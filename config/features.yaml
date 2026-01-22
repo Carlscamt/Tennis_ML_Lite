@@ -1,0 +1,65 @@
+# Feature Definitions for Tennis Betting ML
+# All features calculated using ONLY historical data (no leakage)
+
+rolling_features:
+  # Win rate features
+  - name: win_rate
+    windows: [5, 10, 20, 50]
+    surfaces: [all, hard, clay, grass]
+    
+  # Serve statistics
+  - name: ace_rate
+    windows: [10, 20]
+    description: "Aces per service game"
+    
+  - name: double_fault_rate
+    windows: [10, 20]
+    description: "Double faults per service game"
+    
+  - name: first_serve_pct
+    windows: [10, 20]
+    description: "First serve percentage"
+    
+  - name: first_serve_won_pct
+    windows: [10, 20]
+    description: "Points won on first serve"
+    
+  - name: second_serve_won_pct
+    windows: [10, 20]
+    description: "Points won on second serve"
+
+  # Return statistics  
+  - name: break_point_conversion
+    windows: [10, 20]
+    description: "Break points converted percentage"
+    
+  - name: return_points_won
+    windows: [10, 20]
+    description: "Return points won percentage"
+
+elo_features:
+  - name: elo_overall
+    k_factor: 32
+    initial: 1500
+    
+  - name: elo_surface
+    k_factor: 32
+    initial: 1500
+    surfaces: [hard, clay, grass]
+
+contextual_features:
+  - name: days_since_last_match
+    description: "Fatigue/rust indicator"
+    
+  - name: tournament_round
+    description: "Round number (1=R128, 7=Final)"
+    
+  - name: h2h_win_rate
+    description: "Head-to-head record vs opponent"
+    
+  - name: rank_difference
+    description: "Player rank minus opponent rank"
+
+target:
+  name: player_won
+  type: binary
