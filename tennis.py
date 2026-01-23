@@ -44,7 +44,7 @@ def cmd_scrape(args):
 
 def cmd_train(args):
     """Train or retrain the model."""
-    from scripts.run_pipeline import run_data_pipeline, run_training_pipeline
+    from src.pipeline import run_data_pipeline, run_training_pipeline
     from config import RAW_DATA_DIR, PROCESSED_DATA_DIR, MODELS_DIR
     
     print("=== TRAINING PIPELINE ===")

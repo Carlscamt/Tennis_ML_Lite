@@ -103,6 +103,10 @@ def get_session():
 # CHECKPOINT MANAGEMENT
 # =============================================================================
 
+# =============================================================================
+# CHECKPOINT & STATE MANAGEMENT
+# =============================================================================
+
 class CheckpointManager:
     """Unified checkpoint management for resume support."""
     
@@ -153,9 +157,58 @@ class CheckpointManager:
     def clear(self):
         """Clear checkpoint files."""
         if self.data_file.exists():
-            self.data_file.unlink()
+            try:
+                self.data_file.unlink()
+            except: pass
         if self.state_file.exists():
-            self.state_file.unlink()
+            try:
+                self.state_file.unlink()
+            except: pass
+
+
+STATE_FILE = DATA_DIR / "player_update_state.json"
+
+def load_state() -> Dict:
+    """Load player update state."""
+    if STATE_FILE.exists():
+        try:
+            with open(STATE_FILE, "r") as f:
+                return json.load(f)
+        except: pass
+    return {"last_update": {}, "player_timestamps": {}}
+
+def save_state(state: Dict):
+    """Save player update state."""
+    try:
+        with open(STATE_FILE, "w") as f:
+            json.dump(state, f, indent=2)
+    except Exception as e:
+        logger.warning(f"Failed to save state: {e}")
+
+def should_update_player(player_id: int, state: Dict, force: bool = False) -> bool:
+    """Check if player needs updating based on last match timestamp."""
+    if force:
+        return True
+    
+    timestamps = state.get("player_timestamps", {})
+    player_state = timestamps.get(str(player_id), {})
+    
+    if not player_state:
+        return True
+    
+    last_scraped = player_state.get("last_scraped")
+    if not last_scraped:
+        return True
+    
+    # Check if enough time has passed (24 hours)
+    try:
+        dt = datetime.fromisoformat(last_scraped)
+        if datetime.now() - dt < timedelta(hours=24):
+            return False
+    except:
+        return True
+    
+    return True
 
 
 # =============================================================================
@@ -213,6 +266,15 @@ def convert_fractional(frac_str) -> Optional[float]:
 # =============================================================================
 # DATA FETCHING
 # =============================================================================
+
+def get_active_player_ids(upcoming_df: pl.DataFrame) -> List[int]:
+    """Extract all player IDs from upcoming matches."""
+    ids = set()
+    if "player_id" in upcoming_df.columns:
+        ids.update(upcoming_df["player_id"].drop_nulls().unique().to_list())
+    if "opponent_id" in upcoming_df.columns:
+        ids.update(upcoming_df["opponent_id"].drop_nulls().unique().to_list())
+    return list(ids)
 
 def is_valid_event(event: Dict) -> bool:
     """
@@ -635,12 +697,34 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 4) -> pl.DataFrame:
 def scrape_players(
     player_ids: List[int],
     max_pages: int = 5,
-    workers: int = 3
+    workers: int = 3,
+    smart_update: bool = False
 ) -> pl.DataFrame:
     """
     Scrape match history for specific players.
+    
+    Args:
+        player_ids: List of player IDs to scrape
+        max_pages: Maximum pages of history per player
+        workers: Number of parallel threads
+        smart_update: If True, skip players updated in last 24h
     """
-    print(f"=== SCRAPING {len(player_ids)} PLAYERS ===")
+    print(f"=== SCRAPING {len(player_ids)} PLAYERS (Smart={smart_update}) ===")
+    
+    # Load state
+    state = load_state()
+    
+    # Filter if smart update
+    if smart_update:
+        original_count = len(player_ids)
+        player_ids = [pid for pid in player_ids if should_update_player(pid, state)]
+        skipped = original_count - len(player_ids)
+        if skipped > 0:
+            print(f"Skipping {skipped} recently updated players")
+            
+    if not player_ids:
+        print("No players to update.")
+        return pl.read_parquet(OUTPUT_FILE) if OUTPUT_FILE.exists() else pl.DataFrame()
     
     # Load existing data
     existing_df = None
@@ -649,11 +733,18 @@ def scrape_players(
     if OUTPUT_FILE.exists():
         existing_df = pl.read_parquet(OUTPUT_FILE)
         existing_events = set(existing_df["event_id"].unique().to_list())
-        print(f"Existing matches: {len(existing_df)}")
+        print(f"Existing matches: {len(existing_df):,}")
     
     all_records = []
     
     def fetch_single_player(player_id):
+        # Update timestamp immediately to allow caching even if no new matches found (prevents loops)
+        if "player_timestamps" not in state:
+            state["player_timestamps"] = {}
+        state["player_timestamps"][str(player_id)] = {
+            "last_scraped": datetime.now().isoformat()
+        }
+            
         records = []
         matches = fetch_player_matches(player_id, max_pages, existing_events)
         
@@ -673,6 +764,7 @@ def scrape_players(
         return player_id, records
     
     # Fetch in parallel
+    print(f"Fetching {len(player_ids)} players with {workers} workers...")
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(fetch_single_player, pid): pid for pid in player_ids}
         
@@ -688,6 +780,9 @@ def scrape_players(
         
         if pbar:
             pbar.close()
+    
+    # Save state
+    save_state(state)
     
     if not all_records:
         print("No new matches found")
