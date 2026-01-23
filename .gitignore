@@ -37,21 +37,27 @@ ENV/
 .env.local
 .env.*.local
 
-# Data (NEVER commit data!)
+# Data - exclude raw/temp, keep essential processed data
 data/raw/*
-data/processed/*
 data/predictions/*
 data/future/*
 data/backtest/*
+data/checkpoints/*
+data/.checkpoints/*
 !data/.gitkeep
 !data/*/.gitkeep
+# Keep processed features dataset (required for predictions)
+!data/processed/features_dataset.parquet
 
-# Models (NEVER commit trained models!)
+# Models - keep trained model for distribution
 models/*.pkl
 models/*.xgb
-models/*.joblib
 !models/.gitkeep
 models/*.json.bak
+# Keep the active model files
+!models/xgboost_model.joblib
+!models/xgboost_model.meta.json
+!models/registry.json
 
 # Checkpoints
 .checkpoints/

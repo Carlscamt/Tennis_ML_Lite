@@ -1,0 +1,85 @@
+{
+  "models": [
+    {
+      "version": "v20260117_095342",
+      "path": "C:\\Users\\Carlos\\Documents\\Data Analitycs\\Tennis iterations\\TENNIS 4.0\\models\\xgboost_model",
+      "metrics": {
+        "train_logloss": 0.5456764684883507,
+        "train_brier": 0.18522715943634963,
+        "train_auc": 0.8127912733030738,
+        "train_accuracy": 0.7055176880609444,
+        "eval_logloss": 0.4214850129499742,
+        "eval_brier": 0.1414843202896729,
+        "eval_auc": 0.8613740476204259,
+        "eval_accuracy": 0.7722933736377376
+      },
+      "description": "Trained on data up to 2024-01-01",
+      "created_at": "2026-01-17T09:53:42.682818"
+    },
+    {
+      "version": "v20260120_131034",
+      "path": "models\\xgboost_model",
+      "metrics": {
+        "train_logloss": 0.500753687314427,
+        "train_brier": 0.16863679689537703,
+        "train_auc": 0.8303958425897076,
+        "train_accuracy": 0.7291997406256289,
+        "eval_logloss": 0.4086053404635293,
+        "eval_brier": 0.13597717097092107,
+        "eval_auc": 0.8694160007043537,
+        "eval_accuracy": 0.7744120853449619
+      },
+      "description": "Trained on data up to 2025-01-01",
+      "created_at": "2026-01-20T13:10:34.849824"
+    },
+    {
+      "version": "v20260121_191037",
+      "path": "models\\xgboost_model",
+      "metrics": {
+        "train_logloss": 0.2621875235607704,
+        "train_brier": 0.08912795849533739,
+        "train_auc": 0.9511993880871167,
+        "train_accuracy": 0.8581123228888904,
+        "eval_logloss": 0.17966931517752138,
+        "eval_brier": 0.059785454479622885,
+        "eval_auc": 0.9746415068906643,
+        "eval_accuracy": 0.9022613986419571
+      },
+      "description": "Trained on data up to 2025-01-01",
+      "created_at": "2026-01-21T19:10:37.159722"
+    },
+    {
+      "version": "v20260121_192049",
+      "path": "models\\xgboost_model",
+      "metrics": {
+        "train_logloss": 0.6373101256436665,
+        "train_brier": 0.22301103323221677,
+        "train_auc": 0.7160419466502911,
+        "train_accuracy": 0.6337805983680871,
+        "eval_logloss": 0.6682087769376217,
+        "eval_brier": 0.23771382638542926,
+        "eval_auc": 0.5791800028270353,
+        "eval_accuracy": 0.5963190478475788
+      },
+      "description": "Trained on data up to 2025-01-01",
+      "created_at": "2026-01-21T19:20:49.712430"
+    },
+    {
+      "version": "v20260121_192146",
+      "path": "models\\xgboost_model",
+      "metrics": {
+        "train_logloss": 0.6312917671898589,
+        "train_brier": 0.22065635075544418,
+        "train_auc": 0.7056510191743612,
+        "train_accuracy": 0.6427561196736175,
+        "eval_logloss": 0.6638581871086902,
+        "eval_brier": 0.23569745824439925,
+        "eval_auc": 0.5927584953343843,
+        "eval_accuracy": 0.6015741229543601
+      },
+      "description": "Trained on data up to 2025-01-01",
+      "created_at": "2026-01-21T19:21:46.234614"
+    }
+  ],
+  "active_model": "v20260121_192146"
+}
