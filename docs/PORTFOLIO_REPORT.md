@@ -94,12 +94,19 @@ Simulation on 1,970 out-of-sample matches (Jan 2025 - Jan 2026) reveals signific
 ### 4.2 Feature Importance
 The XGBoost model relies heavily on market-implied probabilities, but combines them with player momentum.
 
-**Top 5 Features:**
+**Top 12 Features:**
 1.  **`odds_ratio` (11.6%)**: Ratio of player/opponent odds (strongest predictor).
 2.  **`implied_prob_player` (8.2%)**: Market consensus probability.
 3.  **`implied_prob_opponent` (5.7%)**: Opponent's market probability.
 4.  **`odds_opponent` (5.1%)**: Raw opponent odds.
 5.  **`player_win_rate_50` (4.1%)**: Player's long-term form (last 50 matches).
+6.  **`odds_player` (4.0%)**: Raw player odds.
+7.  **`opp_aces_avg_10` (3.6%)**: Opponent's recent serve dominance.
+8.  **`player_surface_win_rate_20` (3.4%)**: Player's surface proficiency.
+9.  **`h2h_wins` (3.4%)**: Head-to-head history.
+10. **`player_win_rate_20` (3.4%)**: Medium-term form.
+11. **`days_since_last_match` (3.3%)**: Fatigue/Rest factor.
+12. **`player_win_rate_5` (3.1%)**: Immediate short-term form.
 
 ### Insights
 *   **Calibration**: The model is well-calibrated, meaning a 70% confidence prediction actually wins ~70% of the time.
