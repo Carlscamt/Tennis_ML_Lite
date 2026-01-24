@@ -4,12 +4,15 @@ Prediction service for live and batch predictions.
 import polars as pl
 import numpy as np
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 from datetime import datetime
-import logging
+import time
+import os
+import structlog
+from src.utils.observability import get_metrics, Logger, CORRELATION_ID
 
-logger = logging.getLogger(__name__)
-
+logger = Logger(__name__)
+metrics = get_metrics()
 
 class Predictor:
     """
@@ -17,30 +20,58 @@ class Predictor:
     Handles both live predictions and batch processing.
     """
     
-    def __init__(self, model_path: Optional[Path] = None):
+    def __init__(self, model_path: Optional[Path] = None, fallback_model_path: Optional[Path] = None):
         """
         Args:
-            model_path: Path to saved model (loads on init if provided)
+            model_path: Path to saved model
+            fallback_model_path: Path to fallback model if primary fails
         """
-        self.model = None
+        self.model_path = model_path
+        self.fallback_model_path = fallback_model_path
         self.trainer = None
+        self.fallback_trainer = None
+        self.version = "unknown"
         
         if model_path:
-            self.load_model(model_path)
-    
-    def load_model(self, path: Path) -> None:
-        """Load a trained model."""
+            self._load_primary_model(model_path)
+            
+        if fallback_model_path:
+            self._load_fallback_model(fallback_model_path)
+            
+    def _load_primary_model(self, path: Path) -> None:
+        """Load primary model with observability."""
         from .trainer import ModelTrainer
-        
-        self.trainer = ModelTrainer()
-        self.trainer.load(path)
-        self.model = self.trainer.model
-        
-        logger.info(f"Loaded model with {len(self.trainer.feature_columns)} features")
-    
+        try:
+            self.trainer = ModelTrainer()
+            self.trainer.load(path)
+            self.version = self._extract_version(path)
+            logger.log_event('model_loaded', model_path=str(path), version=self.version)
+        except Exception as e:
+            logger.log_error('model_load_failed', model_path=str(path), error=str(e))
+            raise
+
+    def _load_fallback_model(self, path: Path) -> None:
+        """Load fallback model."""
+        from .trainer import ModelTrainer
+        try:
+            self.fallback_trainer = ModelTrainer()
+            self.fallback_trainer.load(path)
+            logger.log_event('fallback_model_loaded', model_path=str(path))
+        except Exception as e:
+            logger.log_error('fallback_model_load_failed', model_path=str(path), error=str(e))
+
+    def _extract_version(self, path: Path) -> str:
+        """Extract version from path or metadata."""
+        # Check for adjacent meta file? Or just parse filename
+        # Expected: xgboost_model or xgboost_model_v1.0
+        name = path.name
+        if "v" in name:
+            return name.split("v")[-1].split(".")[0]
+        return "latest"
+
     def predict(self, df: pl.DataFrame) -> pl.DataFrame:
         """
-        Add predictions to dataframe.
+        Add predictions to dataframe with observability.
         
         Args:
             df: DataFrame with feature columns
@@ -48,16 +79,76 @@ class Predictor:
         Returns:
             DataFrame with prediction columns added
         """
+        start_time = time.time()
+        correlation_id = CORRELATION_ID.get() or "unknown"
+        
+        logger.log_event(
+            'prediction_batch_started', 
+            num_rows=len(df),
+            correlation_id=correlation_id
+        )
+        
         if self.trainer is None:
+            logger.log_error('prediction_failed_no_model')
             raise ValueError("No model loaded")
         
-        probas = self.trainer.predict_proba(df)
-        
+        try:
+            # Primary Inference
+            df_result = self._inference(self.trainer, df)
+            
+            latency = time.time() - start_time
+            metrics.prediction_latency.observe(latency)
+            metrics.successful_predictions.inc(len(df))
+            metrics.last_prediction_timestamp.set_to_current_time()
+            
+            logger.log_event(
+                'prediction_batch_completed',
+                duration_seconds=latency,
+                num_rows=len(df),
+                status='success',
+                version=self.version
+            )
+            return df_result
+            
+        except Exception as e:
+            logger.log_error(
+                'primary_inference_failed', 
+                error=str(e), 
+                exc_info=True
+            )
+            
+            # Fallback
+            if self.fallback_trainer:
+                try:
+                    logger.log_event('attempting_fallback_inference')
+                    df_result = self._inference(self.fallback_trainer, df)
+                    
+                    latency = time.time() - start_time
+                    metrics.prediction_latency.observe(latency)
+                    metrics.successful_predictions.inc(len(df))
+                    
+                    logger.log_event(
+                        'fallback_inference_success',
+                        duration_seconds=latency,
+                        status='fallback_used'
+                    )
+                    return df_result
+                except Exception as fb_e:
+                    logger.log_error('fallback_inference_failed', error=str(fb_e))
+                    metrics.failed_predictions.labels(error_type='both_failed').inc()
+                    raise
+            
+            metrics.failed_predictions.labels(error_type=type(e).__name__).inc()
+            raise
+
+    def _inference(self, trainer, df: pl.DataFrame) -> pl.DataFrame:
+        """Internal inference logic."""
+        probas = trainer.predict_proba(df)
         return df.with_columns([
             pl.Series("model_prob", probas),
             pl.Series("model_prediction", (probas >= 0.5).astype(int)),
         ])
-    
+
     def predict_with_value(
         self,
         df: pl.DataFrame,
@@ -65,31 +156,19 @@ class Predictor:
     ) -> pl.DataFrame:
         """
         Add predictions with betting value calculations.
-        
-        Args:
-            df: DataFrame with odds_player column
-            min_edge: Minimum edge to flag as value bet
-            
-        Returns:
-            DataFrame with model_prob, edge, and is_value_bet columns
         """
+        # Call observable predict
         df = self.predict(df)
         
         # Calculate edge if odds available
         if "odds_player" in df.columns:
             df = df.with_columns([
-                # Implied probability from odds
                 (1 / pl.col("odds_player")).alias("implied_prob"),
-                
-                # Edge = model_prob - implied_prob
                 (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
             ])
             
             df = df.with_columns([
-                # Flag value bets
                 (pl.col("edge") >= min_edge).alias("is_value_bet"),
-                
-                # Expected value per unit bet
                 (
                     pl.col("model_prob") * (pl.col("odds_player") - 1) -
                     (1 - pl.col("model_prob"))
@@ -104,26 +183,14 @@ class Predictor:
         min_confidence: float = 0.55,
         min_edge: float = 0.05
     ) -> pl.DataFrame:
-        """
-        Get today's betting recommendations.
-        
-        Args:
-            matches_df: Upcoming matches with features and odds
-            min_confidence: Minimum model probability
-            min_edge: Minimum edge for value bets
-            
-        Returns:
-            DataFrame with recommended bets
-        """
+        """Get today's betting recommendations."""
         predictions = self.predict_with_value(matches_df, min_edge)
         
-        # Filter to value bets
         value_bets = predictions.filter(
             (pl.col("model_prob") >= min_confidence) &
             (pl.col("is_value_bet") == True)
         )
         
-        # Sort by edge
         value_bets = value_bets.sort("edge", descending=True)
         
         # Add timestamp
@@ -131,7 +198,11 @@ class Predictor:
             pl.lit(datetime.now().isoformat()).alias("prediction_timestamp")
         ])
         
-        logger.info(f"Found {len(value_bets)} value bets from {len(predictions)} matches")
+        logger.log_event(
+            'value_bets_identified', 
+            count=len(value_bets), 
+            total_matches=len(predictions)
+        )
         
         return value_bets
     
@@ -141,17 +212,7 @@ class Predictor:
         output_dir: Path,
         prefix: str = "predictions"
     ) -> Path:
-        """
-        Save predictions to parquet file.
-        
-        Args:
-            predictions: Predictions DataFrame
-            output_dir: Output directory
-            prefix: Filename prefix
-            
-        Returns:
-            Path to saved file
-        """
+        """Save predictions to parquet file."""
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -160,6 +221,6 @@ class Predictor:
         path = output_dir / filename
         
         predictions.write_parquet(path)
-        logger.info(f"Saved predictions to {path}")
+        logger.log_event('predictions_saved', path=str(path))
         
         return path

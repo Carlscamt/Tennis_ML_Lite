@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Tennis ML Lite 🎾
 
 A lightweight, CLI-based machine learning pipeline for predicting ATP tennis match outcomes using XGBoost.
