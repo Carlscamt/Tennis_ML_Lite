@@ -1,48 +1,94 @@
-# Tennis ML Lite
+# Tennis ML Lite 🎾
 
-Simplified tennis betting prediction system - streamlined from 23 files to just 9 core modules.
+A lightweight, CLI-based machine learning pipeline for predicting ATP tennis match outcomes using XGBoost.
 
-## Quick Start
+## 🚀 Features
+
+*   **Unified CLI**: Single entry point (`tennis.py`) for all operations.
+*   **Robust Scraping**: Automated data collection from SofaScore with smart incremental updates.
+*   **Machine Learning**: XGBoost model with optimized feature engineering and probability calibration.
+*   **Value Betting**: Identifies bets with positive expected value (Edge > 5%).
+*   **Leakage-Free**: Strict temporal splitting and validation to prevent data leakage.
+
+## 📋 Prerequisites
+
+*   Python 3.9+
+*   Windows/Linux/MacOS
+
+## 🛠️ Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Carlscamt/Tennis_ML_Lite.git
+    cd Tennis_ML_Lite
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## 📖 Usage
+
+All interaction is done via the `tennis.py` script.
+
+### 1. Scrape Data
+Fetch historical data or upcoming matches. The system handles deduplication and incremental updates.
 
 ```bash
-pip install -r requirements.txt
-
-# Scrape upcoming matches
-python tennis.py scrape upcoming --days 7
-
-# Get predictions
-python tennis.py predict --days 7 --min-odds 1.5 --max-odds 3.0
-```
-
-## Architecture
-
-```
-scrape → validate → features → predict → bet
-```
-
-| # | File | Purpose |
-|---|------|---------|
-| 1 | `tennis.py` | CLI entry point |
-| 2 | `src/scraper.py` | Data scraper |
-| 3 | `src/schema.py` | Validation |
-| 4 | `src/pipeline.py` | Workflows |
-| 5 | `src/transform/features.py` | Features |
-| 6 | `scripts/run_pipeline.py` | Training |
-| 7 | `scripts/model_audit.py` | Evaluation |
-| 8 | `scripts/backtest.py` | Testing |
-| 9 | `dashboard/app.py` | UI |
-
-## Commands
-
-```bash
+# Scrape top 50 players' history
 python tennis.py scrape historical --top 50
+
+# Scrape specific players by ID
+python tennis.py scrape players --ids 12345,67890
+
+# Scrape upcoming matches for next 7 days
 python tennis.py scrape upcoming --days 7
-python tennis.py predict --days 7
+```
+
+### 2. Train Model
+Train the XGBoost model on available data. Features are automatically generated.
+
+```bash
 python tennis.py train
+```
+
+### 3. Get Predictions 🔮
+Generate predictions for upcoming matches and find value bets.
+
+```bash
+# Predict next 3 days
+python tennis.py predict --days 3
+
+# Filter for specific odds
+python tennis.py predict --days 3 --min-odds 1.5 --max-odds 2.5
+```
+
+### 4. Audit & Backtest
+Verify model performance.
+
+```bash
+# Run model audit
 python tennis.py audit
+
+# Run ROI backtest
 python tennis.py backtest
 ```
 
-## License
+## 🏗️ Architecture
 
-MIT
+The system follows a modular architecture:
+
+*   **`src/pipeline.py`**: Orchestrates scraping, ETL, and modeling.
+*   **`src/scraper.py`**: Handles data collection.
+*   **`src/model/`**: XGBoost training and inference.
+*   **`data/`**: Stores raw parquet files, processed features, and models.
+
+See [docs/architecture.md](docs/architecture.md) for a detailed diagram.
+
+## 🤝 Contributing
+1.  Fork the repo
+2.  Create a feature branch
+3.  Commit changes
+4.  Push to branch
+5.  Create Pull Request
