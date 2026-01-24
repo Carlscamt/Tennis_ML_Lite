@@ -79,7 +79,7 @@ def cmd_predict(args):
         return
     
     # Display top value bets
-    print(f"\n=== TOP VALUE BETS ({len(predictions)} matches) ===\n")
+    print(f"\n=== TOP VALUE BETS (Limit: {args.limit}) ===\n")
     
     # Filter to respect odds range and exclude doubles (names with "/")
     value_bets = predictions.filter(
@@ -88,7 +88,7 @@ def cmd_predict(args):
         (predictions["odds_player"] <= args.max_odds) &
         (~predictions["player_name"].str.contains("/")) &
         (~predictions["opponent_name"].str.contains("/"))
-    ).sort("edge", descending=True).head(10)
+    ).sort("edge", descending=True).head(args.limit)
     
     if len(value_bets) == 0:
         print("No value bets found matching criteria.")
@@ -104,9 +104,11 @@ def cmd_predict(args):
         odds = row.get('odds_player', 0)
         edge = row.get('edge', 0) * 100
         tournament = row.get('tournament_name', 'Unknown')
+        match_date = row.get('match_date', 'Unknown')
         
         print(f"#{i} >>> BET ON: {player}")
         print(f"    vs {opponent}")
+        print(f"    Date: {match_date}")
         print(f"    Win Prob: {prob:.1f}% | Odds: {odds:.2f} | Edge: +{edge:.1f}%")
         print(f"    Tournament: {tournament}")
         print()
@@ -120,8 +122,8 @@ def cmd_audit(args):
 
 def cmd_backtest(args):
     """Run backtesting."""
-    from scripts.backtest import main as run_backtest
-    run_backtest([])
+    from scripts.backtest_roi_analysis import main as run_backtest
+    run_backtest()
 
 
 def main():
@@ -159,6 +161,7 @@ Examples:
     # PREDICT command
     predict_parser = subparsers.add_parser("predict", help="Get predictions")
     predict_parser.add_argument("--days", type=int, default=7, help="Days ahead")
+    predict_parser.add_argument("--limit", type=int, default=10, help="Max bets to show")
     predict_parser.add_argument("--min-odds", type=float, default=1.5, help="Min odds")
     predict_parser.add_argument("--max-odds", type=float, default=3.0, help="Max odds")
     predict_parser.add_argument("--confidence", type=float, default=0.55, help="Min confidence")
