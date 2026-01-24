@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Tennis Prediction System - Unified CLI with Observability
+Tennis Prediction System - Unified CLI with Observability and Model Serving
 """
 import sys
 from pathlib import Path
@@ -8,11 +8,15 @@ import argparse
 import os
 import time
 import uuid
+import json
+from dataclasses import asdict
 
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 
 from src.utils.observability import initialize_observability, get_metrics, Logger, CORRELATION_ID
+from src.model.registry import ModelRegistry
+from src.model.serving import ServingConfig
 
 # Initialize observability
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
@@ -31,10 +35,6 @@ def log_metrics_to_stdout():
         from prometheus_client import generate_latest
         metrics_bytes = generate_latest(metrics.registry)
         # Only print non-empty metrics or summary
-        # For CLI cleanliness, maybe only if requested or on error?
-        # User requested it in "Verify metrics output". 
-        # But we don't want to spam stdout on every command.
-        # Let's print to stderr or debug log if in dev.
         pass 
     except Exception:
         pass
@@ -80,6 +80,7 @@ def cmd_train(args):
     pipeline.run_training_pipeline(Path(data_result['output_path']))
     
     print("=== TRAINING COMPLETE ===")
+    print("Model registered globally as 'Experimental'. Use 'list-models' to view.")
 
 
 def cmd_predict(args):
@@ -126,12 +127,15 @@ def cmd_predict(args):
         edge = row.get('edge', 0) * 100
         tournament = row.get('tournament_name', 'Unknown')
         match_date = row.get('match_date', 'Unknown')
+        model_ver = row.get('model_version', 'N/A')
+        mode = row.get('serving_mode', 'N/A')
         
         print(f"#{i} >>> BET ON: {player}")
         print(f"    vs {opponent}")
         print(f"    Date: {match_date}")
         print(f"    Win Prob: {prob:.1f}% | Odds: {odds:.2f} | Edge: +{edge:.1f}%")
         print(f"    Tournament: {tournament}")
+        print(f"    [Model: {model_ver} | Mode: {mode}]")
         print()
 
 
@@ -144,12 +148,60 @@ def cmd_backtest(args):
     from scripts.backtest_roi_analysis import main as run_backtest
     run_backtest()
 
+# --- NEW COMMANDS ---
+
+def cmd_list_models(args):
+    """List models in registry."""
+    registry = ModelRegistry()
+    models = registry.list_models()
+    
+    print(f"\nModel Registry: {registry.model_name}")
+    print("=" * 80)
+    print(f"{'Version':<10} | {'Stage':<12} | {'AUC':<6} | {'Created At':<20} | {'Note'}")
+    print("-" * 80)
+    
+    for model in models:
+        stage_emoji = {
+            'Production': '✅',
+            'Staging': '🟡',
+            'Experimental': '🔬',
+            'Archived': '📦',
+        }.get(model.stage, '?')
+        
+        note = model.notes if model.notes else ""
+        print(f"{stage_emoji} {model.version:<8} | {model.stage:<12} | {model.auc:.3f}  | {model.trained_at[:19]:<20} | {note}")
+    print("=" * 80)
+    print()
+
+def cmd_promote_model(args):
+    """Promote model to new stage."""
+    registry = ModelRegistry()
+    registry.transition_stage(args.version, args.stage)
+    print(f"✅ Promoted {args.version} to {args.stage}")
+
+def cmd_set_serving_config(args):
+    """Configure serving behavior."""
+    config = ServingConfig(
+        canary_percentage=args.canary,
+        shadow_mode=args.shadow,
+    )
+    
+    # Save config to file
+    config_path = "config/serving.json"
+    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+    with open(config_path, 'w') as f:
+        json.dump(asdict(config), f, indent=2)
+    
+    print(f"✅ Serving config updated:")
+    print(f"   Canary Percentage: {args.canary*100}%")
+    print(f"   Shadow Mode: {args.shadow}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Tennis Prediction System")
     subparsers = parser.add_subparsers(dest="command", required=True)
     
-    # Define commands
+    # Existing commands
     scrape = subparsers.add_parser("scrape")
     scrape.add_argument("mode", choices=["historical", "upcoming", "players"])
     scrape.add_argument("--top", type=int, default=50)
@@ -177,6 +229,20 @@ def main():
     
     backtest = subparsers.add_parser("backtest")
     backtest.set_defaults(func=cmd_backtest)
+    
+    # New Commands
+    list_models = subparsers.add_parser('list-models', help='List model versions')
+    list_models.set_defaults(func=cmd_list_models)
+    
+    promote = subparsers.add_parser('promote', help='Promote model version')
+    promote.add_argument('version', help='Model version (e.g., v1.0.0)')
+    promote.add_argument('stage', choices=['Staging', 'Production', 'Archived'])
+    promote.set_defaults(func=cmd_promote_model)
+
+    config_serving = subparsers.add_parser('serving-config', help='Configure serving settings')
+    config_serving.add_argument('--canary', type=float, default=0.0, help='Canary percentage (0.0 - 1.0)')
+    config_serving.add_argument('--shadow', action='store_true', help='Enable shadow mode')
+    config_serving.set_defaults(func=cmd_set_serving_config)
     
     args = parser.parse_args()
     

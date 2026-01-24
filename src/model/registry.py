@@ -2,122 +2,286 @@
 Model registry for versioning and tracking.
 """
 import json
+import os
+import shutil
+from datetime import datetime, timezone
+from typing import Dict, Any, List, Optional, Tuple
+from dataclasses import dataclass, asdict
 from pathlib import Path
-from datetime import datetime
-from typing import Optional, List, Dict
-import logging
+import structlog
+from src.utils.observability import Logger
 
-logger = logging.getLogger(__name__)
+logger = Logger(__name__)
 
+@dataclass
+class ModelVersion:
+    """Model version metadata."""
+    version: str
+    stage: str  # 'Experimental' | 'Staging' | 'Production' | 'Archived'
+    trained_at: str  # ISO timestamp
+    auc: float
+    precision: float
+    recall: float
+    feature_schema_version: str
+    training_dataset_size: int
+    model_file: str  # Relative path to model file
+    notes: Optional[str] = None
 
 class ModelRegistry:
     """
-    Simple model registry for versioning and tracking.
+    MLflow-inspired model registry.
+    
+    Manages model lifecycle: Experimental → Staging → Production → Archived.
     """
     
-    def __init__(self, models_dir: Path):
+    REGISTRY_FILE = "models/registry.json"
+    MODELS_DIR = "models"
+    
+    def __init__(self, model_name: str = "tennis_xgboost", root_dir: Optional[Path] = None):
         """
         Args:
-            models_dir: Directory to store models
+            model_name: Name of the model artifact
+            root_dir: Optional root directory override (default: project root)
         """
-        self.models_dir = Path(models_dir)
+        self.model_name = model_name
+        
+        # Determine root based on file location if not provided
+        if root_dir is None:
+            # Assuming src/model/registry.py -> ROOT is ../../
+            self.root_dir = Path(__file__).parent.parent.parent
+        else:
+            self.root_dir = root_dir
+            
+        self.models_dir = self.root_dir / self.MODELS_DIR
+        self.registry_path = self.models_dir / "registry.json"
+        
+        # Ensure directories exist
         self.models_dir.mkdir(parents=True, exist_ok=True)
-        self.registry_file = self.models_dir / "registry.json"
-        self.registry = self._load_registry()
+        self._load_registry()
     
-    def _load_registry(self) -> Dict:
-        """Load existing registry or create new."""
-        if self.registry_file.exists():
-            with open(self.registry_file, "r") as f:
-                return json.load(f)
-        return {"models": [], "active_model": None}
+    def _load_registry(self):
+        """Load registry from JSON."""
+        try:
+            if self.registry_path.exists():
+                with open(self.registry_path, 'r') as f:
+                    data = json.load(f)
+                    self.registry = data.get(self.model_name, {})
+                    logger.log_event('registry_loaded', num_versions=len(self.registry))
+            else:
+                self.registry = {}
+        except Exception as e:
+            logger.log_error('registry_load_failed', error=str(e))
+            self.registry = {}
     
-    def _save_registry(self) -> None:
-        """Save registry to disk."""
-        with open(self.registry_file, "w") as f:
-            json.dump(self.registry, f, indent=2)
+    def _save_registry(self):
+        """Save registry to JSON."""
+        try:
+            # Load complete file first if it exists to preserve other models
+            full_data = {}
+            if self.registry_path.exists():
+                with open(self.registry_path, 'r') as f:
+                    full_data = json.load(f)
+            
+            full_data[self.model_name] = self.registry
+            
+            with open(self.registry_path, 'w') as f:
+                json.dump(full_data, f, indent=2, default=str)
+            logger.log_event('registry_saved', num_versions=len(self.registry))
+        except Exception as e:
+            logger.log_error('registry_save_failed', error=str(e))
+            raise
     
-    def register(
+    def register_model(
         self,
-        model_path: Path,
-        metrics: Dict,
-        description: str = "",
-        set_active: bool = True
+        model_path: str,
+        auc: float,
+        precision: float,
+        recall: float,
+        feature_schema_version: str,
+        training_dataset_size: int,
+        notes: Optional[str] = None,
+        stage: str = "Experimental"
     ) -> str:
         """
-        Register a trained model.
+        Register new model version.
         
-        Args:
-            model_path: Path to model file
-            metrics: Training metrics
-            description: Model description
-            set_active: Set as active model
-            
-        Returns:
-            Model version string
+        Returns: version identifier (e.g., 'v1.2.3')
         """
-        version = datetime.now().strftime("v%Y%m%d_%H%M%S")
+        # Generate semantic version
+        versions = list(self.registry.keys())
+        if not versions:
+            major, minor, patch = 1, 0, 0
+        else:
+            # Parse versions assuming vX.Y.Z
+            parsed_versions = []
+            for v_str in versions:
+                try:
+                    v_nums = tuple(map(int, v_str[1:].split('.')))
+                    parsed_versions.append(v_nums)
+                except ValueError:
+                    continue # Skip non-compliant versions if any
+            
+            if not parsed_versions:
+                major, minor, patch = 1, 0, 0
+            else:
+                latest = max(parsed_versions)
+                major, minor, patch = latest
+                
+                if stage == "Production":
+                    major += 1
+                    minor, patch = 0, 0
+                elif stage == "Staging":
+                    minor += 1
+                    patch = 0
+                else:
+                    patch += 1
         
-        entry = {
-            "version": version,
-            "path": str(model_path),
-            "metrics": metrics,
-            "description": description,
-            "created_at": datetime.now().isoformat(),
+        new_version = f"v{major}.{minor}.{patch}"
+        
+        # Copy model to versioned location
+        version_dir = self.models_dir / new_version
+        version_dir.mkdir(parents=True, exist_ok=True)
+        
+        source_path = Path(model_path)
+        dest_path = version_dir / "model.bin"
+        shutil.copy2(source_path, dest_path)
+        
+        # Relative path for storage
+        rel_model_path = f"{new_version}/model.bin"
+        
+        # Create model version
+        model_version = ModelVersion(
+            version=new_version,
+            stage=stage,
+            trained_at=datetime.now(timezone.utc).isoformat(),
+            auc=auc,
+            precision=precision,
+            recall=recall,
+            feature_schema_version=feature_schema_version,
+            training_dataset_size=training_dataset_size,
+            model_file=rel_model_path,
+            notes=notes,
+        )
+        
+        self.registry[new_version] = asdict(model_version)
+        self._save_registry()
+        
+        logger.log_event(
+            'model_registered',
+            version=new_version,
+            stage=stage,
+            auc=auc,
+        )
+        
+        return new_version
+    
+    def transition_stage(self, version: str, new_stage: str) -> None:
+        """
+        Transition model version to new stage.
+        
+        Valid stages: Experimental → Staging → Production → Archived
+        """
+        if version not in self.registry:
+            raise ValueError(f"Version {version} not found")
+        
+        current_stage = self.registry[version]['stage']
+        valid_transitions = {
+            'Experimental': ['Staging', 'Archived'],
+            'Staging': ['Production', 'Experimental', 'Archived'],
+            'Production': ['Archived', 'Staging'],
+            'Archived': [],
         }
         
-        self.registry["models"].append(entry)
+        if new_stage not in valid_transitions.get(current_stage, []):
+            # Allow force transition? Better to warn
+            logger.log_event('forcing_stage_transition', version=version, from_stage=current_stage, to_stage=new_stage)
         
-        if set_active:
-            self.registry["active_model"] = version
+        # Enforce single Production invariant
+        if new_stage == 'Production':
+            for v, meta in self.registry.items():
+                if meta['stage'] == 'Production' and v != version:
+                    logger.log_event('demoting_previous_production', version=v)
+                    self.registry[v]['stage'] = 'Archived'
         
+        self.registry[version]['stage'] = new_stage
         self._save_registry()
         
-        logger.info(f"Registered model {version}")
-        return version
+        logger.log_event(
+            'model_stage_transitioned',
+            version=version,
+            from_stage=current_stage,
+            to_stage=new_stage,
+        )
     
-    def get_active_model(self) -> Optional[Dict]:
-        """Get the currently active model entry."""
-        active = self.registry.get("active_model")
-        if not active:
+    def get_production_model(self) -> Tuple[str, str]:
+        """
+        Get production model path.
+        
+        Returns: (version, absolute_model_path)
+        """
+        production_models = [
+            v for v, meta in self.registry.items()
+            if meta['stage'] == 'Production'
+        ]
+        
+        if not production_models:
+            # Fallback to latout Staging or Experimental mostly for Dev?
+            # User wants production logic. 
+            # If no production model, maybe return None or raise
+            raise RuntimeError("No Production model available")
+        
+        # Sort by version to get latest if multiple (though transition_stage prevents multiple)
+        # Using string sort for vX.Y.Z is risky (v10 < v2), but with tuple mapping it's fine.
+        # We rely on strict transition ensuring usually only 1 prod.
+        # But let's be robust
+        def parse_v(v): 
+            try: return tuple(map(int, v[1:].split('.')))
+            except: return (0,0,0)
+            
+        version = max(production_models, key=parse_v)
+        
+        rel_path = self.registry[version]['model_file']
+        abs_path = str(self.models_dir / rel_path)
+        
+        logger.log_event('production_model_selected', version=version)
+        return version, abs_path
+    
+    def get_challenger_model(self) -> Optional[Tuple[str, str]]:
+        """Get Staging model for canary/shadow testing."""
+        staging_models = [
+            v for v, meta in self.registry.items()
+            if meta['stage'] == 'Staging'
+        ]
+        
+        if not staging_models:
             return None
         
-        for model in self.registry["models"]:
-            if model["version"] == active:
-                return model
+        def parse_v(v): 
+                try: return tuple(map(int, v[1:].split('.')))
+                except: return (0,0,0)
+
+        version = max(staging_models, key=parse_v)
+        rel_path = self.registry[version]['model_file']
+        abs_path = str(self.models_dir / rel_path)
         
-        return None
+        logger.log_event('challenger_model_selected', version=version)
+        return version, abs_path
     
-    def get_model(self, version: str) -> Optional[Dict]:
-        """Get a specific model by version."""
-        for model in self.registry["models"]:
-            if model["version"] == version:
-                return model
-        return None
+    def list_models(self, stage: Optional[str] = None) -> List[ModelVersion]:
+        """List models optionally filtered by stage."""
+        filtered = [
+            ModelVersion(**meta) for v, meta in self.registry.items()
+            if not stage or meta['stage'] == stage
+        ]
+        
+        def parse_v(m): 
+            try: return tuple(map(int, m.version[1:].split('.')))
+            except: return (0,0,0)
+            
+        return sorted(filtered, key=parse_v, reverse=True)
     
-    def list_models(self, limit: int = 10) -> List[Dict]:
-        """List recent models."""
-        return self.registry["models"][-limit:]
-    
-    def set_active(self, version: str) -> None:
-        """Set a model version as active."""
-        if not self.get_model(version):
-            raise ValueError(f"Model {version} not found")
-        
-        self.registry["active_model"] = version
-        self._save_registry()
-        logger.info(f"Set active model to {version}")
-    
-    def compare_models(self, versions: List[str]) -> "pl.DataFrame":
-        """Compare metrics across models."""
-        import polars as pl
-        
-        models = [self.get_model(v) for v in versions if self.get_model(v)]
-        
-        rows = []
-        for m in models:
-            row = {"version": m["version"], "created_at": m["created_at"]}
-            row.update(m.get("metrics", {}))
-            rows.append(row)
-        
-        return pl.DataFrame(rows)
+    def get_model_metadata(self, version: str) -> Dict[str, Any]:
+        """Get metadata for specific version."""
+        if version not in self.registry:
+            raise ValueError(f"Version {version} not found")
+        return self.registry[version]

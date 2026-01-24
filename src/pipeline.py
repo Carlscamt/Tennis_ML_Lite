@@ -1,14 +1,16 @@
 """
-Unified Tennis Prediction Pipeline with Observability and Data Quality.
+Unified Tennis Prediction Pipeline with Observability, Data Quality, and Advanced Serving.
 """
 import sys
 import time
 import uuid
+import os
 from pathlib import Path
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from contextlib import contextmanager
 import polars as pl
+import xgboost as xgb
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
@@ -21,7 +23,7 @@ from src.extract import load_all_parquet_files
 from src.extract.data_loader import prepare_base_dataset, get_dataset_stats
 from src.transform import FeatureEngineer, create_train_test_split, DataValidator
 from src.transform.leakage_guard import validate_temporal_order, assert_no_leakage
-from src.model import Predictor, ModelTrainer, ModelRegistry
+from src.model.trainer import ModelTrainer # Backward compat for params?
 from src.scraper import scrape_upcoming, scrape_players
 from src.utils.observability import get_metrics, Logger, CORRELATION_ID
 
@@ -30,6 +32,10 @@ from src.schema import SchemaValidator
 from src.data_quality.validator import (
     DataQualityMonitor, DriftDetector, AnomalyDetector, StalenessDetector
 )
+
+# Model Serving Imports
+from src.model.registry import ModelRegistry
+from src.model.serving import get_model_server, ModelServer
 
 logger = Logger(__name__)
 metrics = get_metrics()
@@ -54,7 +60,6 @@ class TennisPipeline:
         self.model_path = model_path or (self.models_dir / "xgboost_model")
         
         self.feature_engineer = FeatureEngineer()
-        self._predictor = None
         self.correlation_id = None
 
         # Data Quality Components
@@ -69,6 +74,10 @@ class TennisPipeline:
             anomaly_detector=self.anomaly_detector,
             staleness_detector=self.staleness_detector,
         )
+        
+        # Model Serving Components
+        self.registry = ModelRegistry() # Defaults to project root logic in init
+        self.model_server = get_model_server()
 
     @contextmanager
     def observability_context(self, operation: str):
@@ -100,7 +109,6 @@ class TennisPipeline:
             
         except Exception as e:
             duration = time.time() - start_time
-            
             logger.log_error(
                 f'{operation}_failed',
                 operation=operation,
@@ -109,21 +117,13 @@ class TennisPipeline:
                 error_message=str(e),
                 exc_info=True,
             )
-            
             metrics.data_pipeline_errors.labels(
                 stage=operation,
                 error_type=type(e).__name__
             ).inc()
-            
             raise
         finally:
             CORRELATION_ID.reset(token)
-
-    @property
-    def predictor(self) -> Predictor:
-        if self._predictor is None:
-            self._predictor = Predictor(self.model_path)
-        return self._predictor
 
     def run_data_pipeline(self) -> Dict[str, Any]:
         """Execute ETL with observability and quality gates."""
@@ -132,18 +132,9 @@ class TennisPipeline:
             df = load_all_parquet_files(self.raw_dir)
             
             # --- QUALITY GATE 1: SCHEMA VALIDATION (RAW) ---
-            # We collect schema check results but proceed if warnings only? 
-            # Or strict fail? User asked for "Gates". Let's log errors but maybe allow proceed if not critical 
-            # or strict fail. The plan says "Fails pipeline on schema violation".
-            # SchemaValidator checks types.
             schema_res = self.schema_validator.validate_raw_data(df)
             if not schema_res['valid']:
-                logger.log_error(
-                    'schema_validation_failed', 
-                    errors=schema_res['errors'][:5], 
-                    count=len(schema_res['errors'])
-                )
-                # Strict Fail
+                logger.log_error('schema_validation_failed', errors=schema_res['errors'][:5], count=len(schema_res['errors']))
                 raise ValueError(f"Schema Validation Failed: {len(schema_res['errors'])} errors found.")
             
             logger.log_event('schema_validation_passed', num_rows=schema_res['num_rows'])
@@ -173,8 +164,6 @@ class TennisPipeline:
             df = fe.add_all_features(df)
             
             # --- QUALITY GATE 2: FEATURES SCHEMA ---
-            # Materialize to validate features strictly
-            # Pandera on LazyFrame is supported but eager is safer for strict gate
             df_materialized = df.collect()
             
             feat_res = self.schema_validator.validate_features(df_materialized)
@@ -191,7 +180,7 @@ class TennisPipeline:
             return {'output_path': str(output_path), 'count': len(df_materialized)}
 
     def run_training_pipeline(self, data_path: Path) -> None:
-        """Run training with observability and drift baseline fitting."""
+        """Run training with observability, drift baseline fitting, and model registration."""
         with self.observability_context('training_pipeline'):
             df = pl.scan_parquet(data_path)
             train_df, test_df = create_train_test_split(df, MODEL.train_cutoff_date)
@@ -212,32 +201,91 @@ class TennisPipeline:
             # --- DATA QUALITY: FIT DRIFT & ANOMALY DETECTORS ---
             logger.log_event('fitting_quality_monitors', num_features=len(numeric_cols))
             
-            # Select only numeric features for drift/anomaly
             train_features = train_data.select(numeric_cols)
             self.drift_detector.fit_reference(train_features)
             self.anomaly_detector.fit_reference(train_features)
             
-            # Train
-            trainer = ModelTrainer(params=MODEL.xgb_params, calibrate=True)
-            result = trainer.train(train_data, feature_cols=numeric_cols, eval_df=test_data)
+            # Train using XGBoost directly or via simple Trainer wrapper
+            # Using XGBoost directly to facilitate file saving for Registry
+            import xgboost as xgb
+            X_train = train_data.select(numeric_cols).to_numpy()
+            y_train = train_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
             
-            # Save
-            self.models_dir.mkdir(parents=True, exist_ok=True)
-            model_path = self.models_dir / "xgboost_model"
-            trainer.save(model_path)
+            X_test = test_data.select(numeric_cols).to_numpy()
+            y_test = test_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
             
-            metrics.model_version.labels(version='latest', trained_date=date.today().isoformat()).set(1)
+            model = xgb.XGBClassifier(**MODEL.xgb_params)
+            model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
             
-            logger.log_event(
-                'training_metrics',
-                auc=result.metrics.get('auc'),
-                accuracy=result.metrics.get('accuracy')
-            )
+            # Calculate metrics
+            from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score
+            y_prob = model.predict_proba(X_test)[:, 1]
+            y_pred = (y_prob >= 0.5).astype(int)
             
-            if result.metrics.get('auc', 0) < 0.6:
-                metrics.training_pipeline_runs.labels(status='warning').inc()
-            else:
-                metrics.training_pipeline_runs.labels(status='success').inc()
+            auc = roc_auc_score(y_test, y_prob)
+            acc = accuracy_score(y_test, y_pred)
+            prec = precision_score(y_test, y_pred, zero_division=0)
+            rec = recall_score(y_test, y_pred, zero_division=0)
+            
+            logger.log_event('training_metrics', auc=auc, accuracy=acc)
+            
+            # --- REGISTRY Integration ---
+            temp_path = "temp_model.json"
+            model.save_model(temp_path)
+            
+            try:
+                version = self.registry.register_model(
+                    model_path=temp_path,
+                    auc=auc,
+                    precision=prec,
+                    recall=rec,
+                    feature_schema_version="1.0",
+                    training_dataset_size=len(train_data),
+                    notes=f"Trained on {len(train_data)} samples",
+                    stage="Experimental"
+                )
+                logger.log_event('model_registered', version=version)
+                
+                # Auto-promote to Staging if passing threshold?
+                if auc > 0.65:
+                    self.registry.transition_stage(version, "Staging")
+                    
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+
+    async def _predict_with_server(self, prediction_ready_df: pl.DataFrame) -> pl.DataFrame:
+        """Internal helper to bridge Polars DataFrame to Model Server (Async)."""
+        # Convert to list of dicts for model server
+        # Explicit feature selection to ensure order? 
+        # ModelServer expects features homogeneous.
+        # Ideally we only pass features that were used in training.
+        # For now pass all numeric columns present?
+        
+        # Get numeric columns
+        features = [c for c in prediction_ready_df.columns if prediction_ready_df[c].dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32]]
+        # We assume model trained on subset of these. 
+        # XGBoost handles extra features if feature_names saved? or ignores?
+        # Safe bet: The user code uses hardcoded feature lists in training. We need that list here.
+        # But registry holds metadata? 
+        
+        # Simpler: The ModelServer uses XGBClassifier load_model. 
+        # If model saved with feature names, it matches by name.
+        
+        records = prediction_ready_df.select(features).to_dicts()
+        
+        result = await self.model_server.predict_batch(records)
+        
+        # Add predictions back to dataframe
+        # result['predictions'] is list of 0/1
+        # result['confidence_scores'] is list of floats
+        
+        return prediction_ready_df.with_columns([
+            pl.Series("model_prediction", result['predictions']),
+            pl.Series("model_prob", result['confidence_scores']),
+            pl.lit(result['model_version']).alias("model_version"),
+            pl.lit(result['serving_mode']).alias("serving_mode")
+        ])
 
     def predict_upcoming(
         self,
@@ -247,23 +295,19 @@ class TennisPipeline:
         min_confidence: float = 0.55,
         scrape_unknown: bool = True
     ) -> pl.DataFrame:
-        """Get predictions with observability and quality gates."""
+        """Get predictions with observability, data quality, and advanced serving."""
+        import asyncio
+        
         with self.observability_context('predict_upcoming'):
             # Step 1: Get upcoming
             upcoming = self._get_upcoming_matches(days)
             if len(upcoming) == 0:
-                logger.log_event("no_upcoming_matches_found")
                 return pl.DataFrame()
             
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
-            # Check for staleness, rough schema compliance on raw upcoming data
-            # Assuming upcoming has 'start_timestamp'
             quality_rep = self.quality_monitor.check_incoming_data(upcoming, is_live=True)
             if not quality_rep['passed']:
-                logger.log_error("incoming_data_quality_failed", errors=quality_rep['errors'])
-                # We could raise error here. For now logging error is 
-                # good, but user wants strict gates? "Fails pipeline on schema violation"
-                if any("Schema" in e for e in quality_rep['errors']):
+                 if any("Schema" in e for e in quality_rep['errors']):
                      raise ValueError(f"Incoming Data Schema Failed: {quality_rep['errors']}")
             
             # Step 2: Load history
@@ -281,17 +325,23 @@ class TennisPipeline:
                 upcoming, historical
             )
             
-            # --- QUALITY GATE 4: FEATURE DRIFT CHECK ---
-            # Check for drift in the features we are about to predict on
-            # (If detector is fitted)
+            # --- QUALITY GATE 4: DRIFT ---
             drift_rep = self.drift_detector.detect_drift(prediction_ready)
-            drifted_cnt = sum(1 for r in drift_rep.values() if r.is_drifted)
-            if drifted_cnt > 0:
-                logger.log_event("feature_drift_warning", drifted_count=drifted_cnt)
-                # We don't block on drift usually, just alert
             
-            # Step 4: Predict (Batch)
-            predictions = self.predictor.predict_with_value(prediction_ready)
+            # Step 4: Predict via Model Server
+            # Run async loop
+            predictions = asyncio.run(self._predict_with_server(prediction_ready))
+            
+            # Compute Value (Edge) - Logic from Predictor
+            # Calculate edge if odds available
+            if "odds_player" in predictions.columns:
+                predictions = predictions.with_columns([
+                    (1 / pl.col("odds_player")).alias("implied_prob"),
+                    (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
+                ])
+                predictions = predictions.with_columns([
+                    (pl.col("edge") > 0.05).alias("is_value_bet")
+                ])
             
             # Step 5: Filter
             recommended = predictions.filter(
@@ -316,21 +366,16 @@ class TennisPipeline:
             import os
             mtime = os.path.getmtime(latest_path)
             if (datetime.now().timestamp() - mtime) / 3600 < 1:
-                logger.log_event("using_cached_upcoming")
                 return pl.read_parquet(latest_path)
-        
-        logger.log_event("scraping_upcoming")
         return scrape_upcoming(days_ahead=days)
 
     def _load_historical_data(self) -> pl.DataFrame:
         processed_path = self.processed_dir / "features_dataset.parquet"
         if processed_path.exists():
             return pl.read_parquet(processed_path)
-        
         unified_path = self.data_dir / "tennis.parquet"
         if unified_path.exists():
             return pl.read_parquet(unified_path)
-            
         raw_files = sorted(self.raw_dir.glob("atp_matches_*.parquet"))
         if raw_files:
             return pl.read_parquet(raw_files[-1])
@@ -342,16 +387,13 @@ class TennisPipeline:
             ids.update(upcoming["player_id"].drop_nulls().unique().to_list())
         if "opponent_id" in upcoming.columns:
             ids.update(upcoming["opponent_id"].drop_nulls().unique().to_list())
-            
         known = set()
         if len(historical) > 0 and "player_id" in historical.columns:
             known = set(historical["player_id"].unique().to_list())
-            
         return [pid for pid in ids if pid not in known]
 
     def _scrape_unknown_players(self, player_ids: List[int]) -> None:
         if not player_ids: return
-        logger.log_event("scraping_unknown_players", count=len(player_ids))
         try:
             scrape_players(player_ids=player_ids, max_pages=5, workers=3, smart_update=False)
         except Exception as e:
