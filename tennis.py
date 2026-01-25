@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 from src.utils.observability import initialize_observability, get_metrics, Logger, CORRELATION_ID
 from src.model.registry import ModelRegistry
 from src.model.serving import ServingConfig
+from src.serving.batch_job import run_batch_job, BatchOrchestrator
 
 # Initialize observability
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
@@ -148,7 +149,7 @@ def cmd_backtest(args):
     from scripts.backtest_roi_analysis import main as run_backtest
     run_backtest()
 
-# --- NEW COMMANDS ---
+# --- MODEL REGISTRY COMMANDS ---
 
 def cmd_list_models(args):
     """List models in registry."""
@@ -196,6 +197,45 @@ def cmd_set_serving_config(args):
     print(f"   Canary Percentage: {args.canary*100}%")
     print(f"   Shadow Mode: {args.shadow}")
 
+# --- BATCH SERVING COMMANDS ---
+
+def cmd_batch_run(args):
+    """Trigger daily batch job (Scheduler)."""
+    print(f"🚀 Triggering Batch Job (Fetch {args.days} days)...")
+    status = run_batch_job(force=args.force, days=args.days)
+    print(f"🏁 Batch Job Finished: {status}")
+
+def cmd_show_predictions(args):
+    """Instant serving command (Reads Cache)."""
+    orch = BatchOrchestrator()
+    cached = orch.get_predictions()
+    
+    if cached.is_empty():
+        print("⚠️ No cached predictions found. Run 'batch-run' first.")
+        return
+
+    # Filter and display (same logic as predict but instant)
+    print(f"\n⚡ INSTANT SERVING (Cache Count: {len(cached)})")
+    
+    value_bets = cached.filter(
+        (cached["edge"] > 0.05) &
+        (cached["odds_player"] >= args.min_odds)
+    ).sort("edge", descending=True).head(args.limit)
+    
+    if len(value_bets) == 0:
+        print("No top value bets found in cache.")
+        return
+        
+    for i, row in enumerate(value_bets.iter_rows(named=True), 1):
+        player = row['player_name']
+        opponent = row['opponent_name']
+        prob = row.get('model_prob', 0) * 100
+        odds = row.get('odds_player', 0)
+        edge = row.get('edge', 0) * 100
+        match_date = row.get('match_date', 'Unknown')
+        
+        print(f"#{i} {player} vs {opponent} | {match_date} | Edge: {edge:.1f}%")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Tennis Prediction System")
@@ -230,7 +270,7 @@ def main():
     backtest = subparsers.add_parser("backtest")
     backtest.set_defaults(func=cmd_backtest)
     
-    # New Commands
+    # Registry Commands
     list_models = subparsers.add_parser('list-models', help='List model versions')
     list_models.set_defaults(func=cmd_list_models)
     
@@ -243,6 +283,17 @@ def main():
     config_serving.add_argument('--canary', type=float, default=0.0, help='Canary percentage (0.0 - 1.0)')
     config_serving.add_argument('--shadow', action='store_true', help='Enable shadow mode')
     config_serving.set_defaults(func=cmd_set_serving_config)
+
+    # Batch Serving Commands
+    batch = subparsers.add_parser('batch-run', help='Execute daily batch job')
+    batch.add_argument('--days', type=int, default=7)
+    batch.add_argument('--force', action='store_true', help='Force run even if cache valid')
+    batch.set_defaults(func=cmd_batch_run)
+
+    show = subparsers.add_parser('show-predictions', help='Instant cached predictions')
+    show.add_argument("--limit", type=int, default=10)
+    show.add_argument("--min-odds", type=float, default=1.5)
+    show.set_defaults(func=cmd_show_predictions)
     
     args = parser.parse_args()
     

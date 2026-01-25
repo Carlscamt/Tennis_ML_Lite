@@ -48,7 +48,7 @@ except ImportError:
 
 import polars as pl
 
-from src.schema import deduplicate_matches, enforce_schema, SchemaValidator
+from src.schema import SchemaValidator, merge_datasets
 
 logger = logging.getLogger(__name__)
 
@@ -598,12 +598,11 @@ def scrape_historical(
     # Final save
     if all_records:
         df = pl.DataFrame(all_records)
-        df = deduplicate_matches(df, prefer_with_odds=True)
-        df = enforce_schema(df, add_missing=True)
+        df = df.unique(subset=["event_id", "player_id"], keep="first")
         
         # Validate
         validator = SchemaValidator()
-        result = validator.validate(df)
+        result = validator.validate_raw_data(df)
         if result.errors:
             print(f"  Validation issues: {result.errors}")
         
@@ -683,8 +682,7 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 4) -> pl.DataFrame:
     
     # Create DataFrame
     df = pl.DataFrame(all_records)
-    df = deduplicate_matches(df, prefer_with_odds=True)
-    df = enforce_schema(df, add_missing=True)
+    df = df.unique(subset=["event_id", "player_id"], keep="first")
     
     # Save
     output_path = DATA_DIR / "upcoming.parquet"
@@ -798,8 +796,7 @@ def scrape_players(
     else:
         df = new_df
     
-    df = deduplicate_matches(df, prefer_with_odds=True)
-    df = enforce_schema(df, add_missing=True)
+    df = df.unique(subset=["event_id", "player_id"], keep="first")
     
     # Save
     df.write_parquet(OUTPUT_FILE)
