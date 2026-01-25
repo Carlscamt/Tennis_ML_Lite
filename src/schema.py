@@ -54,7 +54,7 @@ class FeaturesSchema(pa.DataFrameModel):
     odds_player: float = Field(gt=1.0, nullable=True)
     implied_prob_player: float = Field(ge=0.0, le=1.0, nullable=True)
     
-    player_win_rate_50: float = Field(ge=0.0, le=1.0, nullable=True)
+    player_win_rate_20: float = Field(ge=0.0, le=1.0, nullable=True)
     
     class Config:
         pass
@@ -78,10 +78,20 @@ class SchemaValidator:
         """
         try:
             # Clean dataframe for validation if needed (e.g. strict types)
+            if isinstance(df, pl.LazyFrame):
+                df = df.collect()
+            
             validated = self.raw_schema.validate(df, lazy=True)
+            
+            # Count rows safely
+            if isinstance(df, pl.LazyFrame):
+                num_rows = df.select(pl.len()).collect().item()
+            else:
+                num_rows = len(df)
+            
             return {
                 'valid': True,
-                'num_rows': len(df),
+                'num_rows': num_rows,
                 'num_invalid_rows': 0,
                 'errors': [],
                 'error_counts': {},

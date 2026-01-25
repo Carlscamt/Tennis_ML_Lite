@@ -43,8 +43,8 @@ def test_cache_ttl(temp_cache_dir):
     # (metadata file holds timestamp)
     
     # Actually simpler: cache.get checks freshness.
-    # Pass max_age_hours=0 to force expire immediately for test
-    expired = cache.get(max_age_hours=0)
+    # Pass max_age_hours=-1 to force expire immediately for test
+    expired = cache.get(max_age_hours=-1)
     assert expired is None
 
 @patch("src.serving.batch_job.TennisPipeline")

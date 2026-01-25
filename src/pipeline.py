@@ -48,14 +48,15 @@ class TennisPipeline:
     def __init__(
         self,
         data_dir: Optional[Path] = None,
-        model_path: Optional[Path] = None
+        model_path: Optional[Path] = None,
+        root_dir: Optional[Path] = None
     ):
-        self.root = ROOT
-        self.data_dir = data_dir or (ROOT / "data")
+        self.root = root_dir or ROOT
+        self.data_dir = data_dir or (self.root / "data")
         self.raw_dir = self.data_dir / "raw"
         self.processed_dir = self.data_dir / "processed"
         self.future_dir = self.data_dir / "future"
-        self.models_dir = ROOT / "models"
+        self.models_dir = self.root / "models"
         
         self.model_path = model_path or (self.models_dir / "xgboost_model")
         
@@ -76,8 +77,15 @@ class TennisPipeline:
         )
         
         # Model Serving Components
-        self.registry = ModelRegistry() # Defaults to project root logic in init
-        self.model_server = get_model_server()
+        self.registry = ModelRegistry(root_dir=self.root)
+        
+        # If root_dir is provided (testing/isolation), create a local server instance
+        # Otherwise use the global singleton
+        if root_dir:
+            from src.model.serving import ServingConfig
+            self.model_server = ModelServer(self.registry, ServingConfig.from_env())
+        else:
+            self.model_server = get_model_server()
 
     @contextmanager
     def observability_context(self, operation: str):
@@ -231,7 +239,7 @@ class TennisPipeline:
             
             # --- REGISTRY Integration ---
             temp_path = "temp_model.json"
-            model.save_model(temp_path)
+            model.get_booster().save_model(temp_path)
             
             try:
                 version = self.registry.register_model(
@@ -253,6 +261,11 @@ class TennisPipeline:
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
+            
+            # --- RELOAD SERVER ---
+            # Ensure the model server picks up the new champion immediately
+            if self.model_server:
+                self.model_server.reload_models()
 
     async def _predict_with_server(self, prediction_ready_df: pl.DataFrame) -> pl.DataFrame:
         """Internal helper to bridge Polars DataFrame to Model Server (Async)."""
@@ -262,15 +275,30 @@ class TennisPipeline:
         # Ideally we only pass features that were used in training.
         # For now pass all numeric columns present?
         
-        # Get numeric columns
-        features = [c for c in prediction_ready_df.columns if prediction_ready_df[c].dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32]]
-        # We assume model trained on subset of these. 
-        # XGBoost handles extra features if feature_names saved? or ignores?
-        # Safe bet: The user code uses hardcoded feature lists in training. We need that list here.
-        # But registry holds metadata? 
+        # Use FeatureEngineer to identify SAFE feature columns (excluding IDs, timestamps)
+        # This matches run_training_pipeline logic
+        all_features = self.feature_engineer.get_feature_columns(prediction_ready_df)
         
-        # Simpler: The ModelServer uses XGBClassifier load_model. 
-        # If model saved with feature names, it matches by name.
+        # Filter for numeric types only (as done in training)
+        # We need to verify which columns are actually present and numeric
+        numeric_types = [pl.Float64, pl.Float32, pl.Int64, pl.Int32, pl.UInt64, pl.UInt32]
+        
+        features = [
+            c for c in all_features 
+            if c in prediction_ready_df.columns and prediction_ready_df[c].dtype in numeric_types
+        ]
+        
+        if not features:
+            logger.log_warning("no_features_selected_for_prediction", available=prediction_ready_df.columns)
+            # Fallback (risky but better than empty) or raise?
+            # If no features, model will likely fail anyway.
+        
+        # Ensure consistent order (lexicographical or schema order? Schema order is safer if consistent)
+        # But XGBoost is sensitive to order. 
+        # Ideally we should sort them? 
+        # Training pipeline used: [c for c in existing_cols ...] where existing_cols came from get_feature_columns
+        # get_feature_columns iterates schema.
+        # So we should rely on schema order.
         
         records = prediction_ready_df.select(features).to_dicts()
         
@@ -307,8 +335,10 @@ class TennisPipeline:
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
             quality_rep = self.quality_monitor.check_incoming_data(upcoming, is_live=True)
             if not quality_rep['passed']:
-                 if any("Schema" in e for e in quality_rep['errors']):
-                     raise ValueError(f"Incoming Data Schema Failed: {quality_rep['errors']}")
+                 # Strict failure on ANY check failure (Schema or Staleness if configured)
+                 # For now, we treat staleness as warning in check_incoming_data but Schema is error.
+                 # If 'errors' list is populated, we raise.
+                 raise ValueError(f"Incoming Data Health Check Failed: {quality_rep['errors']}")
             
             # Step 2: Load history
             historical = self._load_historical_data()

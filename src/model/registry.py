@@ -58,6 +58,10 @@ class ModelRegistry:
         # Ensure directories exist
         self.models_dir.mkdir(parents=True, exist_ok=True)
         self._load_registry()
+
+    def reload(self):
+        """Reload registry from disk to pick up external changes."""
+        self._load_registry()
     
     def _load_registry(self):
         """Load registry from JSON."""
@@ -65,6 +69,7 @@ class ModelRegistry:
             if self.registry_path.exists():
                 with open(self.registry_path, 'r') as f:
                     data = json.load(f)
+                    # DEBUG LOGGING
                     self.registry = data.get(self.model_name, {})
                     logger.log_event('registry_loaded', num_versions=len(self.registry))
             else:
@@ -86,7 +91,10 @@ class ModelRegistry:
             
             with open(self.registry_path, 'w') as f:
                 json.dump(full_data, f, indent=2, default=str)
-            logger.log_event('registry_saved', num_versions=len(self.registry))
+                f.flush()
+                os.fsync(f.fileno())
+            
+            # logger.log_event('registry_saved', num_versions=len(self.registry))
         except Exception as e:
             logger.log_error('registry_save_failed', error=str(e))
             raise
@@ -219,9 +227,10 @@ class ModelRegistry:
         
         Returns: (version, absolute_model_path)
         """
+        
         production_models = [
             v for v, meta in self.registry.items()
-            if meta['stage'] == 'Production'
+            if meta.get('stage') == 'Production'
         ]
         
         if not production_models:

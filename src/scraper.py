@@ -58,6 +58,44 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.sofascore.com/api/v1"
 
+class RateLimitCircuitBreaker:
+    """
+    Circuit breaker for API rate limiting.
+    """
+    def __init__(self, failure_threshold: int = 3, backoff_minutes: int = 10):
+        self.failure_threshold = failure_threshold
+        self.backoff_minutes = backoff_minutes
+        self.failures = 0
+        self.state = "closed"
+        self.last_failure = None
+        self._lock = Lock()
+
+    def is_open(self) -> bool:
+        with self._lock:
+            if self.state == "open":
+                if datetime.now() - self.last_failure > timedelta(minutes=self.backoff_minutes):
+                    self.state = "half_open"
+                    return False
+                return True
+            return False
+
+    def record_failure(self, status_code: int):
+        if status_code in [403, 429]:
+            with self._lock:
+                self.failures += 1
+                self.last_failure = datetime.now()
+                if self.failures >= self.failure_threshold:
+                    self.state = "open"
+                    logger.warning(f"Circuit breaker OPENED. Backing off for {self.backoff_minutes}m")
+        else:
+            self.record_success()
+
+    def record_success(self):
+        with self._lock:
+            self.failures = 0
+            self.state = "closed"
+
+
 RANKING_IDS = {
     "atp_singles": 5,
     "wta_singles": 6,

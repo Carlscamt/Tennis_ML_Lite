@@ -98,6 +98,9 @@ def assert_no_leakage(
     train_max = train.select(pl.col(timestamp_col).max()).collect().item()
     test_min = test.select(pl.col(timestamp_col).min()).collect().item()
     
+    if train_max is None or test_min is None:
+        return # Cannot check leakage if one set is empty
+        
     if test_min <= train_max:
         raise LeakageError(
             f"Data leakage detected! "

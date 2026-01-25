@@ -78,31 +78,51 @@ class ModelServer:
 
     def _load_models(self):
         """Load champion (Production) and challenger (Staging) models."""
-        try:
-            # Load champion (always required)
-            champion_version, champion_path = self.registry.get_production_model()
-            self.champion_model = self._load_xgboost_model(champion_path)
-            # Monkey-patch version for tracking
-            self.champion_model.version = champion_version
-            logger.log_event('champion_model_loaded', version=champion_version)
-            
-            # Load challenger (optional)
-            challenger = self.registry.get_challenger_model()
-            if challenger:
-                challenger_version, challenger_path = challenger
-                self.challenger_model = self._load_xgboost_model(challenger_path)
-                self.challenger_model.version = challenger_version
-                logger.log_event('challenger_model_loaded', version=challenger_version)
-            else:
-                logger.log_event('no_challenger_model')
+        success = False
+        retries = 3
+        for i in range(retries):
+            try:
+                # Load champion (always required)
+                champion_version, champion_path = self.registry.get_production_model()
+                self.champion_model = self._load_xgboost_model(champion_path)
+                # Monkey-patch version for tracking
+                self.champion_model.version = champion_version
+                logger.log_event('champion_model_loaded', version=champion_version, attempt=i+1)
                 
-        except Exception as e:
-            logger.log_error('model_loading_failed', error=str(e), exc_info=True)
-            # Don't crash init if only challenger fails? User wants robustness.
-            # But if Champion fails, we can't serve.
-            # raise RuntimeError(f"Failed to load models: {e}")
-            # If no production model found (e.g. fresh install), we might want to allow empty init?
-            pass
+                # Load challenger (optional)
+                challenger = self.registry.get_challenger_model()
+                if challenger:
+                    challenger_version, challenger_path = challenger
+                    self.challenger_model = self._load_xgboost_model(challenger_path)
+                    self.challenger_model.version = challenger_version
+                    logger.log_event('challenger_model_loaded', version=challenger_version)
+                else:
+                    logger.log_event('no_challenger_model')
+                
+                success = True
+                break # Success
+            except Exception as e:
+                logger.log_event('model_loading_attempt_failed', attempt=i+1, error=str(e), level='warning')
+                if i < retries - 1:
+                    time.sleep(0.5)
+                    # Force registry reload to catch up with disk
+                    if hasattr(self.registry, 'reload'):
+                        self.registry.reload()
+                    elif hasattr(self.registry, '_load_registry'):
+                         # Fallback if reload not exposed
+                         self.registry._load_registry()
+                else:
+                    logger.log_error('model_loading_final_failure', error=str(e), exc_info=True)
+                    # Allow init to finish even if failed (predict will raise later)
+                    pass
+
+    def reload_models(self):
+        """Force reload of models from registry."""
+        logger.log_event('reloading_models_triggered')
+        # Reload registry first to get latest metadata
+        # if hasattr(self.registry, 'reload'):
+        #     self.registry.reload()
+        self._load_models()
     
     async def predict_batch(
         self, 

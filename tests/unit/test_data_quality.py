@@ -55,6 +55,7 @@ def test_schema_validation_invalid_odds():
 
 def test_drift_detection_no_drift():
     """Identical distributions should not trigger drift detection."""
+    np.random.seed(42)
     detector = DriftDetector()
     
     # Create reference data

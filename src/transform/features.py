@@ -47,6 +47,7 @@ class FeatureEngineer:
         # Pre-match features (known before match)
         df = self.add_round_features(df)
         df = self.add_odds_features(df)
+        df = self.add_ranking_features(df)
         
         # Historical features (shifted rolling stats)
         df = self.add_rolling_win_rate(df)
@@ -104,6 +105,21 @@ class FeatureEngineer:
                 
                 # Is underdog (odds > 2.0)
                 (pl.col("odds_player") > 2.0).alias("is_underdog"),
+            ])
+        
+        return df
+    
+    def add_ranking_features(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Add ranking metrics."""
+        schema = df.collect_schema().names()
+        
+        # Check for standard names (player_rank, opponent_rank) or numbered (player_1_rank)
+        # The schema uses player_rank usually after processing.
+        
+        if "player_rank" in schema and "opponent_rank" in schema:
+            df = df.with_columns([
+                (pl.col("player_rank") - pl.col("opponent_rank")).alias("ranking_diff"),
+                (pl.col("player_rank").log() - pl.col("opponent_rank").log()).alias("ranking_diff_log"),
             ])
         
         return df
@@ -526,6 +542,10 @@ class FeatureEngineer:
             # Check if it matches a LEAKY pattern
             is_leaky = any(col.startswith(pattern) for pattern in leaky_patterns)
             
+            # Exclude join helper columns/artifacts
+            if col.endswith("_right") or col.endswith("_left"):
+                continue
+            
             # Include if safe and NOT a raw leaky stat
             # Note: shifted features like "player_aces_avg_10" contain "_avg_" so they're safe
             if is_safe and not is_leaky:
@@ -585,6 +605,15 @@ class FeatureEngineer:
         # Join player historical features
         result = self._join_player_features(result, player_features)
         
+        # Calculate days_since if timestamps available
+        if "start_timestamp" in result.columns and "last_match_timestamp" in result.columns:
+            result = result.with_columns(
+                ((pl.col("start_timestamp") - pl.col("last_match_timestamp")) / 86400).alias("days_since")
+            ).drop("last_match_timestamp")
+        elif "days_since" not in result.columns:
+             # Fallback if no history or timestamp
+             result = result.with_columns(pl.lit(0).alias("days_since"))
+        
         logger.info(f"Computed {len(result.columns)} columns for prediction")
         return result
     
@@ -642,9 +671,14 @@ class FeatureEngineer:
         # Rename feature columns to avoid conflicts
         feature_cols = [c for c in player_features.columns if c != "player_id" and c != "start_timestamp"]
         
+        # Select columns including timestamp alias
+        cols_to_select = ["player_id"] + feature_cols
+        if "start_timestamp" in player_features.columns:
+            cols_to_select.append(pl.col("start_timestamp").alias("last_match_timestamp"))
+        
         # Join for player (home perspective)
         player_joined = upcoming.join(
-            player_features.select(["player_id"] + feature_cols),
+            player_features.select(cols_to_select),
             on="player_id",
             how="left"
         )

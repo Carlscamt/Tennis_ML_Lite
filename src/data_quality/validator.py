@@ -66,6 +66,10 @@ class DriftDetector:
             col = reference_df[col_name]
             
             if col.dtype in [pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.Float32, pl.Float64]:
+                # Check for all-nulls or empty
+                if col.drop_nulls().len() == 0:
+                    continue  # Skip all-null columns
+
                 # Numerical feature
                 # Sampling for large datasets to keep memory check sane
                 if len(col) > 10000:
@@ -73,11 +77,18 @@ class DriftDetector:
                 else:
                     values = col.to_numpy()
 
+                mean_val = col.mean()
+                std_val = col.std()
+                median_val = col.median()
+                
+                # Guard against None (all nulls even if len > 0, though drop_nulls check above covers it)
+                if mean_val is None: continue 
+
                 self.reference_stats[col_name] = {
                     'type': 'numerical',
-                    'mean': float(col.mean()),
-                    'std': float(col.std()),
-                    'median': float(col.median()),
+                    'mean': float(mean_val),
+                    'std': float(std_val) if std_val is not None else 0.0,
+                    'median': float(median_val) if median_val is not None else 0.0,
                     'values': values,  # Store for KS test
                 }
             elif col.dtype == pl.Utf8 or col.dtype == pl.Boolean:
@@ -173,9 +184,16 @@ class AnomalyDetector:
         for col_name in reference_df.columns:
             col = reference_df[col_name]
             if col.dtype in [pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.Float32, pl.Float64]:
+                if col.drop_nulls().len() == 0: continue
+                
+                mean_val = col.mean()
+                std_val = col.std()
+                
+                if mean_val is None: continue
+                
                 self.reference_stats[col_name] = {
-                    'mean': float(col.mean()),
-                    'std': float(col.std()),
+                    'mean': float(mean_val),
+                    'std': float(std_val) if std_val is not None else 0.0,
                 }
     
     def detect_anomalies(self, df: pl.DataFrame) -> Dict[str, list]:
