@@ -132,12 +132,12 @@ def cmd_predict(args):
             elif out_path.suffix == '.parquet':
                 value_bets.write_parquet(out_path)
             else:
-                print(f"⚠️ Unknown format {out_path.suffix}, defaulting to CSV")
+                print(f"WARN: Unknown format {out_path.suffix}, defaulting to CSV")
                 value_bets.write_csv(out_path)
-            print("✅ Save successful.")
+            print("Save successful.")
         except Exception as e:
             logger.log_error("save_failed", error=str(e))
-            print(f"❌ Error saving file: {e}")
+            print(f"Error saving file: {e}")
     
     for i, row in enumerate(value_bets.iter_rows(named=True), 1):
         player = row['player_name']
@@ -182,10 +182,10 @@ def cmd_list_models(args):
     
     for model in models:
         stage_emoji = {
-            'Production': '✅',
-            'Staging': '🟡',
-            'Experimental': '🔬',
-            'Archived': '📦',
+            'Production': '[PROD]',
+            'Staging': '[STAGE]',
+            'Experimental': '[EXP]',
+            'Archived': '[ARCH]',
         }.get(model.stage, '?')
         
         note = model.notes if model.notes else ""
@@ -197,7 +197,7 @@ def cmd_promote_model(args):
     """Promote model to new stage."""
     registry = ModelRegistry()
     registry.transition_stage(args.version, args.stage)
-    print(f"✅ Promoted {args.version} to {args.stage}")
+    print(f"Promoted {args.version} to {args.stage}")
 
 def cmd_set_serving_config(args):
     """Configure serving behavior."""
@@ -212,7 +212,7 @@ def cmd_set_serving_config(args):
     with open(config_path, 'w') as f:
         json.dump(asdict(config), f, indent=2)
     
-    print(f"✅ Serving config updated:")
+    print(f"Serving config updated:")
     print(f"   Canary Percentage: {args.canary*100}%")
     print(f"   Shadow Mode: {args.shadow}")
 
@@ -220,9 +220,9 @@ def cmd_set_serving_config(args):
 
 def cmd_batch_run(args):
     """Trigger daily batch job (Scheduler)."""
-    print(f"🚀 Triggering Batch Job (Fetch {args.days} days)...")
+    print(f"Triggering Batch Job (Fetch {args.days} days)...")
     status = run_batch_job(force=args.force, days=args.days)
-    print(f"🏁 Batch Job Finished: {status}")
+    print(f"Batch Job Finished: {status}")
 
 def cmd_show_predictions(args):
     """Instant serving command (Reads Cache)."""
@@ -230,11 +230,11 @@ def cmd_show_predictions(args):
     cached = orch.get_predictions()
     
     if cached.is_empty():
-        print("⚠️ No cached predictions found. Run 'batch-run' first.")
+        print("WARN: No cached predictions found. Run 'batch-run' first.")
         return
 
     # Filter and display (same logic as predict but instant)
-    print(f"\n⚡ INSTANT SERVING (Cache Count: {len(cached)})")
+    print(f"\nINSTANT SERVING (Cache Count: {len(cached)})")
     
     value_bets = cached.filter(
         (cached["edge"] > 0.05) &

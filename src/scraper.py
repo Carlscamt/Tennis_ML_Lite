@@ -660,8 +660,8 @@ def scrape_historical(
         # Validate
         validator = SchemaValidator()
         result = validator.validate_raw_data(df)
-        if result.errors:
-            print(f"  Validation issues: {result.errors}")
+        if result['errors']:
+            print(f"  Validation issues: {result['errors']}")
         
         # Save
         df.write_parquet(OUTPUT_FILE)
@@ -739,6 +739,9 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 4) -> pl.DataFrame:
     
     # Create DataFrame
     df = pl.DataFrame(all_records)
+    if "player_won" in df.columns:
+        df = df.with_columns(pl.col("player_won").cast(pl.Boolean))
+    
     df = df.unique(subset=["event_id", "player_id"], keep="first")
     
     # Save

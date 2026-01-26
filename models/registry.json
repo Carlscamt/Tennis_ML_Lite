@@ -1523,5 +1523,19 @@
       "model_file": "v120.0.0/model.bin",
       "notes": null
     }
+  },
+  "tennis_xgboost": {
+    "v1.0.0": {
+      "version": "v1.0.0",
+      "stage": "Staging",
+      "trained_at": "2026-01-26T21:00:29.574298+00:00",
+      "auc": 0.6595314675788582,
+      "precision": 0.6979982593559617,
+      "recall": 0.9662650602409638,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 3257,
+      "model_file": "v1.0.0/model.bin",
+      "notes": "Trained on 3257 samples"
+    }
   }
 }

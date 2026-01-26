@@ -179,6 +179,13 @@ class Logger:
         ctx.update(kwargs)
         return self.logger.error(event, exc_info=exc_info, **ctx)
 
+    def log_warning(self, event: str, **kwargs):
+        """Log warning event."""
+        corr_id = CORRELATION_ID.get()
+        ctx = {'correlation_id': corr_id, 'module': self.module_name}
+        ctx.update(kwargs)
+        return self.logger.warning(event, **ctx)
+
 def initialize_observability(environment: str = 'development'):
     """One-stop initialization for all observability components."""
     config = ObservabilityConfig()

@@ -83,4 +83,4 @@ class BatchOrchestrator:
 
 def run_batch_job(force=False, days=7):
     orch = BatchOrchestrator()
-    orch.run_daily_batch(force=force, days=days)
+    return orch.run_daily_batch(force=force, days=days)

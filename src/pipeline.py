@@ -136,8 +136,13 @@ class TennisPipeline:
     def run_data_pipeline(self) -> Dict[str, Any]:
         """Execute ETL with observability and quality gates."""
         with self.observability_context('data_pipeline'):
-            # Load raw data
-            df = load_all_parquet_files(self.raw_dir)
+            # Load raw data (Unified parquet or scattered raw files)
+            unified_path = self.data_dir / "tennis.parquet"
+            if unified_path.exists():
+                logger.log_event("loading_unified_data", path=str(unified_path))
+                df = pl.scan_parquet(unified_path)
+            else:
+                df = load_all_parquet_files(self.raw_dir)
             
             # --- QUALITY GATE 1: SCHEMA VALIDATION (RAW) ---
             schema_res = self.schema_validator.validate_raw_data(df)
@@ -190,7 +195,7 @@ class TennisPipeline:
     def run_training_pipeline(self, data_path: Path) -> None:
         """Run training with observability, drift baseline fitting, and model registration."""
         with self.observability_context('training_pipeline'):
-            df = pl.scan_parquet(data_path)
+            df = pl.scan_parquet(data_path).drop_nulls(subset=["player_won"])
             train_df, test_df = create_train_test_split(df, MODEL.train_cutoff_date)
             assert_no_leakage(train_df, test_df)
             

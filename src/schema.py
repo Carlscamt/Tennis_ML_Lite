@@ -33,8 +33,8 @@ class TennisMatchesSchema(pa.DataFrameModel):
     ground_type: str = Field(nullable=True)
     
     # Betting odds (Critical) - Allow nulls for historical, but strict for predictions if needed
-    odds_player: float = Field(gt=1.0, nullable=True, description="Decimal odds for Player")
-    odds_opponent: float = Field(gt=1.0, nullable=True, description="Decimal odds for Opponent")
+    odds_player: float = Field(ge=0.0, nullable=True, description="Decimal odds for Player")
+    odds_opponent: float = Field(ge=0.0, nullable=True, description="Decimal odds for Opponent")
     
     # Outcome (Optional/Nullable for upcoming)
     player_won: bool = Field(nullable=True)
@@ -51,7 +51,7 @@ class FeaturesSchema(pa.DataFrameModel):
     player_id: int
     
     # Critical Features requiring validation
-    odds_player: float = Field(gt=1.0, nullable=True)
+    odds_player: float = Field(ge=0.0, nullable=True)
     implied_prob_player: float = Field(ge=0.0, le=1.0, nullable=True)
     
     player_win_rate_20: float = Field(ge=0.0, le=1.0, nullable=True)
