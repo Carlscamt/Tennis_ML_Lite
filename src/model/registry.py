@@ -206,6 +206,11 @@ class ModelRegistry:
         
         # Enforce single Production invariant
         if new_stage == 'Production':
+            # Enforce minimum AUC threshold
+            model_auc = self.registry[version].get('auc', 0.0)
+            if model_auc < 0.80:
+                raise ValueError(f"Minimum AUC of 0.80 required for Production (Got {model_auc})")
+
             for v, meta in self.registry.items():
                 if meta['stage'] == 'Production' and v != version:
                     logger.log_event('demoting_previous_production', version=v)

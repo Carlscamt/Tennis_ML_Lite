@@ -565,7 +565,7 @@ def scrape_historical(
     ranking_type: str = "atp_singles",
     fetch_details: bool = True,
     resume: bool = False,
-    workers: int = 2
+    workers: int = 4
 ) -> pl.DataFrame:
     """
     Scrape historical match data for top-ranked players.
@@ -595,43 +595,62 @@ def scrape_historical(
     # Build existing events set
     existing_events = {r["event_id"] for r in all_records}
     
-    # Fetch player matches
-    pbar = tqdm(players_to_fetch, desc="Scraping players") if HAS_TQDM else players_to_fetch
-    
-    for i, player in enumerate(pbar):
-        player_id = player["player_id"]
+    # Helper to process single player
+    def process_single_player(player):
+        p_id = player["player_id"]
+        p_records = []
         
-        matches = fetch_player_matches(player_id, max_pages, existing_events)
-        
+        matches = fetch_player_matches(p_id, max_pages, existing_events)
         for event in matches:
-            # STRICT FILTER: Skip non-ATP/Challenger matches immediately
             if not is_valid_event(event):
                 continue
 
-            record = process_match(event, player_id, data_type="historical")
+            record = process_match(event, p_id, data_type="historical")
             
-            # Fetch details if enabled
             if fetch_details:
-                event_id = event.get("id")
-                
-                # Odds
-                odds = fetch_match_odds(event_id)
+                e_id = event.get("id")
+                odds = fetch_match_odds(e_id)
                 record = add_odds(record, odds)
                 
-                # Stats
-                stats = fetch_match_stats(event_id)
+                stats = fetch_match_stats(e_id)
                 if stats:
                     stat_fields = flatten_stats(stats, record.get("is_home", True))
                     record.update(stat_fields)
             
-            all_records.append(record)
-            existing_events.add(record["event_id"])
+            p_records.append(record)
+        return p_id, p_records
+
+    # Parallel Execution
+    print(f"Starting parallel scrape with {workers} workers...")
+    pbar = tqdm(total=len(players_to_fetch), desc="Scraping players") if HAS_TQDM else None
+    
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        # Submit all tasks
+        futures = {executor.submit(process_single_player, p): p for p in players_to_fetch}
         
-        completed_players.append(player_id)
-        
-        # Checkpoint every 5 players
-        if (i + 1) % 5 == 0:
-            checkpoint.save(all_records, completed_players)
+        for i, future in enumerate(as_completed(futures)):
+            try:
+                p_id, records = future.result()
+                all_records.extend(records)
+                
+                # Update existing events to help potential future valid checks (though handled per thread mostly)
+                for r in records:
+                    existing_events.add(r["event_id"])
+                    
+                completed_players.append(p_id)
+                
+                if pbar:
+                    pbar.update(1)
+                
+                # Checkpoint every 5 players
+                if (i + 1) % 5 == 0:
+                    checkpoint.save(all_records, completed_players)
+                    
+            except Exception as e:
+                logger.error(f"Error processing player: {e}")
+    
+    if pbar:
+        pbar.close()
     
     # Final save
     if all_records:

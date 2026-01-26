@@ -176,12 +176,16 @@ class FeatureEngineer:
             pl.col("player_won")
             .cast(pl.Float64)
             .shift(1)  # Exclude current match
+            .fill_null(0)
             .cum_sum()
             .over(["player_id", "matchup_key"])
             .alias("h2h_wins"),
             
-            pl.lit(1)
+            pl.col("player_id")
+            .is_not_null()
+            .cast(pl.Int64)
             .shift(1)  # Exclude current match
+            .fill_null(0)
             .cum_sum()
             .over(["player_id", "matchup_key"])
             .alias("h2h_matches")
