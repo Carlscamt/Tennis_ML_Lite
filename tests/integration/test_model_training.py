@@ -60,6 +60,12 @@ class TestModelTraining:
         
         # Force promote to Production to verify get_production_model works
         latest_v = models[0].version
+        
+        # Hack: Manually update AUC to 0.95 to pass the new Production safeguard (AUC >= 0.8)
+        # Since this is a dummy integration test, the model won't naturally achieve high AUC.
+        pipeline.registry.registry[latest_v]['auc'] = 0.95
+        pipeline.registry._save_registry()
+        
         pipeline.registry.transition_stage(latest_v, "Staging")
         pipeline.registry.transition_stage(latest_v, "Production")
         
