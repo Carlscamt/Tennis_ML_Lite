@@ -119,6 +119,25 @@ def cmd_predict(args):
         return
     
     print(f"Found {len(value_bets)} value bets:\n")
+
+    # Output to file if requested
+    if args.output:
+        out_path = Path(args.output)
+        print(f"Saving predictions to {out_path}...")
+        try:
+            if out_path.suffix == '.csv':
+                value_bets.write_csv(out_path)
+            elif out_path.suffix == '.json':
+                value_bets.write_json(out_path, row_oriented=True)
+            elif out_path.suffix == '.parquet':
+                value_bets.write_parquet(out_path)
+            else:
+                print(f"⚠️ Unknown format {out_path.suffix}, defaulting to CSV")
+                value_bets.write_csv(out_path)
+            print("✅ Save successful.")
+        except Exception as e:
+            logger.log_error("save_failed", error=str(e))
+            print(f"❌ Error saving file: {e}")
     
     for i, row in enumerate(value_bets.iter_rows(named=True), 1):
         player = row['player_name']
@@ -262,6 +281,7 @@ def main():
     predict.add_argument("--max-odds", type=float, default=3.0)
     predict.add_argument("--confidence", type=float, default=0.55)
     predict.add_argument("--no-scrape", action="store_true")
+    predict.add_argument("--output", help="Save predictions to file (supports .csv, .json, .parquet)")
     predict.set_defaults(func=cmd_predict)
     
     audit = subparsers.add_parser("audit")

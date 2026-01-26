@@ -32,6 +32,13 @@ A lightweight, CLI-based machine learning pipeline for predicting ATP tennis mat
     pip install -r requirements.txt
     ```
 
+3.  **Docker Setup (Recommended)**
+    Skip Python dependency issues by running in a container.
+    ```bash
+    # Build image
+    docker build -t tennis-cli .
+    ```
+
 ## 📖 Usage
 
 All interaction is done via the `tennis.py` script.
@@ -64,11 +71,31 @@ Generate predictions for upcoming matches and find value bets.
 # Predict next 3 days
 python tennis.py predict --days 3
 
+# Save predictions to file (CSV/JSON/Parquet)
+python tennis.py predict --days 7 --output bets.csv
+
 # Filter for specific odds
 python tennis.py predict --days 3 --min-odds 1.5 --max-odds 2.5
 ```
 
-### 4. Audit & Backtest
+### 4. Daily Automation 🤖
+Use the provided batch script for a one-click daily update.
+```bash
+# Windows
+run_daily.bat
+```
+
+### 5. Running with Docker 🐳
+All commands work via Docker. Mount the `data` volume to persist scraping results.
+```bash
+# Scrape
+docker run -v %cd%/data:/app/data tennis-cli scrape upcoming
+
+# Predict and save to host machine
+docker run -v %cd%/data:/app/data tennis-cli predict --days 3 --output data/bets.csv
+```
+
+### 6. Audit & Backtest
 Verify model performance.
 
 ```bash
