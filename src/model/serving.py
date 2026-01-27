@@ -42,22 +42,37 @@ class ServingConfig:
     
     @classmethod
     def from_env(cls) -> 'ServingConfig':
-        """Load config from environment variables or config file."""
-        # Try loading from local config json first
+        """Load config from environment variables or config file (Env overrides file)."""
+        defaults = {
+            "canary_percentage": 0.0,
+            "shadow_mode": False,
+            "enable_fallback": True
+        }
+        
+        # 1. Load from file
         config_path = "config/serving.json"
         if os.path.exists(config_path):
             try:
                 with open(config_path, 'r') as f:
-                    data = json.load(f)
-                    return cls(**data)
+                    file_config = json.load(f)
+                    defaults.update(file_config)
             except Exception as e:
                 logger.log_error("failed_load_serving_config", error=str(e))
         
-        return cls(
-            canary_percentage=float(os.getenv('CANARY_PERCENTAGE', 0.0)),
-            shadow_mode=os.getenv('SHADOW_MODE', 'false').lower() == 'true',
-            enable_fallback=os.getenv('ENABLE_FALLBACK', 'true').lower() == 'true',
-        )
+        # 2. Override with Env Vars
+        canary = os.getenv('CANARY_PERCENTAGE')
+        if canary is not None:
+             defaults["canary_percentage"] = float(canary)
+             
+        shadow = os.getenv('SHADOW_MODE')
+        if shadow is not None:
+             defaults["shadow_mode"] = shadow.lower() == 'true'
+             
+        fallback = os.getenv('ENABLE_FALLBACK')
+        if fallback is not None:
+             defaults["enable_fallback"] = fallback.lower() == 'true'
+        
+        return cls(**defaults)
 
 class ModelServer:
     """
