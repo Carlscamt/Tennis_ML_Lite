@@ -151,7 +151,8 @@ class ModelRegistry:
         version_dir.mkdir(parents=True, exist_ok=True)
         
         source_path = Path(model_path)
-        dest_path = version_dir / "model.bin"
+        dest_filename = f"model{source_path.suffix}" # e.g. model.joblib or model.bin or model.json
+        dest_path = version_dir / dest_filename
         shutil.copy2(source_path, dest_path)
         
         # Copy metadata if exists
@@ -161,7 +162,7 @@ class ModelRegistry:
             shutil.copy2(source_meta, dest_meta)
         
         # Relative path for storage
-        rel_model_path = f"{new_version}/model.bin"
+        rel_model_path = f"{new_version}/{dest_filename}"
         
         # Create model version
         model_version = ModelVersion(

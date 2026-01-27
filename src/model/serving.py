@@ -86,10 +86,21 @@ class ModelServer:
         self.challenger_model = None
         self._load_models()
     
-    def _load_xgboost_model(self, path: str) -> xgb.XGBClassifier:
-        model = xgb.XGBClassifier()
-        model.load_model(path)
-        return model
+    def _load_model_artifact(self, path: str) -> Any:
+        """Load model from path (supporting joblib or native xgb)."""
+        import joblib
+        path_obj = os.path.normpath(path)
+        if path_obj.endswith('.joblib') or path_obj.endswith('.pkl'):
+             try:
+                 return joblib.load(path)
+             except Exception as e:
+                 logger.log_error("joblib_load_failed", path=path, error=str(e))
+                 raise e
+        else:
+             # Assume native XGBoost config/binary
+             model = xgb.XGBClassifier()
+             model.load_model(path)
+             return model
 
     def _load_models(self):
         """Load champion (Production) and challenger (Staging) models."""
@@ -100,7 +111,7 @@ class ModelServer:
                 # Load champion (always required)
                 try:
                     champion_version, champion_path = self.registry.get_production_model()
-                    self.champion_model = self._load_xgboost_model(champion_path)
+                    self.champion_model = self._load_model_artifact(champion_path)
                     # Monkey-patch version for tracking
                     self.champion_model.version = champion_version
                     logger.log_event('champion_model_loaded', version=champion_version, attempt=i+1)
@@ -119,7 +130,7 @@ class ModelServer:
                 challenger = self.registry.get_challenger_model()
                 if challenger:
                     challenger_version, challenger_path = challenger
-                    self.challenger_model = self._load_xgboost_model(challenger_path)
+                    self.challenger_model = self._load_model_artifact(challenger_path)
                     self.challenger_model.version = challenger_version
                     logger.log_event('challenger_model_loaded', version=challenger_version)
                 else:
