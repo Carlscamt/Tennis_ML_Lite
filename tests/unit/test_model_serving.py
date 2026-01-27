@@ -7,7 +7,7 @@ import numpy as np
 from src.model.serving import ModelServer, ServingConfig, ServingMode
 from src.model.registry import ModelRegistry
 import xgboost as xgb
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock, AsyncMock, patch
 
 @pytest.fixture
 def mock_registry():
@@ -36,18 +36,14 @@ class MockXGBClassifier:
 def mock_server(mock_registry):
     """Server with mocked models."""
     config = ServingConfig(canary_percentage=0.5)
-    server = ModelServer(registry=mock_registry, config=config)
     
-    # Mock internal load logic to skip disk I/O
-    server._load_xgboost_model = MagicMock(return_value=MockXGBClassifier())
-    
-    # Re-trigger load to use mock
-    server._load_models()
-    
-    # Set versions explicitly for logic test
-    server.champion_model.version = "vProd"
-    if server.challenger_model:
-        server.challenger_model.version = "vStage"
+    with patch.object(ModelServer, '_load_model_artifact', side_effect=lambda x: MockXGBClassifier()):
+        server = ModelServer(registry=mock_registry, config=config)
+        
+    # Set versions explicitly for logic test (champion should already be set by _load_models)
+    # But _load_models sets .version from registry. So should be fine.
+    # Just validation:
+    # server.champion_model.version = "vProd"
         
     return server
 
@@ -67,11 +63,9 @@ async def test_serving_response_structure(mock_server):
 async def test_canary_routing(mock_registry):
     """Test 100% canary routing."""
     config = ServingConfig(canary_percentage=1.0) # Force Canary
-    server = ModelServer(registry=mock_registry, config=config)
-    server._load_xgboost_model = MagicMock(return_value=MockXGBClassifier())
-    server._load_models()
-    server.champion_model.version = "vProd"
-    server.challenger_model.version = "vStage"
+    
+    with patch.object(ModelServer, '_load_model_artifact', side_effect=lambda x: MockXGBClassifier()):
+        server = ModelServer(registry=mock_registry, config=config)
     
     features = [{'f1': 1.0}]
     resp = await server.predict_batch(features)
@@ -83,9 +77,9 @@ async def test_canary_routing(mock_registry):
 async def test_shadow_mode(mock_registry):
     """Test Shadow mode (returns Champion, logs Challenger)."""
     config = ServingConfig(shadow_mode=True)
-    server = ModelServer(registry=mock_registry, config=config)
-    server._load_xgboost_model = MagicMock(return_value=MockXGBClassifier())
-    server._load_models()
+    
+    with patch.object(ModelServer, '_load_model_artifact', side_effect=lambda x: MockXGBClassifier()):
+        server = ModelServer(registry=mock_registry, config=config)
     
     features = [{'f1': 1.0}]
     resp = await server.predict_batch(features)

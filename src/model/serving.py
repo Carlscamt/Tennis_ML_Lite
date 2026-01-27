@@ -236,8 +236,7 @@ class ModelServer:
                 
                 if self.config.shadow_mode:
                     # Shadow: Run and log, discard result
-                    # Don't change serving_mode returned to user, usually
-                    # But logging indicates shadow.
+                    serving_mode = ServingMode.SHADOW
                     challenger_result = self._predict_single(self.challenger_model, feature_array)
                     self._log_shadow_diff(champion_result, challenger_result, corr_id)
                     challenger_result = None 
