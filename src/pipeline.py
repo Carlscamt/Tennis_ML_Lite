@@ -11,6 +11,7 @@ from typing import Optional, List, Dict, Any
 from contextlib import contextmanager
 import polars as pl
 import xgboost as xgb
+import json
 
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
@@ -243,8 +244,18 @@ class TennisPipeline:
             logger.log_event('training_metrics', auc=auc, accuracy=acc)
             
             # --- REGISTRY Integration ---
-            temp_path = "temp_model.json"
-            model.get_booster().save_model(temp_path)
+            import joblib
+            temp_path = "temp_model.joblib"
+            joblib.dump(model, temp_path)
+            
+            # Save metadata for registry to pick up
+            meta = {
+                "feature_columns": numeric_cols,
+                "params": MODEL.xgb_params,
+                "calibrated": False, # Pipeline doesn't stick calibration on top yet
+            }
+            with open("temp_model.meta.json", "w") as f:
+                json.dump(meta, f)
             
             try:
                 version = self.registry.register_model(
@@ -266,6 +277,8 @@ class TennisPipeline:
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
+                if os.path.exists("temp_model.meta.json"):
+                    os.remove("temp_model.meta.json")
             
             # --- RELOAD SERVER ---
             # Ensure the model server picks up the new champion immediately

@@ -111,7 +111,10 @@ class ModelAuditor:
         self.test_df = self.df.filter(pl.col("start_timestamp") >= cutoff_ts)
         
         # Filter to matches with odds for fair evaluation
-        self.test_df = self.test_df.filter(pl.col("odds_player").is_not_null())
+        self.test_df = self.test_df.filter(
+            pl.col("odds_player").is_not_null() & 
+            pl.col("player_won").is_not_null()
+        )
         
         logger.info(f"Train: {len(self.train_df):,} | Test: {len(self.test_df):,} matches")
         
@@ -1044,17 +1047,28 @@ def main(args_list=None):
         sys.exit(1)
     
     # Get active model
-    registry = ModelRegistry(MODELS_DIR)
-    active = registry.get_active_model()
+    # Get active model
+    registry = ModelRegistry(root_dir=ROOT)
     
-    if not active:
-        # Fallback to direct model file
-        model_path = MODELS_DIR / "xgboost_model.joblib"
-        if not model_path.exists():
-            logger.error("No model found. Run training first.")
-            sys.exit(1)
-    else:
-        model_path = Path(active["path"])
+    try:
+        version, path = registry.get_production_model()
+        model_path = Path(path)
+        logger.info(f"Auditing Production model: {version}")
+    except Exception:
+        # Fallback to challenger or direct file
+        try:
+            version, path = registry.get_challenger_model()
+            model_path = Path(path)
+            logger.info(f"Auditing Staging model: {version}")
+        except Exception:
+            # Fallback to direct model file
+            model_path = MODELS_DIR / "xgboost_model.joblib"
+            if not model_path.exists():
+                model_path = MODELS_DIR / "experimental" / "model.bin"
+            
+            if not model_path.exists():
+                logger.error("No model found (Production, Staging, or Experimental). Run training first.")
+                sys.exit(1)
     
     # Run audit
     output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR

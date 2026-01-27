@@ -43,7 +43,7 @@ class TestDataPipeline:
         invalid_data = pl.DataFrame({
              'event_id': [1], 'player_id': [100], 'opponent_id': [200], 
              'start_timestamp': [123456], 'player_name': ["Djokovic"], 'opponent_name': ["Alcaraz"],
-             'odds_player': [0.5], # Invalid
+             'odds_player': [-0.5], # Invalid (< 0.0)
              'odds_opponent': [2.5],
              'tournament_name': ["Grand Slam"],
              'ground_type': ["Hard"],

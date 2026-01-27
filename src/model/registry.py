@@ -154,6 +154,12 @@ class ModelRegistry:
         dest_path = version_dir / "model.bin"
         shutil.copy2(source_path, dest_path)
         
+        # Copy metadata if exists
+        source_meta = source_path.with_suffix(".meta.json")
+        if source_meta.exists():
+            dest_meta = version_dir / "model.meta.json"
+            shutil.copy2(source_meta, dest_meta)
+        
         # Relative path for storage
         rel_model_path = f"{new_version}/model.bin"
         

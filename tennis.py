@@ -326,7 +326,13 @@ def main():
     try:
         args.func(args)
     except Exception as e:
-        logger.log_error("command_failed", error=str(e), exc_info=True)
+        try:
+            logger.log_error("command_failed", error=str(e), exc_info=True)
+        except UnicodeEncodeError:
+            # Fallback for Windows encoding issues
+            print(f"ERROR: Command failed with {type(e).__name__}. (Details omitted due to encoding error)")
+            import traceback
+            traceback.print_exc()
         sys.exit(1)
     finally:
         duration = time.time() - start_time

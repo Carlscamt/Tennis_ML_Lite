@@ -223,8 +223,13 @@ class ModelTrainer:
         
         path = Path(path)
         
-        # Load the calibrated model
-        model_path = path.with_suffix(".joblib")
+        # Determine actual model path
+        if path.exists() and path.is_file():
+            model_path = path
+        else:
+            model_path = path.with_suffix(".joblib")
+        
+        # Load the model
         loaded_model = joblib.load(model_path)
         
         # Set both model and calibrated_model
@@ -232,12 +237,27 @@ class ModelTrainer:
         self.model = loaded_model  # For predict_proba
         
         # Load metadata
-        meta_path = path.with_suffix(".meta.json")
-        with open(meta_path, "r") as f:
-            meta = json.load(f)
+        # Try different metadata naming conventions
+        meta_candidates = [
+            path.with_suffix(".meta.json"),
+            path.parent / (path.name + ".meta.json"),
+            path.parent / "model.meta.json"
+        ]
         
-        self.feature_columns = meta["feature_columns"]
-        self.params = meta["params"]
-        self.calibrate = meta.get("calibrated", False)
+        meta_path = None
+        for p in meta_candidates:
+            if p.exists():
+                meta_path = p
+                break
+        
+        if meta_path:
+            with open(meta_path, "r") as f:
+                meta = json.load(f)
+            
+            self.feature_columns = meta["feature_columns"]
+            self.params = meta["params"]
+            self.calibrate = meta.get("calibrated", False)
+        else:
+            logger.warning(f"No metadata found for {path}, using defaults")
         
         logger.info(f"Model loaded from {path}")

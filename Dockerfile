@@ -25,6 +25,8 @@ COPY . .
 # Create necessary directories for data persistence
 RUN mkdir -p data/raw data/processed models config
 
-# Set entrypoint to the CLI
-ENTRYPOINT ["python", "tennis.py"]
-CMD ["--help"]
+# Expose API port
+EXPOSE 8000
+
+# Set entrypoint to API (can be overridden for CLI)
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

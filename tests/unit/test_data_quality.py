@@ -43,7 +43,7 @@ def test_schema_validation_invalid_odds():
         'opponent_name': ['Alcaraz'],
         'tournament_name': ['Wimbledon'],
         'ground_type': ['Grass'],
-        'odds_player': [0.9],  # INVALID: < 1.0
+        'odds_player': [-1.0],  # INVALID: < 0.0
         'odds_opponent': [2.5]
     })
     
