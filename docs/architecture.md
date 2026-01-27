@@ -19,6 +19,10 @@ graph TD
     %% --- INTERFACE ---
     subgraph CLI ["CLI Interface"]
         TennisCLI["tennis.py<br/>(Entry Point)"]:::ui
+        CmdTrain["train"]:::ui
+        CmdPredict["predict"]:::ui
+        CmdAudit["audit"]:::ui
+        CmdServe["serving-config"]:::ui
     end
 
     %% --- BACKEND ORCHESTRATION ---
@@ -32,8 +36,12 @@ graph TD
     subgraph Services ["Services"]
         Scraper["src/scraper.py<br/>(Data Fetching)"]:::logic
         FeatEng["src/transform/<br/>(Feature Engineering)"]:::logic
-        registry["src/model/registry.py<br/>(Model Registry)"]:::model
-        server["src/model/serving.py<br/>(Batch Server)"]:::model
+        
+        subgraph ModelOps ["Model Operations"]
+            registry["src/model/registry.py<br/>(ModelRegistry)"]:::model
+            server["src/model/serving.py<br/>(ModelServer)"]:::model
+        end
+        
         obs["src/utils/observability.py<br/>(Logs/Metrics)"]:::infra
     end
 
@@ -41,26 +49,40 @@ graph TD
     subgraph Storage ["Data Layer"]
         RawData[("data/raw/*.parquet")]:::data
         ProcData[("data/processed/features.parquet")]:::data
-        ModelFile[("models/registry/*.json")]:::data
+        
+        subgraph RegistryStore ["models/registry/"]
+            ProdModel[("production/v1.2.0/")]:::data
+            StageModel[("staging/v1.3.0/")]:::data
+            ExpModel[("experiments/")]:::data
+        end
+        
         Outputs[("Reporting<br/>CSV/JSON/Parquet")]:::data
     end
 
     %% --- FLOWS ---
     Docker -- "Hosts" --> CLI
     
-    TennisCLI --> |"predict"| Pipeline
-    TennisCLI --> |"scrape"| Scraper
-    TennisCLI --> |"train"| TrainPipe
+    TennisCLI --> CmdPredict
+    TennisCLI --> CmdTrain
+    TennisCLI --> CmdAudit
+    TennisCLI --> CmdServe
+    
+    CmdPredict --> Pipeline
+    CmdTrain --> TrainPipe
     
     %% Internal Flows
     Pipeline --> |"Calls"| Scraper
     Pipeline --> |"Calls"| DataPipe
-    Pipeline --> |"Uses"| server
+    Pipeline --> |"Predict Batch"| server
     Pipeline --> |"Logs to"| obs
     
-    server --> |"Load Best"| registry
-    registry --> |"Read"| ModelFile
-
+    %% Model Serving Logic
+    server --> |"Load Champion"| registry
+    server --> |"Load Challenger"| registry
+    server --> |"Shadow/Canary"| server
+    
+    registry --> |"Read/Write"| RegistryStore
+    
     DataPipe --> |"Reads"| RawData
     DataPipe --> |"Uses"| FeatEng
     DataPipe --> |"Writes"| ProcData
@@ -76,7 +98,7 @@ graph TD
 ## Module Responsibilities
 
 ### CLI & Infrastructure
-- **`tennis.py`**: Command-line entry point. Handles argument parsing and dispatching.
+- **`tennis.py`**: Command-line entry point using `argparse`. Dispatches subcommands (`train`, `predict`, `audit`, `promote`).
 - **`Dockerfile`**: Defines the reproducible runtime environment.
 - **`run_daily.bat`**: Windows automation script for scheduled execution.
 
@@ -85,14 +107,37 @@ graph TD
   - Integrates **Observability** context managers for tracing.
   - Manages **Data Quality** gates (Schema validation, drift detection).
 - **`run_data_pipeline`**: Orchestrates ETL (Raw -> Processed).
-- **`run_training_pipeline`**: Orchestrates Training (Processed -> Model Registry).
 
 ### Services
-- **`src.scraper`**: Data collection with rate limiting and circuit breakers.
-- **`src.transform`**: Feature engineering logic.
-- **`src.model.registry`**: Manages model versions and promotion stages (Experimental -> Production).
-- **`src.model.serving`**: Handles batch prediction requests using the best available model.
-- **`src.utils.observability`**: Centralized structured logging (`structlog`) and Prometheus metrics.
+
+#### Model Operations (`src.model`)
+- **`src.model.registry`**:
+    - **Artifact Management**: Stores models in `models/registry/{stage}/{version}/`.
+    - **Stages**: `experimental` -> `staging` -> `production` -> `archived`.
+    - **Metadata**: Tracks metrics, timestamps, and promotion history in `model.meta.json`.
+- **`src.model.serving`**:
+    - **Advanced Serving**: Implements Canary deployments (percentage traffic), Shadow Mode (silent parallel execution), and Fallback (reliability).
+    - **Loading**: Uniform loading interface for `xgboost` (native) and `joblib` (sklearn/pipeline) artifacts.
+    - **Observability**: detailed logs for model selection and latency.
+
+#### Data & Utilities
+- **`src.scraper`**: Data collection with rate limiting, circuit breakers, and raw parquet storage.
+- **`src.transform`**: Feature engineering logic and Pandera schema validation.
+- **`src.utils.observability`**: Centralized structured logging (`structlog`) and Prometheus metrics integration.
 
 ### CI/CD
-- **`.github/workflows/ci.yaml`**: Automated testing workflow triggered on push.
+- **`.github/workflows/ci.yaml`**: Automated testing workflow.
+    - Runs Unit Tests (`pytest tests/unit`).
+    - Runs Integration Tests (`pytest tests/integration`).
+    - Validates Code Quality (Linting).
+
+## Serving Logic Flow
+
+The **ModelServer** implements a sophisticated routing engine for inference:
+
+1.  **Initialization**: Loads `active_model` (Production) and optional `challenger_model` (Staging).
+2.  **Request Handling**:
+    *   **Shadow Mode**: If enabled, predicts with Champion (returned to user) AND Challenger (logged for comparison).
+    *   **Canary Mode**: If within canary percentage, predicts with Challenger.
+    *   **Fallback**: If Champion fails prediction, automatically falls back to Challenger to prevent outage.
+3.  **Response**: Returns structured JSON with prediction, probabilities, model version used, and serving mode (`champion_only`, `canary`, `shadow`, `fallback`).
