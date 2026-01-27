@@ -170,74 +170,73 @@ class ModelServer:
 
     def _predict_sync(self, features: List[Dict[str, Any]], request_id: Optional[str]) -> Dict[str, Any]:
         """Synchronous implementation of serving logic."""
-        # Auto-fallback to challenger if no champion (e.g. freshly trained model in Staging)
-        if not self.champion_model:
-            if self.challenger_model:
-                 logger.log_event('using_challenger_as_primary', version=self.challenger_model.version)
-                 return self._predict_single(self.challenger_model, features).to_dict() # helper needed?
-                 # No, _predict_single returns PredictionResult object, need to serialize.
-                 # Let's just swap it temporarily or handle logic below.
-                 self.champion_model = self.challenger_model
-                 # But wait, this modifies state. Better to just use local ref.
-            else:
-                raise RuntimeError("Model Server not initialized with Production model")
-
-        corr_id = CORRELATION_ID.get() or request_id or str(random.randint(100000, 999999))
-        CORRELATION_ID.set(corr_id)
-        
-        start_time = time.time()
-        
-        # Prepare Features (Dict List -> Numpy)
-        # Assuming features are homogeneous
-        # Need to ensure correct column order matching model.
-        # Ideally we pass feature names or dataframe to predict?
-        # XGBoost expects DMatrix or numpy array. DataFrame preserves order if passed.
-        # Here we receive List of Dicts.
-        
-        # Quick hack: get keys from first item.
-        # In robust system, ModelRegistry should persist feature schema order!
         if not features:
             return {'predictions': []}
             
-        feature_keys = list(features[0].keys())
-        # Ideally sort optional? Or just convert values.
-        feature_array = np.array([[row[k] for k in feature_keys] for row in features])
+        corr_id = CORRELATION_ID.get() or request_id or str(random.randint(100000, 999999))
+        CORRELATION_ID.set(corr_id)
         
-        champion_result = None
-        challenger_result = None
+        # Prepare Features (Dict List -> Numpy)
+        feature_keys = list(features[0].keys())
+        feature_array = np.array([[row[k] for k in feature_keys] for row in features])
+
+        # Auto-fallback to challenger if no champion (e.g. freshly trained model in Staging)
+        active_model = self.champion_model
         serving_mode = ServingMode.CHAMPION_ONLY
         
+        if not active_model:
+            if self.challenger_model:
+                 logger.log_event('using_challenger_as_primary', version=self.challenger_model.version)
+                 active_model = self.challenger_model
+                 serving_mode = ServingMode.FALLBACK
+            else:
+                raise RuntimeError("Model Server not initialized with Production model")
+        
+        start_time = time.time()
+        champion_result = None
+        challenger_result = None
+        
         try:
-            # 1. Champion
-            champion_start = time.time()
-            champion_result = self._predict_single(self.champion_model, feature_array)
-            champion_latency = (time.time() - champion_start) * 1000
+            # 1. Predict with Active Model (Champion or Fallback)
+            model_start = time.time()
+            primary_result = self._predict_single(active_model, feature_array)
             
-            # 2. Challenger
-            challenger_latency = 0
+            # If we are already in FALLBACK mode, we are done
+            if serving_mode == ServingMode.FALLBACK:
+                total_latency = (time.time() - start_time) * 1000
+                metrics.prediction_latency.observe(total_latency / 1000)
+                metrics.successful_predictions.inc()
+                
+                return {
+                    'predictions': primary_result.predictions.tolist(),
+                    'confidence_scores': primary_result.confidence_scores.tolist() if primary_result.confidence_scores is not None else None,
+                    'model_version': primary_result.model_version,
+                    'serving_mode': serving_mode,
+                    'latency_ms': total_latency,
+                    'request_id': corr_id
+                }
+
+            # 2. Advanced Serving (Canary/Shadow) - Only if using Champion
+            # (If we are here, active_model IS champion_model)
+            champion_result = primary_result
+            
             if self.challenger_model:
                 challenger_start = time.time()
                 
                 if self.config.shadow_mode:
                     # Shadow: Run and log, discard result
-                    serving_mode = ServingMode.SHADOW
+                    # Don't change serving_mode returned to user, usually
+                    # But logging indicates shadow.
                     challenger_result = self._predict_single(self.challenger_model, feature_array)
-                    # Log diffs?
                     self._log_shadow_diff(champion_result, challenger_result, corr_id)
-                    challenger_result = None # Don't return it
-                    challenger_latency = (time.time() - challenger_start) * 1000
+                    challenger_result = None 
                 
                 elif self.config.canary_percentage > 0:
-                    # Canary: Route subset
-                    # For batch prediction, routing whole batch or splitting?
-                    # Usually routing request. Let's route full batch for simplicity here.
                     if random.random() < self.config.canary_percentage:
                         serving_mode = ServingMode.CANARY
-                        # Swap results
                         challenger_result = self._predict_single(self.challenger_model, feature_array)
-                        champion_result = challenger_result # Use challenger as result
-                        challenger_latency = (time.time() - challenger_start) * 1000
-
+                        primary_result = challenger_result # Swap result
+            
             total_latency = (time.time() - start_time) * 1000
             
             metrics.prediction_latency.observe(total_latency / 1000)
@@ -246,15 +245,15 @@ class ModelServer:
             logger.log_event(
                 'prediction_serving_completed',
                 mode=serving_mode,
-                champion=self.champion_model.version,
+                champion=self.champion_model.version if self.champion_model else "none",
                 rows=len(features),
                 latency_ms=round(total_latency, 2)
             )
             
             return {
-                'predictions': champion_result.predictions.tolist(),
-                'confidence_scores': champion_result.confidence_scores.tolist() if champion_result.confidence_scores is not None else None,
-                'model_version': champion_result.model_version,
+                'predictions': primary_result.predictions.tolist(),
+                'confidence_scores': primary_result.confidence_scores.tolist() if primary_result.confidence_scores is not None else None,
+                'model_version': primary_result.model_version,
                 'serving_mode': serving_mode,
                 'latency_ms': total_latency,
                 'request_id': corr_id
