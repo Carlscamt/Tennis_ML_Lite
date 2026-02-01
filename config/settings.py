@@ -144,6 +144,21 @@ RANKING_IDS = {
 
 
 # =============================================================================
+# SCRAPER CONFIGURATION
+# =============================================================================
+
+@dataclass
+class ScraperConfig:
+    """Scraper rate limiting configuration (tunable via environment variables)."""
+    min_delay: float = float(os.getenv("SCRAPER_MIN_DELAY", "1.5"))
+    max_delay: float = float(os.getenv("SCRAPER_MAX_DELAY", "3.0"))
+    max_workers: int = int(os.getenv("SCRAPER_MAX_WORKERS", "2"))
+    cache_ttl_rankings: int = int(os.getenv("CACHE_TTL_RANKINGS", "86400"))   # 24h
+    cache_ttl_matches: int = int(os.getenv("CACHE_TTL_MATCHES", "3600"))      # 1h
+    cache_ttl_odds: int = int(os.getenv("CACHE_TTL_ODDS", "900"))             # 15min
+
+
+# =============================================================================
 # INSTANTIATE DEFAULTS
 # =============================================================================
 
@@ -151,3 +166,4 @@ FEATURES = FeatureConfig()
 MODEL = ModelConfig()
 BETTING = BettingConfig()
 API = APIConfig()
+SCRAPER = ScraperConfig()

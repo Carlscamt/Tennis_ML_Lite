@@ -27,13 +27,13 @@ class SofaScoreClient:
     
     BASE_URL = "https://www.sofascore.com/api/v1"
     
-    def __init__(self, max_retries: int = 3, delay_range: tuple = (0.3, 0.8)):
+    def __init__(self, max_retries: int = 2, delay_range: tuple = (1.5, 3.0)):
         """
         Initialize client.
         
         Args:
             max_retries: Number of retry attempts
-            delay_range: Min/max delay between requests (seconds)
+            delay_range: Min/max delay between requests (seconds) - increased to avoid bans
         """
         self.max_retries = max_retries
         self.delay_range = delay_range
@@ -49,7 +49,7 @@ class SofaScoreClient:
     
     def _fetch(self, endpoint: str) -> Optional[Dict]:
         """
-        Fetch JSON from API with retries.
+        Fetch JSON from API with retries and exponential backoff.
         
         Args:
             endpoint: API endpoint (e.g., '/rankings/5')
@@ -70,10 +70,10 @@ class SofaScoreClient:
                 
                 if response.status_code == 200:
                     return response.json()
-                elif response.status_code == 403:
-                    # Rate limited
-                    wait = 5 * (attempt + 1)
-                    logger.warning(f"Rate limited, waiting {wait}s")
+                elif response.status_code in [403, 429]:
+                    # Exponential backoff: 10s, 20s, 40s
+                    wait = 10 * (2 ** attempt)
+                    logger.warning(f"Rate limited ({response.status_code}), waiting {wait}s")
                     time.sleep(wait)
                 elif response.status_code == 404:
                     return None
@@ -81,7 +81,7 @@ class SofaScoreClient:
             except Exception as e:
                 logger.error(f"Request failed: {e}")
                 if attempt < self.max_retries:
-                    time.sleep(2 ** attempt)
+                    time.sleep(2 ** attempt)  # Exponential backoff on errors
         
         return None
     

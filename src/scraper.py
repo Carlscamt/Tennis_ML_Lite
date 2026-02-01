@@ -61,8 +61,9 @@ BASE_URL = "https://www.sofascore.com/api/v1"
 class RateLimitCircuitBreaker:
     """
     Circuit breaker for API rate limiting.
+    More aggressive settings to prevent temporary bans.
     """
-    def __init__(self, failure_threshold: int = 3, backoff_minutes: int = 10):
+    def __init__(self, failure_threshold: int = 2, backoff_minutes: int = 15):
         self.failure_threshold = failure_threshold
         self.backoff_minutes = backoff_minutes
         self.failures = 0
@@ -101,9 +102,9 @@ RANKING_IDS = {
     "wta_singles": 6,
 }
 
-# Rate limiting
-MIN_DELAY = 0.3
-MAX_DELAY = 0.8
+# Rate limiting - conservative to avoid bans
+MIN_DELAY = 1.5  # Increased from 0.3 to avoid rate limiting
+MAX_DELAY = 3.0  # Increased from 0.8 for safety margin
 
 # Data paths
 DATA_DIR = ROOT / "data"
@@ -135,6 +136,89 @@ def get_session():
             }
             _thread_local.session = httpx.Client(headers=headers, timeout=30)
     return _thread_local.session
+
+
+# =============================================================================
+# RESPONSE CACHE
+# =============================================================================
+
+CACHE_DIR = DATA_DIR / ".cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+class ResponseCache:
+    """
+    File-based cache for API responses to reduce duplicate requests.
+    """
+    # TTL values in seconds
+    TTL_RANKINGS = 86400   # 24 hours for rankings
+    TTL_MATCHES = 3600     # 1 hour for match details
+    TTL_ODDS = 900         # 15 minutes for odds
+    
+    def __init__(self, cache_dir: Path = CACHE_DIR):
+        self.cache_dir = cache_dir
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._lock = Lock()
+    
+    def _get_cache_path(self, key: str) -> Path:
+        """Generate safe filename from cache key."""
+        import hashlib
+        key_hash = hashlib.md5(key.encode()).hexdigest()
+        return self.cache_dir / f"{key_hash}.json"
+    
+    def get(self, key: str, ttl: int = 3600) -> Optional[Dict]:
+        """
+        Get cached response if valid.
+        
+        Args:
+            key: Cache key (usually the endpoint)
+            ttl: Time-to-live in seconds
+            
+        Returns:
+            Cached data or None if expired/missing
+        """
+        cache_path = self._get_cache_path(key)
+        
+        if not cache_path.exists():
+            return None
+        
+        try:
+            with open(cache_path, "r") as f:
+                cached = json.load(f)
+            
+            cached_at = datetime.fromisoformat(cached.get("_cached_at", ""))
+            if datetime.now() - cached_at > timedelta(seconds=ttl):
+                return None  # Expired
+            
+            return cached.get("data")
+        except Exception:
+            return None
+    
+    def set(self, key: str, data: Dict) -> None:
+        """Store response in cache."""
+        cache_path = self._get_cache_path(key)
+        
+        try:
+            with self._lock:
+                with open(cache_path, "w") as f:
+                    json.dump({
+                        "_cached_at": datetime.now().isoformat(),
+                        "data": data
+                    }, f)
+        except Exception as e:
+            logger.warning(f"Failed to cache response: {e}")
+    
+    def clear(self) -> None:
+        """Clear all cached responses."""
+        for f in self.cache_dir.glob("*.json"):
+            try:
+                f.unlink()
+            except:
+                pass
+
+
+# Global cache instance
+_response_cache = ResponseCache()
 
 
 # =============================================================================
@@ -260,9 +344,23 @@ def fetch_json_cached(endpoint: str) -> Optional[str]:
     return json.dumps(result) if result else None
 
 
-def fetch_json(endpoint: str, retries: int = 2) -> Optional[Dict]:
-    """Fetch JSON from SofaScore API with retries."""
+def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[Dict]:
+    """
+    Fetch JSON from SofaScore API with retries, caching, and exponential backoff.
+    
+    Args:
+        endpoint: API endpoint to fetch
+        retries: Number of retry attempts
+        cache_ttl: Cache TTL in seconds (0 = no cache, use ResponseCache.TTL_* constants)
+    """
     global _request_count
+    
+    # Check cache first
+    if cache_ttl > 0:
+        cached = _response_cache.get(endpoint, ttl=cache_ttl)
+        if cached is not None:
+            logger.debug(f"Cache hit for {endpoint}")
+            return cached
     
     url = f"{BASE_URL}{endpoint}" if endpoint.startswith('/') else endpoint
     session = get_session()
@@ -278,14 +376,21 @@ def fetch_json(endpoint: str, retries: int = 2) -> Optional[Dict]:
                 _request_count += 1
             
             if response.status_code == 200:
-                return response.json()
-            elif response.status_code == 403:
-                time.sleep(3 * (attempt + 1))
+                data = response.json()
+                # Cache successful responses
+                if cache_ttl > 0:
+                    _response_cache.set(endpoint, data)
+                return data
+            elif response.status_code in [403, 429]:
+                # Exponential backoff: 10s, 20s, 40s
+                wait = 10 * (2 ** attempt)
+                logger.warning(f"Rate limited ({response.status_code}), backing off {wait}s")
+                time.sleep(wait)
             elif response.status_code == 404:
                 return None
         except Exception as e:
             if attempt < retries:
-                time.sleep(1)
+                time.sleep(2 ** attempt)  # Exponential backoff on errors too
     
     return None
 
@@ -362,9 +467,9 @@ def is_valid_event(event: Dict) -> bool:
     return True
 
 def fetch_rankings(ranking_type: str = "atp_singles", limit: int = 100) -> List[Dict]:
-    """Fetch player rankings."""
+    """Fetch player rankings (cached for 24h)."""
     ranking_id = RANKING_IDS.get(ranking_type, 5)
-    data = fetch_json(f"/rankings/{ranking_id}")
+    data = fetch_json(f"/rankings/{ranking_id}", cache_ttl=ResponseCache.TTL_RANKINGS)
     
     if not data or "rankingRows" not in data:
         return []
@@ -412,9 +517,9 @@ def fetch_player_matches(player_id: int, max_pages: int = 10, existing_events: S
 
 
 def fetch_match_odds(event_id: int) -> Dict:
-    """Fetch match odds."""
+    """Fetch match odds (cached for 15min)."""
     odds_data = {}
-    data = fetch_json(f"/event/{event_id}/odds/1/all")
+    data = fetch_json(f"/event/{event_id}/odds/1/all", cache_ttl=ResponseCache.TTL_ODDS)
     
     if not data or "markets" not in data:
         return odds_data
@@ -436,8 +541,8 @@ def fetch_match_odds(event_id: int) -> Dict:
 
 
 def fetch_match_stats(event_id: int) -> Optional[Dict]:
-    """Fetch match statistics."""
-    return fetch_json(f"/event/{event_id}/statistics")
+    """Fetch match statistics (cached for 1h)."""
+    return fetch_json(f"/event/{event_id}/statistics", cache_ttl=ResponseCache.TTL_MATCHES)
 
 
 def get_scheduled_events(date_str: str) -> List[Dict]:
@@ -565,7 +670,7 @@ def scrape_historical(
     ranking_type: str = "atp_singles",
     fetch_details: bool = True,
     resume: bool = False,
-    workers: int = 4
+    workers: int = 2  # Reduced from 4 to avoid rate limiting
 ) -> pl.DataFrame:
     """
     Scrape historical match data for top-ranked players.
@@ -673,7 +778,7 @@ def scrape_historical(
     return pl.DataFrame()
 
 
-def scrape_upcoming(days_ahead: int = 7, workers: int = 4) -> pl.DataFrame:
+def scrape_upcoming(days_ahead: int = 7, workers: int = 2) -> pl.DataFrame:  # Reduced from 4
     """
     Scrape upcoming matches for the next N days.
     """
@@ -755,7 +860,7 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 4) -> pl.DataFrame:
 def scrape_players(
     player_ids: List[int],
     max_pages: int = 5,
-    workers: int = 3,
+    workers: int = 2,  # Reduced from 3 to avoid rate limiting
     smart_update: bool = False
 ) -> pl.DataFrame:
     """
