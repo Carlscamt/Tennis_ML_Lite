@@ -112,10 +112,35 @@ The system follows a modular architecture:
 
 *   **`src/pipeline.py`**: Orchestrates scraping, ETL, and modeling.
 *   **`src/scraper.py`**: Handles data collection.
-*   **`src/model/`**: XGBoost training and inference.
+*   **`src/model/`**: XGBoost training, inference, and **probability calibration**.
+*   **`src/transform/`**: Feature engineering with surface-encoded stats.
 *   **`data/`**: Stores raw parquet files, processed features, and models.
 
 See [docs/architecture.md](docs/architecture.md) for a detailed diagram.
+
+## 📊 Probability Calibration
+
+The model includes **isotonic calibration** to fix probability biases:
+
+```bash
+# Fit calibrator after training
+python scripts/fit_calibrator.py
+
+# Check calibration quality
+python scripts/check_calibration.py
+```
+
+**EV Gating**: Probability-based minimum edge thresholds prevent low-confidence bets:
+
+| Probability | Min Edge Required |
+|-------------|-------------------|
+| 35-40%      | 4.0%              |
+| 40-50%      | 3.5%              |
+| 50-60%      | 3.0%              |
+| 60-70%      | 2.5%              |
+| 70%+        | 2.0%              |
+
+Bets below 35% probability are blocked (insufficient sample size).
 
 ## 🤝 Contributing
 1.  Fork the repo
