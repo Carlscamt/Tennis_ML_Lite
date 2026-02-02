@@ -1642,6 +1642,126 @@
       "training_dataset_size": 1000,
       "model_file": "v130.0.0/model.bin",
       "notes": null
+    },
+    "v131.0.0": {
+      "version": "v131.0.0",
+      "stage": "Production",
+      "trained_at": "2026-01-27T00:41:49.753170+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v131.0.0/model.bin",
+      "notes": null
+    },
+    "v132.0.0": {
+      "version": "v132.0.0",
+      "stage": "Production",
+      "trained_at": "2026-01-27T00:41:49.822517+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v132.0.0/model.bin",
+      "notes": null
+    },
+    "v133.0.0": {
+      "version": "v133.0.0",
+      "stage": "Production",
+      "trained_at": "2026-01-27T00:41:49.863443+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v133.0.0/model.bin",
+      "notes": null
+    },
+    "v134.0.0": {
+      "version": "v134.0.0",
+      "stage": "Production",
+      "trained_at": "2026-01-27T00:41:49.904430+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v134.0.0/model.bin",
+      "notes": null
+    },
+    "v135.0.0": {
+      "version": "v135.0.0",
+      "stage": "Production",
+      "trained_at": "2026-01-27T00:41:51.355952+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v135.0.0/model.bin",
+      "notes": null
+    },
+    "v136.0.0": {
+      "version": "v136.0.0",
+      "stage": "Production",
+      "trained_at": "2026-02-02T20:54:13.439414+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v136.0.0/model.json",
+      "notes": null
+    },
+    "v137.0.0": {
+      "version": "v137.0.0",
+      "stage": "Production",
+      "trained_at": "2026-02-02T20:54:13.509465+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v137.0.0/model.json",
+      "notes": null
+    },
+    "v138.0.0": {
+      "version": "v138.0.0",
+      "stage": "Production",
+      "trained_at": "2026-02-02T20:54:13.553240+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v138.0.0/model.json",
+      "notes": null
+    },
+    "v139.0.0": {
+      "version": "v139.0.0",
+      "stage": "Production",
+      "trained_at": "2026-02-02T20:54:13.608759+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v139.0.0/model.json",
+      "notes": null
+    },
+    "v140.0.0": {
+      "version": "v140.0.0",
+      "stage": "Production",
+      "trained_at": "2026-02-02T20:54:15.098684+00:00",
+      "auc": 0.85,
+      "precision": 0.82,
+      "recall": 0.88,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 1000,
+      "model_file": "v140.0.0/model.json",
+      "notes": null
     }
   },
   "tennis_xgboost": {
@@ -1667,6 +1787,18 @@
       "feature_schema_version": "1.0",
       "training_dataset_size": 3257,
       "model_file": "v1.0.1/model.bin",
+      "notes": "Trained on 3257 samples"
+    },
+    "v1.0.2": {
+      "version": "v1.0.2",
+      "stage": "Staging",
+      "trained_at": "2026-02-02T20:54:41.949706+00:00",
+      "auc": 0.6608433734939758,
+      "precision": 0.7011135857461025,
+      "recall": 0.9481927710843373,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 3257,
+      "model_file": "v1.0.2/model.joblib",
       "notes": "Trained on 3257 samples"
     }
   }

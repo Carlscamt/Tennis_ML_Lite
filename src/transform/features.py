@@ -63,6 +63,12 @@ class FeatureEngineer:
         df = self.add_rolling_winners_stats(df)
         df = self.add_rolling_errors_stats(df)
         
+        # Surface-specific rolling stats (partitioned by surface)
+        df = self.add_surface_rolling_service_stats(df)
+        df = self.add_surface_rolling_return_stats(df)
+        df = self.add_surface_rolling_winners_stats(df)
+        df = self.add_surface_rolling_errors_stats(df)
+        
         return df
     
     # =========================================================================
@@ -225,6 +231,126 @@ class FeatureEngineer:
                 .over(["player_id", "surface_normalized"])
                 .alias(f"player_surface_win_rate_{window}")
             ])
+        
+        return df
+    
+    # =========================================================================
+    # SURFACE-SPECIFIC ROLLING STATISTICS
+    # =========================================================================
+    
+    def add_surface_rolling_service_stats(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """
+        Add surface-specific rolling service statistics.
+        Uses .over(["player_id", "surface_normalized"]) for partitioning.
+        """
+        schema = df.collect_schema().names()
+        
+        if "surface_normalized" not in schema:
+            return df
+        
+        service_stats = [
+            ("player_service_aces", "aces"),
+            ("player_service_doublefaults", "double_faults"),
+            ("player_service_firstserveaccuracy", "first_serve_pct"),
+            ("player_service_firstservepointsaccuracy", "first_serve_won_pct"),
+            ("player_service_secondservepointsaccuracy", "second_serve_won_pct"),
+        ]
+        
+        window = 10  # Smaller window for surface-specific (less data per surface)
+        
+        for raw_col, short_name in service_stats:
+            if raw_col in schema:
+                df = df.with_columns([
+                    pl.col(raw_col)
+                    .cast(pl.Float64)
+                    .shift(1)  # CRITICAL: Exclude current match
+                    .rolling_mean(window_size=window, min_periods=3)
+                    .over(["player_id", "surface_normalized"])
+                    .alias(f"player_{short_name}_surface_avg_{window}")
+                ])
+        
+        return df
+    
+    def add_surface_rolling_return_stats(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Add surface-specific rolling return statistics."""
+        schema = df.collect_schema().names()
+        
+        if "surface_normalized" not in schema:
+            return df
+        
+        return_stats = [
+            ("player_return_firstreturnpoints", "first_return_won"),
+            ("player_return_secondreturnpoints", "second_return_won"),
+            ("player_return_breakpointsscored", "bp_converted"),
+        ]
+        
+        window = 10
+        
+        for raw_col, short_name in return_stats:
+            if raw_col in schema:
+                df = df.with_columns([
+                    pl.col(raw_col)
+                    .cast(pl.Float64)
+                    .shift(1)
+                    .rolling_mean(window_size=window, min_periods=3)
+                    .over(["player_id", "surface_normalized"])
+                    .alias(f"player_{short_name}_surface_avg_{window}")
+                ])
+        
+        return df
+    
+    def add_surface_rolling_winners_stats(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Add surface-specific rolling winners statistics."""
+        schema = df.collect_schema().names()
+        
+        if "surface_normalized" not in schema:
+            return df
+        
+        winner_stats = [
+            ("player_winners_winnerstotal", "total_winners"),
+            ("player_winners_forehandwinners", "fh_winners"),
+            ("player_winners_backhandwinners", "bh_winners"),
+        ]
+        
+        window = 10
+        
+        for raw_col, short_name in winner_stats:
+            if raw_col in schema:
+                df = df.with_columns([
+                    pl.col(raw_col)
+                    .cast(pl.Float64)
+                    .shift(1)
+                    .rolling_mean(window_size=window, min_periods=3)
+                    .over(["player_id", "surface_normalized"])
+                    .alias(f"player_{short_name}_surface_avg_{window}")
+                ])
+        
+        return df
+    
+    def add_surface_rolling_errors_stats(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Add surface-specific rolling errors statistics."""
+        schema = df.collect_schema().names()
+        
+        if "surface_normalized" not in schema:
+            return df
+        
+        error_stats = [
+            ("player_errors_errorstotal", "total_errors"),
+            ("player_unforced_errors_unforcederrorstotal", "total_ue"),
+        ]
+        
+        window = 10
+        
+        for raw_col, short_name in error_stats:
+            if raw_col in schema:
+                df = df.with_columns([
+                    pl.col(raw_col)
+                    .cast(pl.Float64)
+                    .shift(1)
+                    .rolling_mean(window_size=window, min_periods=3)
+                    .over(["player_id", "surface_normalized"])
+                    .alias(f"player_{short_name}_surface_avg_{window}")
+                ])
         
         return df
     
@@ -485,6 +611,7 @@ class FeatureEngineer:
             "_avg_",               # All rolling averages
             "_pct_avg_",           # Percentage averages
             "_ratio_avg_",         # Ratio averages
+            "_surface_avg_",       # Surface-specific rolling averages
         ]
         
         # Columns to ALWAYS exclude (even if they match patterns)
