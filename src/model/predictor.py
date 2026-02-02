@@ -6,6 +6,7 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 from datetime import datetime
+from .calibrator import ProbabilityCalibrator, passes_ev_gate, MIN_PROB_THRESHOLD
 import time
 import os
 import structlog
@@ -31,9 +32,11 @@ class Predictor:
         self.trainer = None
         self.fallback_trainer = None
         self.version = "unknown"
+        self.calibrator = None  # Post-hoc isotonic calibrator
         
         if model_path:
             self._load_primary_model(model_path)
+            self._load_calibrator(model_path)
             
         if fallback_model_path:
             self._load_fallback_model(fallback_model_path)
@@ -59,6 +62,15 @@ class Predictor:
             logger.log_event('fallback_model_loaded', model_path=str(path))
         except Exception as e:
             logger.log_error('fallback_model_load_failed', model_path=str(path), error=str(e))
+    
+    def _load_calibrator(self, model_path: Path) -> None:
+        """Load post-hoc calibrator if available."""
+        calibrator_path = model_path.parent / "calibrator.joblib"
+        if calibrator_path.exists():
+            self.calibrator = ProbabilityCalibrator().load(calibrator_path)
+            logger.log_event('calibrator_loaded', path=str(calibrator_path))
+        else:
+            logger.log_event('no_calibrator_found', path=str(calibrator_path))
 
     def _extract_version(self, path: Path) -> str:
         """Extract version from path or metadata."""
@@ -142,10 +154,19 @@ class Predictor:
             raise
 
     def _inference(self, trainer, df: pl.DataFrame) -> pl.DataFrame:
-        """Internal inference logic."""
-        probas = trainer.predict_proba(df)
+        """Internal inference logic with optional calibration."""
+        raw_probas = trainer.predict_proba(df)
+        
+        # Apply post-hoc calibration if available
+        if self.calibrator and self.calibrator.is_fitted:
+            probas = self.calibrator.calibrate(raw_probas)
+            logger.log_event('calibration_applied', num_samples=len(probas))
+        else:
+            probas = raw_probas
+        
         return df.with_columns([
             pl.Series("model_prob", probas),
+            pl.Series("raw_prob", raw_probas),  # Keep raw for comparison
             pl.Series("model_prediction", (probas >= 0.5).astype(int)),
         ])
 
@@ -167,12 +188,32 @@ class Predictor:
                 (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
             ])
             
+            # Basic edge check
             df = df.with_columns([
-                (pl.col("edge") >= min_edge).alias("is_value_bet"),
                 (
                     pl.col("model_prob") * (pl.col("odds_player") - 1) -
                     (1 - pl.col("model_prob"))
                 ).alias("expected_value"),
+            ])
+            
+            # Apply probability-based EV gating
+            # Higher required edge for lower probability bets
+            df = df.with_columns([
+                pl.struct(["model_prob", "edge"])
+                .map_elements(
+                    lambda x: passes_ev_gate(x["model_prob"], x["edge"]) if x["model_prob"] is not None and x["edge"] is not None else False,
+                    return_dtype=pl.Boolean
+                )
+                .alias("passes_ev_gate"),
+                (pl.col("model_prob") >= MIN_PROB_THRESHOLD).alias("above_min_prob"),
+            ])
+            
+            # is_value_bet now combines edge threshold + EV gate
+            df = df.with_columns([
+                (
+                    (pl.col("edge") >= min_edge) & 
+                    pl.col("passes_ev_gate")
+                ).alias("is_value_bet"),
             ])
         
         return df
