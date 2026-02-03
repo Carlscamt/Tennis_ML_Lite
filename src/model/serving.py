@@ -98,9 +98,20 @@ class ModelServer:
                  raise e
         else:
              # Assume native XGBoost config/binary
-             model = xgb.XGBClassifier()
-             model.load_model(path)
-             return model
+             # But if it fails (e.g. it's actually a pickle named .bin), try joblib
+             try:
+                 model = xgb.XGBClassifier()
+                 model.load_model(path)
+                 return model
+             except Exception as e:
+                 # XGBoost load failed (could be format error or "UnicodeDecodeError" in error msg)
+                 # Fallback to joblib
+                 try:
+                     # logger.log_event("fallback_to_joblib_load", path=path, original_error=str(e))
+                     return joblib.load(path)
+                 except Exception:
+                     # If both fail, raise the original XGBoost error as it's the expected format for unknown ext
+                     raise e
 
     def _load_models(self):
         """Load champion (Production) and challenger (Staging) models."""
@@ -135,6 +146,15 @@ class ModelServer:
                     logger.log_event('challenger_model_loaded', version=challenger_version)
                 else:
                     logger.log_event('no_challenger_model')
+                
+                # Desperation Mode: If no champion and no challenger, try LATEST (Experimental)
+                if not self.champion_model and not self.challenger_model:
+                     latest = self.registry.get_latest_model()
+                     if latest:
+                         v, p = latest
+                         self.champion_model = self._load_model_artifact(p)
+                         self.champion_model.version = v
+                         logger.log_warning('SERVING_IN_EXPERIMENTAL_MODE', version=v, reason="No Production/Staging models found")
                 
                 success = True
                 break # Success
@@ -287,6 +307,8 @@ class ModelServer:
 
     def _predict_single(self, model: xgb.XGBClassifier, features: np.ndarray) -> PredictionResult:
         start = time.time()
+        # Convert None to np.nan (XGBoost can handle nan but not Python None)
+        features = np.where(features == None, np.nan, features).astype(np.float64)
         preds = model.predict(features)
         probs = model.predict_proba(features)[:, 1] # Class 1
         dur = (time.time() - start) * 1000
