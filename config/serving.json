@@ -1,5 +1,5 @@
 {
   "canary_percentage": 0.0,
-  "shadow_mode": true,
+  "shadow_mode": false,
   "enable_fallback": true
 }
