@@ -308,7 +308,9 @@ class ModelServer:
     def _predict_single(self, model: xgb.XGBClassifier, features: np.ndarray) -> PredictionResult:
         start = time.time()
         # Convert None to np.nan (XGBoost can handle nan but not Python None)
-        features = np.where(features == None, np.nan, features).astype(np.float64)
+        # np.where doesn't properly detect Python None, so use pandas
+        import pandas as pd
+        features = pd.DataFrame(features).fillna(np.nan).values.astype(np.float64)
         preds = model.predict(features)
         probs = model.predict_proba(features)[:, 1] # Class 1
         dur = (time.time() - start) * 1000
