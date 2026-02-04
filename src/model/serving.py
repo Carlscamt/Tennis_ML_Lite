@@ -224,8 +224,11 @@ class ModelServer:
                 raise RuntimeError("Model Server not initialized with Production model")
         
         start_time = time.time()
-        champion_result = None
-        challenger_result = None
+        
+        # Convert None to np.nan ONCE before any predictions
+        # XGBoost can handle nan but not Python None
+        import pandas as pd
+        feature_array = pd.DataFrame(feature_array).fillna(np.nan).values.astype(np.float64)
         
         try:
             # 1. Predict with Active Model (Champion or Fallback)
@@ -307,10 +310,7 @@ class ModelServer:
 
     def _predict_single(self, model: xgb.XGBClassifier, features: np.ndarray) -> PredictionResult:
         start = time.time()
-        # Convert None to np.nan (XGBoost can handle nan but not Python None)
-        # np.where doesn't properly detect Python None, so use pandas
-        import pandas as pd
-        features = pd.DataFrame(features).fillna(np.nan).values.astype(np.float64)
+        # Features are already cleaned (None -> np.nan) in _predict_sync
         preds = model.predict(features)
         probs = model.predict_proba(features)[:, 1] # Class 1
         dur = (time.time() - start) * 1000
