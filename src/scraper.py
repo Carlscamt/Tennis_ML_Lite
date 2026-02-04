@@ -859,7 +859,7 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 2) -> pl.DataFrame:  # R
 
 def scrape_players(
     player_ids: List[int],
-    max_pages: int = 5,
+    max_pages: int = 10,  # Increased from 5 for better rolling stats coverage
     workers: int = 2,  # Reduced from 3 to avoid rate limiting
     smart_update: bool = False
 ) -> pl.DataFrame:

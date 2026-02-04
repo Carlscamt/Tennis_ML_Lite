@@ -446,7 +446,7 @@ class TennisPipeline:
     def _scrape_unknown_players(self, player_ids: List[int]) -> None:
         if not player_ids: return
         try:
-            scrape_players(player_ids=player_ids, max_pages=5, workers=3, smart_update=True)
+            scrape_players(player_ids=player_ids, max_pages=10, workers=2, smart_update=True)
         except Exception as e:
             logger.log_error("unknown_scrape_failed", error=str(e))
 
