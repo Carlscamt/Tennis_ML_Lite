@@ -320,6 +320,9 @@ class TennisPipeline:
         
         records = prediction_ready_df.select(features).to_dicts()
         
+        if not self.model_server.champion_model and not self.model_server.challenger_model:
+             raise RuntimeError("No models available in Registry. Please run training pipeline first.")
+
         result = await self.model_server.predict_batch(records)
         
         # Add predictions back to dataframe
@@ -443,7 +446,7 @@ class TennisPipeline:
     def _scrape_unknown_players(self, player_ids: List[int]) -> None:
         if not player_ids: return
         try:
-            scrape_players(player_ids=player_ids, max_pages=5, workers=3, smart_update=False)
+            scrape_players(player_ids=player_ids, max_pages=5, workers=3, smart_update=True)
         except Exception as e:
             logger.log_error("unknown_scrape_failed", error=str(e))
 
