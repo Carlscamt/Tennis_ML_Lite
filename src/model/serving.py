@@ -224,6 +224,9 @@ class ModelServer:
                 raise RuntimeError("Model Server not initialized with Production model")
         
         start_time = time.time()
+        corr_id = str(random.randint(100000, 999999))
+        champion_result = None
+        challenger_result = None
         
         # Convert None to np.nan ONCE before any predictions
         # XGBoost can handle nan but not Python None
