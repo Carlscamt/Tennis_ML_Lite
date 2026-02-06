@@ -125,7 +125,7 @@ _count_lock = Lock()
 
 
 def get_session():
-    """Get thread-local HTTP session."""
+    """Get thread-local HTTP session with optimized limits."""
     if not hasattr(_thread_local, "session"):
         if HAS_TLS_CLIENT:
             _thread_local.session = Session(client_identifier="firefox_120")
@@ -134,7 +134,13 @@ def get_session():
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
                 "Accept": "application/json",
             }
-            _thread_local.session = httpx.Client(headers=headers, timeout=30)
+            # Optimize connection pool
+            limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+            _thread_local.session = httpx.Client(
+                headers=headers, 
+                timeout=15.0,  # 15s timeout
+                limits=limits
+            )
     return _thread_local.session
 
 
@@ -370,7 +376,11 @@ def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[
             delay = random.uniform(MIN_DELAY, MAX_DELAY)
             time.sleep(delay)
             
-            response = session.get(url)
+            # Add explicit timeout for request
+            if HAS_TLS_CLIENT:
+                response = session.get(url, timeout_seconds=15)
+            else:
+                response = session.get(url)  # Timeout configured in client
             
             with _count_lock:
                 _request_count += 1
