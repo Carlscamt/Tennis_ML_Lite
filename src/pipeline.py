@@ -368,94 +368,66 @@ class TennisPipeline:
                     self._scrape_unknown_players(unknowns)
                     historical = self._load_historical_data()
             
-            # Step 3: Features
+            # Step 3: Create BOTH perspectives (A vs B and B vs A)
+            # Original perspective
+            original = upcoming.clone()
+            
+            # Create swapped perspective (B vs A) for opponent value detection
+            swap_cols = {}
+            if "player_id" in upcoming.columns and "opponent_id" in upcoming.columns:
+                swap_cols["player_id"] = pl.col("opponent_id")
+                swap_cols["opponent_id"] = pl.col("player_id")
+            if "player_name" in upcoming.columns and "opponent_name" in upcoming.columns:
+                swap_cols["player_name"] = pl.col("opponent_name")
+                swap_cols["opponent_name"] = pl.col("player_name")
+            if "odds_player" in upcoming.columns and "odds_opponent" in upcoming.columns:
+                swap_cols["odds_player"] = pl.col("odds_opponent")
+                swap_cols["odds_opponent"] = pl.col("odds_player")
+            
+            if swap_cols:
+                swapped = upcoming.with_columns([v.alias(k) for k, v in swap_cols.items()])
+                # Mark as swapped perspective
+                original = original.with_columns(pl.lit("A").alias("_perspective"))
+                swapped = swapped.with_columns(pl.lit("B").alias("_perspective"))
+                combined_upcoming = pl.concat([original, swapped])
+            else:
+                combined_upcoming = original.with_columns(pl.lit("A").alias("_perspective"))
+            
+            # Step 4: Features for BOTH perspectives
             prediction_ready = self.feature_engineer.compute_features_for_prediction(
-                upcoming, historical
+                combined_upcoming, historical
             )
             
             # --- QUALITY GATE 4: DRIFT ---
             drift_rep = self.drift_detector.detect_drift(prediction_ready)
             
-            # Step 4: Predict via Model Server
+            # Step 5: Predict via Model Server (for both perspectives)
             predictions = asyncio.run(self._predict_with_server(prediction_ready))
             
-            # Step 5: Calculate edge for BOTH players
-            # Player A edge (original)
+            # Step 6: Calculate edge
             if "odds_player" in predictions.columns:
                 predictions = predictions.with_columns([
                     (1 / pl.col("odds_player")).alias("implied_prob"),
                     (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
                 ])
             
-            # Also calculate opponent edge (flipped perspective)
-            # opponent_prob = 1 - model_prob
-            # opponent_edge = opponent_prob - implied_prob_opponent
-            if "odds_opponent" in predictions.columns:
-                predictions = predictions.with_columns([
-                    (1 - pl.col("model_prob")).alias("opponent_prob"),
-                    (1 / pl.col("odds_opponent")).alias("implied_prob_opponent"),
-                ])
-                predictions = predictions.with_columns([
-                    ((1 - pl.col("model_prob")) - (1 / pl.col("odds_opponent"))).alias("opponent_edge"),
-                ])
-            
-            # Step 6: Create unified value bets from BOTH perspectives
-            # Rows where player A has value
-            player_value = predictions.filter(
+            # Step 7: Filter for value bets
+            recommended = predictions.filter(
                 (pl.col("model_prob") >= min_confidence) &
                 (pl.col("odds_player") >= min_odds) &
                 (pl.col("odds_player") <= max_odds) &
                 (pl.col("edge") > 0.05)
-            )
-            
-            # Rows where opponent (B) has value - need to flip the columns
-            opponent_value = pl.DataFrame()
-            if "opponent_edge" in predictions.columns:
-                opp_candidates = predictions.filter(
-                    (pl.col("opponent_prob") >= min_confidence) &
-                    (pl.col("odds_opponent") >= min_odds) &
-                    (pl.col("odds_opponent") <= max_odds) &
-                    (pl.col("opponent_edge") > 0.05)
-                )
-                
-                if len(opp_candidates) > 0:
-                    # Flip columns: opponent becomes the "player" to bet on
-                    opponent_value = opp_candidates.select([
-                        pl.col("opponent_name").alias("player_name"),
-                        pl.col("player_name").alias("opponent_name"),
-                        pl.col("opponent_id").alias("player_id") if "opponent_id" in opp_candidates.columns else pl.lit(None).alias("player_id"),
-                        pl.col("player_id").alias("opponent_id") if "player_id" in opp_candidates.columns else pl.lit(None).alias("opponent_id"),
-                        pl.col("odds_opponent").alias("odds_player"),
-                        pl.col("odds_player").alias("odds_opponent"),
-                        pl.col("opponent_prob").alias("model_prob"),
-                        pl.col("opponent_edge").alias("edge"),
-                        pl.col("implied_prob_opponent").alias("implied_prob"),
-                        pl.col("tournament_name") if "tournament_name" in opp_candidates.columns else pl.lit("Unknown").alias("tournament_name"),
-                        pl.col("model_version") if "model_version" in opp_candidates.columns else pl.lit("N/A").alias("model_version"),
-                        pl.col("serving_mode") if "serving_mode" in opp_candidates.columns else pl.lit("N/A").alias("serving_mode"),
-                    ])
-            
-            # Combine both perspectives
-            if len(opponent_value) > 0:
-                # Match columns before concat
-                common_cols = ["player_name", "opponent_name", "odds_player", "model_prob", "edge", "implied_prob", "tournament_name", "model_version", "serving_mode"]
-                common_cols = [c for c in common_cols if c in player_value.columns and c in opponent_value.columns]
-                
-                combined = pl.concat([
-                    player_value.select(common_cols),
-                    opponent_value.select(common_cols)
-                ])
-            else:
-                combined = player_value
-            
-            # Sort by edge
-            recommended = combined.sort("edge", descending=True)
+            ).sort("edge", descending=True)
             
             # Add timestamp
             final_df = recommended.with_columns([
                 pl.lit(datetime.now().isoformat()).alias("prediction_timestamp"),
                 pl.lit(date.today().isoformat()).alias("match_date")
             ])
+            
+            # Drop internal columns
+            if "_perspective" in final_df.columns:
+                final_df = final_df.drop("_perspective")
             
             return final_df
 
