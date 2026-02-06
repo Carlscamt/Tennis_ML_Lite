@@ -95,7 +95,31 @@ docker run -v %cd%/data:/app/data tennis-cli scrape upcoming
 docker run -v %cd%/data:/app/data tennis-cli predict --days 3 --output data/bets.csv
 ```
 
-### 6. Audit & Backtest
+### 6. Showdown Mode 🏆
+Simulate tournament brackets and compare model predictions vs actual results.
+
+```bash
+# ASCII bracket in terminal
+python tennis.py showdown -t "Wimbledon" -y 2024 --ascii
+
+# HTML visualization (saved to results/)
+python tennis.py showdown -t "US Open" -y 2024
+
+# List available tournaments
+python tennis.py showdown --list
+```
+
+**Output Example (ASCII):**
+```
+--- Quarterfinals ---
+  [+] *Carlos Alcaraz    << vs  Tommy Paul           (80%)
+  [+] *Novak Djokovic    << vs  Alex de Minaur       (80%)
+  [-]  Jannik Sinner     << vs *Daniil Medvedev      (82%)
+
+Legend: [+] Correct  [-] Wrong  * = Winner  << = Model Pick
+```
+
+### 7. Audit & Backtest
 Verify model performance.
 
 ```bash
