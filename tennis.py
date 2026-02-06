@@ -256,6 +256,144 @@ def cmd_show_predictions(args):
         print(f"#{i} {player} vs {opponent} | {match_date} | Edge: {edge:.1f}%")
 
 
+def cmd_showdown(args):
+    """Run tournament showdown simulation."""
+    from src.showdown import TournamentSimulator, BracketVisualizer
+    from config import DATA_DIR
+    
+    logger.log_event('showdown_command_started', tournament=args.tournament, year=args.year)
+    
+    # Initialize simulator
+    data_path = DATA_DIR / "tennis.parquet"
+    if not data_path.exists():
+        print(f"ERROR: Data file not found: {data_path}")
+        print("Run 'python tennis.py scrape historical' first.")
+        return 1
+    
+    simulator = TournamentSimulator(data_path)
+    
+    # List tournaments mode
+    if args.list:
+        print(f"\n=== Available Tournaments (Year: {args.year or 'All'}) ===")
+        tournaments = simulator.list_available_tournaments(year=args.year)
+        for t in tournaments[:20]:  # Show top 20
+            print(f"  - {t['name']} ({t['year']}) - {t['matches']} matches")
+        return
+    
+    # Validate required args for simulation
+    if not args.tournament:
+        print("ERROR: --tournament required. Use --list to see available tournaments.")
+        return 1
+    if not args.year:
+        print("ERROR: --year required.")
+        return 1
+    
+    try:
+        print(f"\n[SHOWDOWN] {args.tournament} {args.year}")
+        print("=" * 60)
+        
+        # Run showdown
+        bracket, stats = simulator.run_showdown(args.tournament, args.year)
+        
+        # ASCII terminal bracket
+        if args.ascii:
+            _print_ascii_bracket(bracket, stats)
+        else:
+            # Summary stats
+            print(f"\n[RESULTS]")
+            print(f"   Total: {stats.total_matches} | Predicted: {stats.predicted_matches} | Correct: {stats.correct_predictions}")
+            print(f"   Accuracy: {stats.accuracy * 100:.1f}% | Confidence: {stats.avg_confidence * 100:.1f}%")
+            
+            if stats.upsets_total > 0:
+                print(f"   Upsets: {stats.upsets_predicted}/{stats.upsets_total}")
+            
+            print(f"\n[ACCURACY BY ROUND]")
+            for round_name, acc in stats.accuracy_by_round.items():
+                bar = "#" * int(acc * 20) + "-" * (20 - int(acc * 20))
+                print(f"   {round_name:20s} [{bar}] {acc * 100:.0f}%")
+            
+            # Generate HTML
+            visualizer = BracketVisualizer()
+            output_path = Path(args.output) if args.output else None
+            html_path = visualizer.render_html(bracket, stats, output_path)
+            print(f"\n[OK] Saved to: {html_path}")
+            
+            if args.json:
+                json_path = visualizer.export_json(bracket, stats)
+                print(f"     JSON: {json_path}")
+        
+    except ValueError as e:
+        print(f"ERROR: {e}")
+        print("Use --list to see available tournaments.")
+        return 1
+    except Exception as e:
+        logger.log_error("showdown_failed", error=str(e))
+        print(f"ERROR: Showdown failed - {e}")
+        return 1
+
+
+def _print_ascii_bracket(bracket, stats):
+    """Print ASCII tournament bracket to terminal."""
+    
+    # Get last 4 rounds
+    all_rounds = sorted(bracket.rounds.keys())
+    display_rounds = all_rounds[-4:] if len(all_rounds) > 4 else all_rounds
+    
+    # Header
+    print(f"\n{'':=^80}")
+    print(f"{bracket.config.name.upper()} {bracket.config.year}".center(80))
+    print(f"Accuracy: {stats.accuracy*100:.1f}% ({stats.correct_predictions}/{stats.predicted_matches})".center(80))
+    print(f"{'':=^80}\n")
+    
+    # Print each round
+    for round_num in display_rounds:
+        matches = bracket.rounds[round_num]
+        if not matches:
+            continue
+        
+        round_name = matches[0].round_name
+        print(f"--- {round_name} ---")
+        
+        for match in matches:
+            _print_match_line(match)
+        
+        print()
+    
+    # Footer
+    print(f"{'-'*80}")
+    print(f" Legend: [+] Correct  [-] Wrong  * = Winner  << = Model Pick")
+    print(f" Upsets: {stats.upsets_predicted}/{stats.upsets_total} caught | Confidence: {stats.avg_confidence*100:.0f}%")
+    print(f"{'-'*80}\n")
+
+
+def _print_match_line(match):
+    """Print a single match on one line."""
+    # Status indicator
+    if match.prediction_correct is True:
+        status = "[+]"
+    elif match.prediction_correct is False:
+        status = "[-]"
+    else:
+        status = "[?]"
+    
+    # Player names
+    p1 = match.player1_name[:18] if match.player1_name else "TBD"
+    p2 = match.player2_name[:18] if match.player2_name else "TBD"
+    
+    # Winner marker
+    p1_mark = "*" if match.actual_winner_id == match.player1_id else " "
+    p2_mark = "*" if match.actual_winner_id == match.player2_id else " "
+    
+    # Model pick
+    p1_pick = "<<" if match.model_winner_id == match.player1_id else "  "
+    p2_pick = "<<" if match.model_winner_id == match.player2_id else "  "
+    
+    # Confidence
+    conf = f"{match.model_confidence*100:.0f}%" if match.model_confidence else "  "
+    
+    print(f"  {status} {p1_mark}{p1:<18}{p1_pick} vs {p2_mark}{p2:<18}{p2_pick} ({conf})")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Tennis Prediction System")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -314,6 +452,16 @@ def main():
     show.add_argument("--limit", type=int, default=10)
     show.add_argument("--min-odds", type=float, default=1.5)
     show.set_defaults(func=cmd_show_predictions)
+    
+    # Showdown Command
+    showdown = subparsers.add_parser('showdown', help='Tournament bracket simulation')
+    showdown.add_argument('--tournament', '-t', type=str, help='Tournament name (e.g., "Australian Open")')
+    showdown.add_argument('--year', '-y', type=int, help='Tournament year')
+    showdown.add_argument('--output', '-o', type=str, help='Output HTML path')
+    showdown.add_argument('--list', '-l', action='store_true', help='List available tournaments')
+    showdown.add_argument('--json', action='store_true', help='Also export JSON data')
+    showdown.add_argument('--ascii', '-a', action='store_true', help='Print ASCII bracket to terminal')
+    showdown.set_defaults(func=cmd_showdown)
     
     args = parser.parse_args()
     

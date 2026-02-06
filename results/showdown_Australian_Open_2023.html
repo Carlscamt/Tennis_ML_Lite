@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎾 Australian Open 2023 Showdown</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .overall-acc {
+            font-size: 1.5em;
+            color: #3b82f6;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .bracket {
+            flex: 3;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+        }
+        .round {
+            min-width: 200px;
+        }
+        .round h3 {
+            text-align: center;
+            padding: 10px;
+            background: #374151;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .match {
+            background: #374151;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #6b7280;
+        }
+        .match.correct { border-left-color: #22c55e; }
+        .match.incorrect { border-left-color: #ef4444; }
+        .players {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .player { font-weight: 500; }
+        .vs { color: #888; font-size: 0.9em; }
+        .prediction {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+        .icon { font-size: 1.2em; }
+        .correct .icon { color: #22c55e; }
+        .incorrect .icon { color: #ef4444; }
+        .actual {
+            font-size: 0.85em;
+            color: #aaa;
+            margin-top: 8px;
+        }
+        .stats {
+            flex: 1;
+            background: #374151;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .stats h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .acc-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .round-name {
+            width: 100px;
+            font-size: 0.9em;
+        }
+        .bar-bg {
+            flex: 1;
+            height: 20px;
+            background: #555;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        .acc-value {
+            width: 50px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .summary {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 Australian Open 2023</h1>
+        <div class="overall-acc">Overall Accuracy: 100.0%</div>
+    </div>
+    
+    <div class="container">
+        <div class="bracket">
+            
+            <div class="round">
+                <h3>Round of 128</h3>
+                
+                <div class="match correct">
+                    <div class="players">
+                        <span class="player">Denis Shapovalov</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Dusan Lajovic</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">✓</span>
+                        <span class="pick">Pick: Denis Shapovalov</span>
+                        <span class="conf">(93%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Denis Shapovalov
+                    </div>
+                </div>
+                
+                <div class="match correct">
+                    <div class="players">
+                        <span class="player">Jack Draper</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Rafael Nadal</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">✓</span>
+                        <span class="pick">Pick: Rafael Nadal</span>
+                        <span class="conf">(74%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Rafael Nadal
+                    </div>
+                </div>
+                
+                <div class="match correct">
+                    <div class="players">
+                        <span class="player">Jenson Brooksby</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Christopher O'Connell</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">✓</span>
+                        <span class="pick">Pick: Jenson Brooksby</span>
+                        <span class="conf">(69%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Jenson Brooksby
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="round">
+                <h3>Round of 64</h3>
+                
+                <div class="match correct">
+                    <div class="players">
+                        <span class="player">Denis Shapovalov</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Taro Daniel</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">✓</span>
+                        <span class="pick">Pick: Denis Shapovalov</span>
+                        <span class="conf">(83%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Denis Shapovalov
+                    </div>
+                </div>
+                
+                <div class="match pending">
+                    <div class="players">
+                        <span class="player">Jenson Brooksby</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Casper Ruud</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">?</span>
+                        <span class="pick">Pick: TBD</span>
+                        <span class="conf">(0%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Jenson Brooksby
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="round">
+                <h3>Round of 32</h3>
+                
+                <div class="match correct">
+                    <div class="players">
+                        <span class="player">Denis Shapovalov</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Hubert Hurkacz</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">✓</span>
+                        <span class="pick">Pick: Hubert Hurkacz</span>
+                        <span class="conf">(52%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Hubert Hurkacz
+                    </div>
+                </div>
+                
+                <div class="match pending">
+                    <div class="players">
+                        <span class="player">Jenson Brooksby</span>
+                        <span class="vs">vs</span>
+                        <span class="player">Tommy Paul</span>
+                    </div>
+                    <div class="prediction">
+                        <span class="icon">?</span>
+                        <span class="pick">Pick: TBD</span>
+                        <span class="conf">(0%)</span>
+                    </div>
+                    <div class="actual">
+                        Actual: Tommy Paul
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <div class="stats">
+            <h3>📊 Accuracy by Round</h3>
+            
+            <div class="acc-row">
+                <span class="round-name">Round of 128</span>
+                <div class="bar-bg">
+                    <div class="bar" style="width: 100.0%; background: #22c55e;"></div>
+                </div>
+                <span class="acc-value">100%</span>
+            </div>
+            
+            <div class="acc-row">
+                <span class="round-name">Round of 64</span>
+                <div class="bar-bg">
+                    <div class="bar" style="width: 100.0%; background: #22c55e;"></div>
+                </div>
+                <span class="acc-value">100%</span>
+            </div>
+            
+            <div class="acc-row">
+                <span class="round-name">Round of 32</span>
+                <div class="bar-bg">
+                    <div class="bar" style="width: 100.0%; background: #22c55e;"></div>
+                </div>
+                <span class="acc-value">100%</span>
+            </div>
+            
+            
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Total Matches</span>
+                    <strong>7</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Correct Predictions</span>
+                    <strong>5/5</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Upsets Caught</span>
+                    <strong>1/2</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Avg Confidence</span>
+                    <strong>74.3%</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+        

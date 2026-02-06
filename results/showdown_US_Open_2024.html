@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>US Open 2024 Bracket</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #3b82f6;
+            margin-bottom: 30px;
+        }
+        .bracket {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            min-width: 180px;
+        }
+        .round-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 8px;
+            background: #1e293b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+        }
+        .matches {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+            gap: 8px;
+        }
+        .match {
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 0.85em;
+        }
+        .player {
+            padding: 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .meta {
+            font-size: 0.75em;
+            color: #64748b;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .stats {
+            max-width: 400px;
+            margin: 30px auto 0;
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .stats h2 {
+            font-size: 1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .stats table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .stats td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #334155;
+        }
+        .stats td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+            font-size: 0.9em;
+        }
+        .summary div {
+            text-align: center;
+        }
+        .summary strong {
+            display: block;
+            font-size: 1.3em;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>US Open 2024</h1>
+    <div class="subtitle">79.4% Accuracy (81/102)</div>
+    
+    <div class="bracket">
+        
+            <div class="round">
+                <div class="round-header">Round of 16</div>
+                <div class="matches">
+                    
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Alex de Minaur ◀</div>
+                    <div class="player" style="">Jordan Thompson</div>
+                    <div class="meta">80% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jack Draper ◀</div>
+                    <div class="player" style="">Tomas Machac</div>
+                    <div class="meta">69% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Alexander Zverev ◀</div>
+                    <div class="player" style="">Brandon Nakashima</div>
+                    <div class="meta">82% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Daniil Medvedev ◀</div>
+                    <div class="player" style="">Nuno Borges</div>
+                    <div class="meta">91% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Taylor Fritz ◀</div>
+                    <div class="player" style="">Casper Ruud</div>
+                    <div class="meta">74% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #ef4444;">
+                    <div class="player" style="">Andrey Rublev ◀</div>
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Grigor Dimitrov</div>
+                    <div class="meta">56% • WRONG</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #ef4444;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Frances Tiafoe</div>
+                    <div class="player" style="">Alexei Popyrin ◀</div>
+                    <div class="meta">52% • WRONG</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jannik Sinner ◀</div>
+                    <div class="player" style="">Tommy Paul</div>
+                    <div class="meta">88% • CORRECT</div>
+                </div>
+                
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-header">Quarterfinals</div>
+                <div class="matches">
+                    
+                <div class="match" style="border-left: 4px solid #ef4444;">
+                    <div class="player" style="">Alex de Minaur ◀</div>
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jack Draper</div>
+                    <div class="meta">60% • WRONG</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jannik Sinner ◀</div>
+                    <div class="player" style="">Daniil Medvedev</div>
+                    <div class="meta">75% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #ef4444;">
+                    <div class="player" style="">Alexander Zverev ◀</div>
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Taylor Fritz</div>
+                    <div class="meta">65% • WRONG</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #ef4444;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Frances Tiafoe</div>
+                    <div class="player" style="">Grigor Dimitrov ◀</div>
+                    <div class="meta">64% • WRONG</div>
+                </div>
+                
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-header">Semifinals</div>
+                <div class="matches">
+                    
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Taylor Fritz ◀</div>
+                    <div class="player" style="">Frances Tiafoe</div>
+                    <div class="meta">75% • CORRECT</div>
+                </div>
+                
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jannik Sinner ◀</div>
+                    <div class="player" style="">Jack Draper</div>
+                    <div class="meta">85% • CORRECT</div>
+                </div>
+                
+                </div>
+            </div>
+            
+            <div class="round">
+                <div class="round-header">Final</div>
+                <div class="matches">
+                    
+                <div class="match" style="border-left: 4px solid #22c55e;">
+                    <div class="player" style="font-weight:bold; color:#22c55e;">Jannik Sinner ◀</div>
+                    <div class="player" style="">Taylor Fritz</div>
+                    <div class="meta">82% • CORRECT</div>
+                </div>
+                
+                </div>
+            </div>
+            
+    </div>
+    
+    <div class="stats">
+        <h2>Accuracy by Round</h2>
+        <table>
+            <tr><td>Round of 128</td><td style="color:#22c55e">79%</td></tr><tr><td>Round of 64</td><td style="color:#22c55e">81%</td></tr><tr><td>Round of 32</td><td style="color:#22c55e">86%</td></tr><tr><td>Round of 16</td><td style="color:#22c55e">75%</td></tr><tr><td>Quarterfinals</td><td style="color:#ef4444">25%</td></tr><tr><td>Semifinals</td><td style="color:#22c55e">100%</td></tr><tr><td>Final</td><td style="color:#22c55e">100%</td></tr>
+        </table>
+        <div class="summary">
+            <div><strong>104</strong>Matches</div>
+            <div><strong>81</strong>Correct</div>
+            <div><strong>1/20</strong>Upsets</div>
+            <div><strong>79%</strong>Avg Conf</div>
+        </div>
+    </div>
+</body>
+</html>
