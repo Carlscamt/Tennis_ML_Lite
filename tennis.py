@@ -443,7 +443,7 @@ def main():
     
     predict = subparsers.add_parser("predict")
     predict.add_argument("--days", type=int, default=7)
-    predict.add_argument("--limit", type=int, default=10)
+    predict.add_argument("--limit", type=int, default=50)
     predict.add_argument("--min-odds", type=float, default=1.5)
     predict.add_argument("--max-odds", type=float, default=3.0)
     predict.add_argument("--confidence", type=float, default=0.55)
