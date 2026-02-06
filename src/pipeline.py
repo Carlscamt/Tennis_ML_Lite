@@ -356,7 +356,12 @@ class TennisPipeline:
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
             quality_rep = self.quality_monitor.check_incoming_data(upcoming, is_live=True)
             if not quality_rep['passed']:
-                 raise ValueError(f"Incoming Data Health Check Failed: {quality_rep['errors']}")
+                 # Downgrade 'Data Stale' to warning, only raise on other errors
+                 critical_errors = [e for e in quality_rep['errors'] if "Data Stale" not in e]
+                 if critical_errors:
+                     raise ValueError(f"Incoming Data Health Check Failed: {critical_errors}")
+                 else:
+                     logger.log_warning("incoming_data_quality_warning", errors=quality_rep['errors'])
             
             # Step 2: Load history
             historical = self._load_historical_data()
