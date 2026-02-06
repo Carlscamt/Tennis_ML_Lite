@@ -138,12 +138,15 @@ def cmd_predict(args):
 
 
 def _print_predictions_ascii(value_bets, days):
-    """Print predictions grouped by tournament in bracket style."""
+    """Print predictions as a compact ASCII table."""
     
-    print(f"\n{'':=^75}")
-    print(f"VALUE BETS - Next {days} Days".center(75))
-    print(f"{len(value_bets)} opportunities found".center(75))
-    print(f"{'':=^75}\n")
+    print(f"\n{'':=^90}")
+    print(f"VALUE BETS - Next {days} Days ({len(value_bets)} found)".center(90))
+    print(f"{'':=^90}")
+    
+    # Table header
+    print(f"| {'BET ON':<20} | {'vs':<18} | {'Prob':>5} | {'Odds':>5} | {'Edge':>6} | {'Tournament':<18} |")
+    print(f"|{'-'*22}|{'-'*20}|{'-'*7}|{'-'*7}|{'-'*8}|{'-'*20}|")
     
     # Group by tournament
     tournaments = {}
@@ -153,39 +156,28 @@ def _print_predictions_ascii(value_bets, days):
             tournaments[tourney] = []
         tournaments[tourney].append(row)
     
-    # Print each tournament as a mini bracket
+    # Print rows grouped by tournament
     for tourney, matches in tournaments.items():
-        # Tournament header
-        print(f"+{'-'*73}+")
-        print(f"| {tourney:<71} |")
-        print(f"+{'-'*73}+")
-        
         for row in matches:
-            player = row['player_name'][:18]
+            player = row['player_name'][:20]
             opponent = row['opponent_name'][:18]
             prob = row.get('model_prob', 0) * 100
             odds = row.get('odds_player', 0)
             edge = row.get('edge', 0) * 100
-            match_date = str(row.get('match_date', ''))[:10]
+            tourney_short = tourney[:18]
             
             # Edge indicator
             if edge >= 15:
-                edge_mark = "!!!"
+                edge_str = f"+{edge:4.1f}%!"
             elif edge >= 10:
-                edge_mark = "!! "
+                edge_str = f"+{edge:4.1f}%"
             else:
-                edge_mark = "!  "
+                edge_str = f"+{edge:4.1f}%"
             
-            # Bracket style match
-            print(f"|  [{edge_mark}] {player:<18} << BET                              |")
-            print(f"|        vs {opponent:<18}    {prob:3.0f}% @ {odds:.2f} (+{edge:.1f}%)  {match_date} |")
-            print(f"|{'':-^73}|")
-        
-        print(f"+{'='*73}+\n")
+            print(f"| {player:<20} | {opponent:<18} | {prob:4.0f}% | {odds:5.2f} | {edge_str:>6} | {tourney_short:<18} |")
     
-    # Footer
-    print(f" Legend: [!!!] Edge 15%+  [!! ] Edge 10%+  [!  ] Edge 5%+")
-    print(f" << BET = Recommended pick\n")
+    print(f"|{'='*22}|{'='*20}|{'='*7}|{'='*7}|{'='*8}|{'='*20}|")
+    print(f" Filter: Edge > 5% | Confidence > 55% | Odds 1.50-3.00\n")
 
 
 def cmd_audit(args):
