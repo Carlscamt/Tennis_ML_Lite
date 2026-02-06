@@ -509,8 +509,9 @@ class TennisPipeline:
         """Trigger fast scraper for specific IDs."""
         if not player_ids: return
         
-        from src.scraper.run_scraper import run_scraper_for_players
-        run_scraper_for_players(player_ids)
+        from src.scraper import scrape_players
+        # Use smart_update=True to avoid re-scraping recently updated players
+        scrape_players(player_ids, smart_update=True, workers=2)
         
     def _normalize_probabilities(self, predictions: pl.DataFrame) -> pl.DataFrame:
         """
