@@ -404,6 +404,35 @@ class TennisPipeline:
             # Step 5: Predict via Model Server (for both perspectives)
             predictions = asyncio.run(self._predict_with_server(prediction_ready))
             
+            # Step 5b: Normalize Probabilities
+            # Ensure P(Player A) + P(Player B) = 1.0 per match
+            if "model_prob" in predictions.columns:
+                # Determine match identifier
+                group_col = "event_id" if "event_id" in predictions.columns else "_match_key_temp"
+                
+                if "event_id" not in predictions.columns:
+                     predictions = predictions.with_columns([
+                        pl.when(pl.col("player_name") < pl.col("opponent_name"))
+                        .then(pl.col("player_name") + "|" + pl.col("opponent_name"))
+                        .otherwise(pl.col("opponent_name") + "|" + pl.col("player_name"))
+                        .alias("_match_key_temp")
+                    ])
+                
+                # Calculate sum of probs per match
+                predictions = predictions.with_columns([
+                    pl.col("model_prob").sum().over(group_col).alias("_prob_sum")
+                ])
+                
+                # Normalize (avoid division by zero if something weird happens)
+                predictions = predictions.with_columns([
+                    (pl.col("model_prob") / pl.col("_prob_sum")).alias("model_prob")
+                ])
+                
+                if "_match_key_temp" in predictions.columns:
+                    predictions = predictions.drop("_match_key_temp")
+                if "_prob_sum" in predictions.columns:
+                    predictions = predictions.drop("_prob_sum")
+
             # Step 6: Calculate edge
             if "odds_player" in predictions.columns:
                 predictions = predictions.with_columns([
