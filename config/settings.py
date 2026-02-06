@@ -144,6 +144,22 @@ RANKING_IDS = {
 
 
 # =============================================================================
+# DATA QUALITY
+# =============================================================================
+
+@dataclass
+class DataQualityConfig:
+    """Data quality thresholds."""
+    # Staleness check
+    stale_hours_warn: float = float(os.getenv("STALE_HOURS_WARN", "24.0"))
+    stale_hours_error: float = float(os.getenv("STALE_HOURS_ERROR", "48.0"))
+    
+    # Schema validation
+    min_rows_warn: int = 10
+    max_null_pct: float = 0.5
+
+
+# =============================================================================
 # SCRAPER CONFIGURATION
 # =============================================================================
 
@@ -167,3 +183,4 @@ MODEL = ModelConfig()
 BETTING = BettingConfig()
 API = APIConfig()
 SCRAPER = ScraperConfig()
+DATA_QUALITY = DataQualityConfig()

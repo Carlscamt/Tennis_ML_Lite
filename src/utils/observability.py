@@ -165,6 +165,18 @@ class Logger:
         CORRELATION_ID.set(correlation_id)
         return self.logger.bind(correlation_id=correlation_id)
     
+    def info(self, event: str, **kwargs):
+        """Standard info logging (alias for log_event)."""
+        return self.log_event(event, **kwargs)
+
+    def warning(self, event: str, **kwargs):
+        """Standard warning logging."""
+        return self.log_warning(event, **kwargs)
+
+    def error(self, event: str, exc_info=None, **kwargs):
+        """Standard error logging."""
+        return self.log_error(event, exc_info=exc_info, **kwargs)
+
     def log_event(self, event: str, **kwargs):
         """Log structured event with automatic context."""
         corr_id = CORRELATION_ID.get()

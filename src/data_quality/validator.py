@@ -218,10 +218,12 @@ class AnomalyDetector:
                 
         return anomalies
 
+from config.settings import DATA_QUALITY
+
 class StalenessDetector:
     """Detect stale data."""
-    def __init__(self, max_age_hours: int = 24):
-        self.max_age_hours = max_age_hours
+    def __init__(self, max_age_hours: int = None):
+        self.max_age_hours = max_age_hours if max_age_hours is not None else DATA_QUALITY.stale_hours_warn
     
     def detect_stale_data(self, df: pl.DataFrame, timestamp_col: str) -> Tuple[bool, Dict[str, Any]]:
         if timestamp_col not in df.columns:

@@ -356,10 +356,22 @@ class TennisPipeline:
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
             quality_rep = self.quality_monitor.check_incoming_data(upcoming, is_live=True)
             if not quality_rep['passed']:
-                 # Downgrade 'Data Stale' to warning, only raise on other errors
+                 # Check against configured error threshold (critical failure) vs warning
+                 stale_hours = 0.0
+                 for err in quality_rep['errors']:
+                     if "Data Stale" in err:
+                         try:
+                             stale_hours = float(err.split(': ')[1].replace('h', ''))
+                         except:
+                             pass
+                 
+                 from config.settings import DATA_QUALITY
+                 is_critical_stale = stale_hours > DATA_QUALITY.stale_hours_error
+                 
                  critical_errors = [e for e in quality_rep['errors'] if "Data Stale" not in e]
-                 if critical_errors:
-                     raise ValueError(f"Incoming Data Health Check Failed: {critical_errors}")
+                 
+                 if critical_errors or is_critical_stale:
+                     raise ValueError(f"Incoming Data Health Check Failed: {critical_errors + (['Critical Stale'] if is_critical_stale else [])}")
                  else:
                      logger.log_warning("incoming_data_quality_warning", errors=quality_rep['errors'])
             
@@ -409,34 +421,8 @@ class TennisPipeline:
             # Step 5: Predict via Model Server (for both perspectives)
             predictions = asyncio.run(self._predict_with_server(prediction_ready))
             
-            # Step 5b: Normalize Probabilities
-            # Ensure P(Player A) + P(Player B) = 1.0 per match
-            if "model_prob" in predictions.columns:
-                # Determine match identifier
-                group_col = "event_id" if "event_id" in predictions.columns else "_match_key_temp"
-                
-                if "event_id" not in predictions.columns:
-                     predictions = predictions.with_columns([
-                        pl.when(pl.col("player_name") < pl.col("opponent_name"))
-                        .then(pl.col("player_name") + "|" + pl.col("opponent_name"))
-                        .otherwise(pl.col("opponent_name") + "|" + pl.col("player_name"))
-                        .alias("_match_key_temp")
-                    ])
-                
-                # Calculate sum of probs per match
-                predictions = predictions.with_columns([
-                    pl.col("model_prob").sum().over(group_col).alias("_prob_sum")
-                ])
-                
-                # Normalize (avoid division by zero if something weird happens)
-                predictions = predictions.with_columns([
-                    (pl.col("model_prob") / pl.col("_prob_sum")).alias("model_prob")
-                ])
-                
-                if "_match_key_temp" in predictions.columns:
-                    predictions = predictions.drop("_match_key_temp")
-                if "_prob_sum" in predictions.columns:
-                    predictions = predictions.drop("_prob_sum")
+            # Step 5b: Normalize Probabilities (Extracted)
+            predictions = self._normalize_probabilities(predictions)
 
             # Step 6: Calculate edge
             if "odds_player" in predictions.columns:
@@ -519,12 +505,50 @@ class TennisPipeline:
             known = set(historical["player_id"].unique().to_list())
         return [pid for pid in ids if pid not in known]
 
-    def _scrape_unknown_players(self, player_ids: List[int]) -> None:
+    def _scrape_unknown_players(self, player_ids: List[int]):
+        """Trigger fast scraper for specific IDs."""
         if not player_ids: return
-        try:
-            scrape_players(player_ids=player_ids, max_pages=10, workers=2, smart_update=True)
-        except Exception as e:
-            logger.log_error("unknown_scrape_failed", error=str(e))
+        
+        from src.scraper.run_scraper import run_scraper_for_players
+        run_scraper_for_players(player_ids)
+        
+    def _normalize_probabilities(self, predictions: pl.DataFrame) -> pl.DataFrame:
+        """
+        Ensure P(Player A) + P(Player B) = 1.0 per match.
+        Handles both event_id and name-based matching.
+        """
+        if "model_prob" not in predictions.columns:
+            return predictions
+
+        # Determine match identifier
+        group_col = "event_id" if "event_id" in predictions.columns else "_match_key_temp"
+        
+        # Create temp match key if event_id missing
+        if "event_id" not in predictions.columns:
+             predictions = predictions.with_columns([
+                pl.when(pl.col("player_name") < pl.col("opponent_name"))
+                .then(pl.col("player_name") + "|" + pl.col("opponent_name"))
+                .otherwise(pl.col("opponent_name") + "|" + pl.col("player_name"))
+                .alias("_match_key_temp")
+            ])
+        
+        # Calculate sum of probs per match
+        predictions = predictions.with_columns([
+            pl.col("model_prob").sum().over(group_col).alias("_prob_sum")
+        ])
+        
+        # Normalize
+        # Add small epsilon to avoid division by zero if something weird happens
+        predictions = predictions.with_columns([
+            (pl.col("model_prob") / (pl.col("_prob_sum") + 1e-9)).alias("model_prob")
+        ])
+        
+        # Cleanup
+        cols_to_drop = [c for c in ["_match_key_temp", "_prob_sum"] if c in predictions.columns]
+        if cols_to_drop:
+            predictions = predictions.drop(cols_to_drop)
+            
+        return predictions
 
 def run_data_pipeline(raw_dir: Path, output_dir: Path):
     pipeline = TennisPipeline()
