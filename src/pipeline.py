@@ -417,7 +417,28 @@ class TennisPipeline:
                 (pl.col("odds_player") >= min_odds) &
                 (pl.col("odds_player") <= max_odds) &
                 (pl.col("edge") > 0.05)
-            ).sort("edge", descending=True)
+            )
+            
+            # Step 8: Deduplicate - keep only best bet per match
+            # Create a match key that's the same regardless of perspective
+            if "event_id" in recommended.columns:
+                # Use event_id as match identifier
+                recommended = recommended.sort("edge", descending=True)
+                recommended = recommended.unique(subset=["event_id"], keep="first")
+            else:
+                # Fallback: create sorted player pair as match key
+                recommended = recommended.with_columns([
+                    pl.when(pl.col("player_name") < pl.col("opponent_name"))
+                    .then(pl.col("player_name") + " vs " + pl.col("opponent_name"))
+                    .otherwise(pl.col("opponent_name") + " vs " + pl.col("player_name"))
+                    .alias("_match_key")
+                ])
+                recommended = recommended.sort("edge", descending=True)
+                recommended = recommended.unique(subset=["_match_key"], keep="first")
+                recommended = recommended.drop("_match_key")
+            
+            # Final sort by edge
+            recommended = recommended.sort("edge", descending=True)
             
             # Add timestamp
             final_df = recommended.with_columns([
