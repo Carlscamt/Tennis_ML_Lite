@@ -138,47 +138,54 @@ def cmd_predict(args):
 
 
 def _print_predictions_ascii(value_bets, days):
-    """Print predictions in clean ASCII format."""
+    """Print predictions grouped by tournament in bracket style."""
     
     print(f"\n{'':=^75}")
     print(f"VALUE BETS - Next {days} Days".center(75))
     print(f"{len(value_bets)} opportunities found".center(75))
     print(f"{'':=^75}\n")
     
-    # Group by date
-    current_date = None
-    
+    # Group by tournament
+    tournaments = {}
     for row in value_bets.iter_rows(named=True):
-        match_date = str(row.get('match_date', 'Unknown'))[:10]
+        tourney = row.get('tournament_name', 'Unknown')
+        if tourney not in tournaments:
+            tournaments[tourney] = []
+        tournaments[tourney].append(row)
+    
+    # Print each tournament as a mini bracket
+    for tourney, matches in tournaments.items():
+        # Tournament header
+        print(f"+{'-'*73}+")
+        print(f"| {tourney:<71} |")
+        print(f"+{'-'*73}+")
         
-        # Print date header if new date
-        if match_date != current_date:
-            current_date = match_date
-            print(f"--- {match_date} ---")
+        for row in matches:
+            player = row['player_name'][:18]
+            opponent = row['opponent_name'][:18]
+            prob = row.get('model_prob', 0) * 100
+            odds = row.get('odds_player', 0)
+            edge = row.get('edge', 0) * 100
+            match_date = str(row.get('match_date', ''))[:10]
+            
+            # Edge indicator
+            if edge >= 15:
+                edge_mark = "!!!"
+            elif edge >= 10:
+                edge_mark = "!! "
+            else:
+                edge_mark = "!  "
+            
+            # Bracket style match
+            print(f"|  [{edge_mark}] {player:<18} << BET                              |")
+            print(f"|        vs {opponent:<18}    {prob:3.0f}% @ {odds:.2f} (+{edge:.1f}%)  {match_date} |")
+            print(f"|{'':-^73}|")
         
-        player = row['player_name'][:20]
-        opponent = row['opponent_name'][:20]
-        prob = row.get('model_prob', 0) * 100
-        odds = row.get('odds_player', 0)
-        edge = row.get('edge', 0) * 100
-        tournament = row.get('tournament_name', 'Unknown')[:25]
-        
-        # Edge indicator
-        if edge >= 15:
-            edge_mark = "[!!!]"
-        elif edge >= 10:
-            edge_mark = "[!! ]"
-        else:
-            edge_mark = "[!  ]"
-        
-        print(f"  {edge_mark} {player:<20} vs {opponent:<20}")
-        print(f"        Prob: {prob:4.0f}% | Odds: {odds:5.2f} | Edge: +{edge:4.1f}% | {tournament}")
+        print(f"+{'='*73}+\n")
     
     # Footer
-    print(f"\n{'-'*75}")
     print(f" Legend: [!!!] Edge 15%+  [!! ] Edge 10%+  [!  ] Edge 5%+")
-    print(f" Filter: Edge > 5% | {days}-day window")
-    print(f"{'-'*75}\n")
+    print(f" << BET = Recommended pick\n")
 
 
 def cmd_audit(args):
