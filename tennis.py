@@ -103,9 +103,7 @@ def cmd_predict(args):
         print("No predictions available")
         return
     
-    # Display logic
-    print(f"\n=== TOP VALUE BETS (Limit: {args.limit}) ===\n")
-    
+    # Filter value bets
     value_bets = predictions.filter(
         (predictions["edge"] > 0.05) &
         (predictions["odds_player"] >= args.min_odds) &
@@ -118,12 +116,9 @@ def cmd_predict(args):
         print("No value bets found matching criteria.")
         return
     
-    print(f"Found {len(value_bets)} value bets:\n")
-
     # Output to file if requested
     if args.output:
         out_path = Path(args.output)
-        print(f"Saving predictions to {out_path}...")
         try:
             if out_path.suffix == '.csv':
                 value_bets.write_csv(out_path)
@@ -132,31 +127,58 @@ def cmd_predict(args):
             elif out_path.suffix == '.parquet':
                 value_bets.write_parquet(out_path)
             else:
-                print(f"WARN: Unknown format {out_path.suffix}, defaulting to CSV")
                 value_bets.write_csv(out_path)
-            print("Save successful.")
+            print(f"[OK] Saved to: {out_path}")
         except Exception as e:
             logger.log_error("save_failed", error=str(e))
-            print(f"Error saving file: {e}")
+            print(f"Error saving: {e}")
     
-    for i, row in enumerate(value_bets.iter_rows(named=True), 1):
-        player = row['player_name']
-        opponent = row['opponent_name']
+    # ASCII formatted output
+    _print_predictions_ascii(value_bets, args.days)
+
+
+def _print_predictions_ascii(value_bets, days):
+    """Print predictions in clean ASCII format."""
+    
+    print(f"\n{'':=^75}")
+    print(f"VALUE BETS - Next {days} Days".center(75))
+    print(f"{len(value_bets)} opportunities found".center(75))
+    print(f"{'':=^75}\n")
+    
+    # Group by date
+    current_date = None
+    
+    for row in value_bets.iter_rows(named=True):
+        match_date = str(row.get('match_date', 'Unknown'))[:10]
+        
+        # Print date header if new date
+        if match_date != current_date:
+            current_date = match_date
+            print(f"--- {match_date} ---")
+        
+        player = row['player_name'][:20]
+        opponent = row['opponent_name'][:20]
         prob = row.get('model_prob', 0) * 100
         odds = row.get('odds_player', 0)
         edge = row.get('edge', 0) * 100
-        tournament = row.get('tournament_name', 'Unknown')
-        match_date = row.get('match_date', 'Unknown')
-        model_ver = row.get('model_version', 'N/A')
-        mode = row.get('serving_mode', 'N/A')
+        tournament = row.get('tournament_name', 'Unknown')[:25]
         
-        print(f"#{i} >>> BET ON: {player}")
-        print(f"    vs {opponent}")
-        print(f"    Date: {match_date}")
-        print(f"    Win Prob: {prob:.1f}% | Odds: {odds:.2f} | Edge: +{edge:.1f}%")
-        print(f"    Tournament: {tournament}")
-        print(f"    [Model: {model_ver} | Mode: {mode}]")
-        print()
+        # Edge indicator
+        if edge >= 15:
+            edge_mark = "[!!!]"
+        elif edge >= 10:
+            edge_mark = "[!! ]"
+        else:
+            edge_mark = "[!  ]"
+        
+        print(f"  {edge_mark} {player:<20} vs {opponent:<20}")
+        print(f"        Prob: {prob:4.0f}% | Odds: {odds:5.2f} | Edge: +{edge:4.1f}% | {tournament}")
+    
+    # Footer
+    print(f"\n{'-'*75}")
+    print(f" Legend: [!!!] Edge 15%+  [!! ] Edge 10%+  [!  ] Edge 5%+")
+    print(f" Filter: Edge > 5% | {days}-day window")
+    print(f"{'-'*75}\n")
 
 
 def cmd_audit(args):
