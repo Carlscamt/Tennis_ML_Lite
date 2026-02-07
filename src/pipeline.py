@@ -627,6 +627,6 @@ def run_data_pipeline(raw_dir: Path, output_dir: Path):
     pipeline = TennisPipeline()
     pipeline.run_data_pipeline()
 
-def run_training_pipeline(data_path: Path, models_dir: Path, model_type: str = "xgboost"):
+def run_training_pipeline(data_path: Path, models_dir: Path):
     pipeline = TennisPipeline()
-    pipeline.run_training_pipeline(data_path, model_type=model_type)
+    pipeline.run_training_pipeline(data_path)

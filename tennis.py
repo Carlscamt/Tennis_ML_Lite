@@ -69,7 +69,7 @@ def cmd_train(args):
     """Train pipeline with observability."""
     from src.pipeline import TennisPipeline
     
-    logger.log_event('train_command_started', max_days=None, model_type=args.model_type)
+    logger.log_event('train_command_started')
     pipeline = TennisPipeline()
     
     # Run data pipeline
@@ -77,8 +77,8 @@ def cmd_train(args):
     data_result = pipeline.run_data_pipeline()
     
     # Run training
-    print(f"Step 2: Training model ({args.model_type})...")
-    pipeline.run_training_pipeline(Path(data_result['output_path']), model_type=args.model_type)
+    print("Step 2: Training model...")
+    pipeline.run_training_pipeline(Path(data_result['output_path']))
     
     print("=== TRAINING COMPLETE ===")
     print("Model registered globally as 'Experimental'. Use 'list-models' to view.")
@@ -88,7 +88,7 @@ def cmd_predict(args):
     """Predict with observability."""
     from src.pipeline import TennisPipeline
     
-    logger.log_event('predict_command_started', days=args.days, model_type=args.model_type)
+    logger.log_event('predict_command_started', days=args.days)
     
     pipeline = TennisPipeline()
     predictions = pipeline.predict_upcoming(
@@ -96,8 +96,7 @@ def cmd_predict(args):
         min_odds=args.min_odds,
         max_odds=args.max_odds,
         min_confidence=args.confidence,
-        scrape_unknown=not args.no_scrape,
-        model_type=args.model_type
+        scrape_unknown=not args.no_scrape
     )
     
     if len(predictions) == 0:
@@ -245,6 +244,64 @@ def cmd_batch_run(args):
     print(f"Triggering Batch Job (Fetch {args.days} days)...")
     status = run_batch_job(force=args.force, days=args.days)
     print(f"Batch Job Finished: {status}")
+
+
+def cmd_run_flow(args):
+    """Execute a Prefect flow."""
+    from src.flows import (
+        scrape_historical_flow,
+        scrape_upcoming_flow,
+        build_features_flow,
+        train_model_flow,
+        batch_predictions_flow,
+        daily_pipeline_flow,
+        full_retrain_flow,
+    )
+    
+    flows = {
+        "scrape-historical": lambda: scrape_historical_flow(
+            top_players=args.top,
+            pages=args.pages
+        ),
+        "scrape-upcoming": lambda: scrape_upcoming_flow(days=args.days),
+        "build-features": build_features_flow,
+        "train-model": train_model_flow,
+        "batch-predictions": lambda: batch_predictions_flow(
+            days=args.days,
+            min_edge=args.min_edge
+        ),
+        "daily-pipeline": lambda: daily_pipeline_flow(
+            scrape_days=args.days,
+            min_edge=args.min_edge,
+            skip_scrape=args.skip_scrape,
+            skip_features=args.skip_features
+        ),
+        "full-retrain": lambda: full_retrain_flow(
+            top_players=args.top,
+            pages=args.pages
+        ),
+    }
+    
+    if args.list:
+        print("\nAvailable flows:")
+        for name in flows.keys():
+            print(f"  - {name}")
+        return
+    
+    flow_func = flows.get(args.flow_name)
+    if not flow_func:
+        print(f"ERROR: Unknown flow '{args.flow_name}'")
+        print(f"Available: {', '.join(flows.keys())}")
+        return
+    
+    print(f"\nExecuting flow: {args.flow_name}")
+    print("=" * 50)
+    
+    result = flow_func()
+    
+    print("=" * 50)
+    print(f"Flow completed. Result: {result}")
+
 
 def cmd_show_predictions(args):
     """Instant serving command (Reads Cache)."""
@@ -432,7 +489,6 @@ def main():
     scrape.set_defaults(func=cmd_scrape)
     
     train = subparsers.add_parser("train")
-    train.add_argument("--model-type", choices=["xgboost", "stacking"], default="xgboost", help="Model architecture")
     train.set_defaults(func=cmd_train)
     
     predict = subparsers.add_parser("predict")
@@ -442,7 +498,6 @@ def main():
     predict.add_argument("--max-odds", type=float, default=3.0)
     predict.add_argument("--confidence", type=float, default=0.55)
     predict.add_argument("--no-scrape", action="store_true")
-    predict.add_argument("--model-type", choices=["xgboost", "stacking"], help="Force specific model type (bypass champion)")
     predict.add_argument("--output", help="Save predictions to file (supports .csv, .json, .parquet)")
     predict.set_defaults(func=cmd_predict)
     
@@ -486,6 +541,18 @@ def main():
     showdown.add_argument('--json', action='store_true', help='Also export JSON data')
     showdown.add_argument('--ascii', '-a', action='store_true', help='Print ASCII bracket to terminal')
     showdown.set_defaults(func=cmd_showdown)
+    
+    # Prefect Flow Commands
+    run_flow = subparsers.add_parser('run-flow', help='Execute a Prefect flow')
+    run_flow.add_argument('flow_name', nargs='?', help='Flow name (e.g., daily-pipeline)')
+    run_flow.add_argument('--list', '-l', action='store_true', help='List available flows')
+    run_flow.add_argument('--top', type=int, default=50, help='Top players for scraping')
+    run_flow.add_argument('--pages', type=int, default=10, help='Pages per player')
+    run_flow.add_argument('--days', type=int, default=7, help='Days for upcoming/predictions')
+    run_flow.add_argument('--min-edge', type=float, default=0.05, help='Minimum edge threshold')
+    run_flow.add_argument('--skip-scrape', action='store_true', help='Skip scraping step')
+    run_flow.add_argument('--skip-features', action='store_true', help='Skip feature building')
+    run_flow.set_defaults(func=cmd_run_flow)
     
     args = parser.parse_args()
     

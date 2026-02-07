@@ -384,3 +384,13 @@ class TaskQueue:
                 """, (datetime.now().isoformat(),))
             conn.commit()
             logger.info(f"Reset {result.rowcount} failed tasks")
+    
+    # Protocol aliases for TaskQueueProtocol compliance
+    def ack(self, task_id: str, result: Optional[Dict] = None) -> None:
+        """Acknowledge task completion (alias for mark_completed)."""
+        self.mark_completed(task_id, result)
+    
+    def nack(self, task_id: str, error: str) -> None:
+        """Negative acknowledge task failure (alias for mark_failed)."""
+        self.mark_failed(task_id, error)
+
