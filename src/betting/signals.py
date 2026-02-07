@@ -36,19 +36,30 @@ class ValueBetFinder:
         """
         # Calculate edge and EV
         df = predictions_df.with_columns([
-            # Implied probability from odds
+            # Raw implied probability (includes vig)
             (1 / pl.col("odds_player")).alias("implied_prob"),
+            (1 / pl.col("odds_opponent")).alias("implied_prob_opp"),
         ])
         
-        # Calculate Blended Probability
-        # blended = (weight * model) + ((1-weight) * implied)
+        # Calculate Overround & Fair Market Probability
+        df = df.with_columns([
+            (pl.col("implied_prob") + pl.col("implied_prob_opp")).alias("overround")
+        ])
+        
+        df = df.with_columns([
+            (pl.col("implied_prob") / pl.col("overround")).alias("fair_market_prob")
+        ])
+        
+        # Calculate Blended Probability (Model + Fair Market)
+        # We blend with FAIR market prob, not raw (which is inflated)
         df = df.with_columns([
             ((pl.col("model_prob") * self.blend_weight) + 
-             (pl.col("implied_prob") * (1 - self.blend_weight))).alias("blended_prob")
+             (pl.col("fair_market_prob") * (1 - self.blend_weight))).alias("blended_prob")
         ])
         
         df = df.with_columns([
-            # Edge = blended_prob - implied_prob
+            # Edge = blended_prob - implied_prob (Cost of bet)
+            # We must beat the bookie's price, so we compare Fair Blend vs Raw Price
             (pl.col("blended_prob") - pl.col("implied_prob")).alias("edge"),
             
             # Expected value per unit (using conservative blended prob)
