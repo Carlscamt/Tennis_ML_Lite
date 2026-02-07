@@ -49,6 +49,8 @@ except ImportError:
 import polars as pl
 
 from src.schema import SchemaValidator, merge_datasets
+from src.utils.response_archive import ResponseArchive
+from src.utils.task_queue import TaskQueue, TaskState
 
 logger = logging.getLogger(__name__)
 
@@ -223,8 +225,12 @@ class ResponseCache:
                 pass
 
 
-# Global cache instance
+# Global instances
 _response_cache = ResponseCache()
+_response_archive = ResponseArchive()
+
+# Archive config - set to True to enable raw response archiving
+ARCHIVE_ENABLED = True
 
 
 # =============================================================================
@@ -390,6 +396,12 @@ def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[
                 # Cache successful responses
                 if cache_ttl > 0:
                     _response_cache.set(endpoint, data)
+                # Archive raw response for future re-processing
+                if ARCHIVE_ENABLED:
+                    try:
+                        _response_archive.store(endpoint, data)
+                    except Exception as archive_err:
+                        logger.debug(f"Archive failed: {archive_err}")
                 return data
             elif response.status_code in [403, 429]:
                 # Exponential backoff: 10s, 20s, 40s

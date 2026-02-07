@@ -9,7 +9,7 @@ sys.path.insert(0, str(ROOT))
 
 import polars as pl
 from datetime import datetime
-from config import PROCESSED_DATA_DIR, MODELS_DIR
+from config import PROCESSED_DATA_DIR
 from src.model import Predictor, ModelRegistry
 
 def main():
@@ -28,9 +28,18 @@ def main():
     print(f"Matches with odds (2024+): {len(df):,}")
 
     # Load model and predict
-    registry = ModelRegistry(MODELS_DIR)
-    active = registry.get_active_model()
-    predictor = Predictor(Path(active["path"]))
+    registry = ModelRegistry()
+    try:
+        version, model_path = registry.get_production_model()
+    except RuntimeError:
+        # Fallback to Staging model if no Production model
+        result = registry.get_challenger_model()
+        if result is None:
+            raise RuntimeError("No Production or Staging model available for backtest")
+        version, model_path = result
+        print(f"Note: Using Staging model {version} (no Production model available)")
+    
+    predictor = Predictor(Path(model_path))
     df = predictor.predict_with_value(df, min_edge=0.0)
 
     # Add bins for odds and confidence
