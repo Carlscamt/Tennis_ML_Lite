@@ -62,6 +62,8 @@ class ModelExplainer:
         if isinstance(feature_row, pl.DataFrame):
             X = feature_row.to_pandas()
         elif isinstance(feature_row, np.ndarray):
+            if feature_row.ndim == 1:
+                feature_row = feature_row.reshape(1, -1)
             X = pd.DataFrame(feature_row, columns=self.feature_names)
         else:
             X = feature_row
