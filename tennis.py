@@ -69,7 +69,7 @@ def cmd_train(args):
     """Train pipeline with observability."""
     from src.pipeline import TennisPipeline
     
-    logger.log_event('train_command_started')
+    logger.log_event('train_command_started', max_days=None, model_type=args.model_type)
     pipeline = TennisPipeline()
     
     # Run data pipeline
@@ -77,8 +77,8 @@ def cmd_train(args):
     data_result = pipeline.run_data_pipeline()
     
     # Run training
-    print("Step 2: Training model...")
-    pipeline.run_training_pipeline(Path(data_result['output_path']))
+    print(f"Step 2: Training model ({args.model_type})...")
+    pipeline.run_training_pipeline(Path(data_result['output_path']), model_type=args.model_type)
     
     print("=== TRAINING COMPLETE ===")
     print("Model registered globally as 'Experimental'. Use 'list-models' to view.")
@@ -88,7 +88,7 @@ def cmd_predict(args):
     """Predict with observability."""
     from src.pipeline import TennisPipeline
     
-    logger.log_event('predict_command_started', days=args.days)
+    logger.log_event('predict_command_started', days=args.days, model_type=args.model_type)
     
     pipeline = TennisPipeline()
     predictions = pipeline.predict_upcoming(
@@ -96,7 +96,8 @@ def cmd_predict(args):
         min_odds=args.min_odds,
         max_odds=args.max_odds,
         min_confidence=args.confidence,
-        scrape_unknown=not args.no_scrape
+        scrape_unknown=not args.no_scrape,
+        model_type=args.model_type
     )
     
     if len(predictions) == 0:
@@ -431,6 +432,7 @@ def main():
     scrape.set_defaults(func=cmd_scrape)
     
     train = subparsers.add_parser("train")
+    train.add_argument("--model-type", choices=["xgboost", "stacking"], default="xgboost", help="Model architecture")
     train.set_defaults(func=cmd_train)
     
     predict = subparsers.add_parser("predict")
@@ -440,6 +442,7 @@ def main():
     predict.add_argument("--max-odds", type=float, default=3.0)
     predict.add_argument("--confidence", type=float, default=0.55)
     predict.add_argument("--no-scrape", action="store_true")
+    predict.add_argument("--model-type", choices=["xgboost", "stacking"], help="Force specific model type (bypass champion)")
     predict.add_argument("--output", help="Save predictions to file (supports .csv, .json, .parquet)")
     predict.set_defaults(func=cmd_predict)
     

@@ -193,9 +193,9 @@ class TennisPipeline:
             
             return {'output_path': str(output_path), 'count': len(df_materialized)}
 
-    def run_training_pipeline(self, data_path: Path) -> None:
+    def run_training_pipeline(self, data_path: Path, model_type: str = "xgboost") -> None:
         """Run training with observability, drift baseline fitting, and model registration."""
-        with self.observability_context('training_pipeline'):
+        with self.observability_context(f'training_pipeline_{model_type}'):
             df = pl.scan_parquet(data_path).drop_nulls(subset=["player_won"])
             train_df, test_df = create_train_test_split(df, MODEL.train_cutoff_date)
             assert_no_leakage(train_df, test_df)
@@ -219,42 +219,54 @@ class TennisPipeline:
             self.drift_detector.fit_reference(train_features)
             self.anomaly_detector.fit_reference(train_features)
             
-            # Train using XGBoost directly or via simple Trainer wrapper
-            # Using XGBoost directly to facilitate file saving for Registry
-            import xgboost as xgb
-            X_train = train_data.select(numeric_cols).to_numpy()
-            y_train = train_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
-            
-            X_test = test_data.select(numeric_cols).to_numpy()
-            y_test = test_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
-            
-            model = xgb.XGBClassifier(**MODEL.xgb_params)
-            model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
-            
+            # --- TRAIN MODEL ---
+            if model_type == "stacking":
+                from src.model.stacking import StackedTrainer
+                trainer = StackedTrainer()
+                trainer.train(train_data, numeric_cols, "player_won")
+                model = trainer.model 
+                
+                # Check metrics manually for Stacking
+                y_prob = trainer.predict_proba(test_data)
+                
+            else:
+                # Default XGBoost
+                import xgboost as xgb
+                X_train = train_data.select(numeric_cols).to_numpy()
+                y_train = train_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
+                
+                X_test = test_data.select(numeric_cols).to_numpy()
+                y_test = test_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
+                
+                model = xgb.XGBClassifier(**MODEL.xgb_params)
+                model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+                y_prob = model.predict_proba(X_test)[:, 1]
+
             # Calculate metrics
             from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score
-            y_prob = model.predict_proba(X_test)[:, 1]
             y_pred = (y_prob >= 0.5).astype(int)
+            y_true = test_data["player_won"].to_numpy().astype(int)
             
-            auc = roc_auc_score(y_test, y_prob)
-            acc = accuracy_score(y_test, y_pred)
-            prec = precision_score(y_test, y_pred, zero_division=0)
-            rec = recall_score(y_test, y_pred, zero_division=0)
+            auc = roc_auc_score(y_true, y_prob)
+            acc = accuracy_score(y_true, y_pred)
+            prec = precision_score(y_true, y_pred, zero_division=0)
+            rec = recall_score(y_true, y_pred, zero_division=0)
             
-            logger.log_event('training_metrics', auc=auc, accuracy=acc)
+            logger.log_event(f'training_metrics_{model_type}', auc=auc, accuracy=acc)
             
             # --- REGISTRY Integration ---
             import joblib
-            temp_path = "temp_model.joblib"
+            temp_path = f"temp_model_{model_type}.joblib"
             joblib.dump(model, temp_path)
             
             # Save metadata for registry to pick up
             meta = {
                 "feature_columns": numeric_cols,
-                "params": MODEL.xgb_params,
-                "calibrated": False, # Pipeline doesn't stick calibration on top yet
+                "params": MODEL.xgb_params if model_type == "xgboost" else {},
+                "calibrated": False, 
+                "model_type": model_type
             }
-            with open("temp_model.meta.json", "w") as f:
+            with open(f"temp_model_{model_type}.meta.json", "w") as f:
                 json.dump(meta, f)
             
             try:
@@ -265,23 +277,33 @@ class TennisPipeline:
                     recall=rec,
                     feature_schema_version="1.0",
                     training_dataset_size=len(train_data),
-                    notes=f"Trained on {len(train_data)} samples",
+                    notes=f"Type: {model_type} | Trained on {len(train_data)} samples",
                     stage="Experimental"
                 )
-                logger.log_event('model_registered', version=version)
+                logger.log_event('model_registered', version=version, type=model_type)
                 
-                # Auto-promote to Staging if passing threshold?
                 if auc > 0.65:
                     self.registry.transition_stage(version, "Staging")
+                
+                # Save local reference for direct loading
+                if model_type == "stacking":
+                     special_path = self.models_dir / "stacked_model.joblib"
+                     joblib.dump(model, special_path)
+                     with open(self.models_dir / "stacked_model.meta.json", "w") as f:
+                         json.dump(meta, f)
+                elif model_type == "xgboost":
+                     special_path = self.models_dir / "xgboost_model.joblib"
+                     joblib.dump(model, special_path)
+                     with open(self.models_dir / "xgboost_model.meta.json", "w") as f:
+                         json.dump(meta, f)
                     
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
-                if os.path.exists("temp_model.meta.json"):
-                    os.remove("temp_model.meta.json")
+                if os.path.exists(f"temp_model_{model_type}.meta.json"):
+                    os.remove(f"temp_model_{model_type}.meta.json")
             
             # --- RELOAD SERVER ---
-            # Ensure the model server picks up the new champion immediately
             if self.model_server:
                 self.model_server.reload_models()
 
@@ -336,21 +358,65 @@ class TennisPipeline:
             pl.lit(result['serving_mode']).alias("serving_mode")
         ])
 
+    def _predict_direct(self, df: pl.DataFrame, model_type: str) -> pl.DataFrame:
+        """Directly load a specific model type for A/B testing."""
+        import joblib
+        
+        path = self.models_dir / f"{model_type}_model.joblib"
+        meta_path = self.models_dir / f"{model_type}_model.meta.json"
+        
+        if not path.exists():
+            raise FileNotFoundError(f"No model found for type '{model_type}'. Run 'train --model-type {model_type}' first.")
+        
+        model = joblib.load(path)
+        with open(meta_path, 'r') as f:
+            meta = json.load(f)
+            
+        feature_cols = meta["feature_columns"]
+        
+        # Prepare Features
+        # Add missing as null
+        for col in feature_cols:
+             if col not in df.columns:
+                 df = df.with_columns(pl.lit(None).alias(col))
+        
+        X = df.select(feature_cols).to_numpy()
+        # Handle nan if needed
+        import numpy as np
+        X = np.nan_to_num(X, nan=-999) 
+        
+        try:
+            probas = model.predict_proba(X)[:, 1]
+        except:
+            if hasattr(model, "predict_proba"): 
+                 probas = model.predict_proba(X)[:, 1]
+            else:
+                 raise ValueError(f"Unknown model object type: {type(model)}")
+                 
+        return df.with_columns([
+            pl.Series("model_prediction", (probas >= 0.5).astype(int)),
+            pl.Series("model_prob", probas),
+            pl.lit("local_ab_test").alias("model_version"),
+            pl.lit(model_type).alias("model_type")
+        ])
+
     def predict_upcoming(
         self,
         days: int = 7,
         min_odds: float = 1.5,
         max_odds: float = 3.0,
         min_confidence: float = 0.55,
-        scrape_unknown: bool = True
+        scrape_unknown: bool = True,
+        model_type: Optional[str] = None 
     ) -> pl.DataFrame:
         """Get predictions with observability, data quality, and advanced serving."""
         import asyncio
         
-        with self.observability_context('predict_upcoming'):
+        with self.observability_context(f'predict_upcoming_{model_type or "default"}'):
             # Step 1: Get upcoming
             upcoming = self._get_upcoming_matches(days)
             if len(upcoming) == 0:
+                print("No upcoming matches found.") 
                 return pl.DataFrame()
             
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
@@ -418,8 +484,14 @@ class TennisPipeline:
             # --- QUALITY GATE 4: DRIFT ---
             drift_rep = self.drift_detector.detect_drift(prediction_ready)
             
-            # Step 5: Predict via Model Server (for both perspectives)
-            predictions = asyncio.run(self._predict_with_server(prediction_ready))
+            # Step 5: PREDICT
+            if model_type:
+                logger.log_event("predicting_with_specific_model", type=model_type)
+                predictions = self._predict_direct(prediction_ready, model_type)
+            else:
+                # Default Server Route
+                predictions = asyncio.run(self._predict_with_server(prediction_ready))
+                predictions = predictions.with_columns(pl.lit("champion").alias("model_type"))
             
             # Step 5b: Normalize Probabilities (Extracted)
             predictions = self._normalize_probabilities(predictions)
@@ -555,6 +627,6 @@ def run_data_pipeline(raw_dir: Path, output_dir: Path):
     pipeline = TennisPipeline()
     pipeline.run_data_pipeline()
 
-def run_training_pipeline(data_path: Path, models_dir: Path):
+def run_training_pipeline(data_path: Path, models_dir: Path, model_type: str = "xgboost"):
     pipeline = TennisPipeline()
-    pipeline.run_training_pipeline(data_path)
+    pipeline.run_training_pipeline(data_path, model_type=model_type)
