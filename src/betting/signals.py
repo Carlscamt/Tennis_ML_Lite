@@ -20,6 +20,7 @@ class ValueBetFinder:
     min_odds: float = 1.20
     max_odds: float = 5.00
     max_bets_per_day: int = 10
+    blend_weight: float = 0.5  # 0.5 = 50% Model, 50% Market (Implied)
     
     def find_value_bets(self, predictions_df: pl.DataFrame) -> pl.DataFrame:
         """
@@ -37,14 +38,23 @@ class ValueBetFinder:
         df = predictions_df.with_columns([
             # Implied probability from odds
             (1 / pl.col("odds_player")).alias("implied_prob"),
+        ])
+        
+        # Calculate Blended Probability
+        # blended = (weight * model) + ((1-weight) * implied)
+        df = df.with_columns([
+            ((pl.col("model_prob") * self.blend_weight) + 
+             (pl.col("implied_prob") * (1 - self.blend_weight))).alias("blended_prob")
+        ])
+        
+        df = df.with_columns([
+            # Edge = blended_prob - implied_prob
+            (pl.col("blended_prob") - pl.col("implied_prob")).alias("edge"),
             
-            # Edge = model_prob - implied_prob
-            (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
-            
-            # Expected value per unit
+            # Expected value per unit (using conservative blended prob)
             (
-                pl.col("model_prob") * (pl.col("odds_player") - 1) -
-                (1 - pl.col("model_prob"))
+                pl.col("blended_prob") * (pl.col("odds_player") - 1) -
+                (1 - pl.col("blended_prob"))
             ).alias("expected_value"),
         ])
         
