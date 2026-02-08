@@ -51,6 +51,17 @@ import polars as pl
 from src.schema import SchemaValidator, merge_datasets
 from src.utils.response_archive import ResponseArchive
 from src.utils.task_queue import TaskQueue, TaskState
+from src.scraper.rate_limiter import (
+    ExponentialBackoff,
+    SlidingWindowRateLimiter,
+    AdaptiveRateLimiter,
+    EnhancedCircuitBreaker,
+    parse_retry_after,
+)
+from src.scraper.schema_monitor import (
+    validate_response,
+    get_health_metrics,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +118,13 @@ RANKING_IDS = {
 # Rate limiting - conservative to avoid bans
 MIN_DELAY = 1.5  # Increased from 0.3 to avoid rate limiting
 MAX_DELAY = 3.0  # Increased from 0.8 for safety margin
+
+# Global rate limiter instances
+_backoff = ExponentialBackoff(base_delay=2.0, max_delay=300.0, jitter_factor=0.3)
+_rate_limiter = SlidingWindowRateLimiter(window_seconds=60, max_requests=40, min_delay=1.5)
+_adaptive_limiter = AdaptiveRateLimiter(base_delay=1.5, min_delay=0.5, max_delay=10.0)
+_circuit_breaker = EnhancedCircuitBreaker(failure_threshold=3, success_threshold=2)
+_health_metrics = get_health_metrics()
 
 # Data paths
 DATA_DIR = ROOT / "data"
@@ -356,9 +374,16 @@ def fetch_json_cached(endpoint: str) -> Optional[str]:
     return json.dumps(result) if result else None
 
 
-def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[Dict]:
+def fetch_json(endpoint: str, retries: int = 3, cache_ttl: int = 0) -> Optional[Dict]:
     """
-    Fetch JSON from SofaScore API with retries, caching, and exponential backoff.
+    Fetch JSON from SofaScore API with advanced rate limiting and backoff.
+    
+    Features:
+    - Exponential backoff with jitter
+    - Sliding window rate limiting
+    - Retry-After header parsing
+    - Schema validation
+    - Health metrics tracking
     
     Args:
         endpoint: API endpoint to fetch
@@ -366,6 +391,11 @@ def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[
         cache_ttl: Cache TTL in seconds (0 = no cache, use ResponseCache.TTL_* constants)
     """
     global _request_count
+    
+    # Check circuit breaker first
+    if _circuit_breaker.is_open(endpoint):
+        logger.warning(f"Circuit breaker open for {endpoint}, skipping request")
+        return None
     
     # Check cache first
     if cache_ttl > 0:
@@ -379,40 +409,91 @@ def fetch_json(endpoint: str, retries: int = 2, cache_ttl: int = 0) -> Optional[
     
     for attempt in range(retries + 1):
         try:
-            delay = random.uniform(MIN_DELAY, MAX_DELAY)
-            time.sleep(delay)
+            # Apply sliding window rate limit
+            rate_delay = _rate_limiter.acquire(endpoint)
+            if rate_delay > 0:
+                logger.debug(f"Rate limiter delay: {rate_delay:.2f}s for {endpoint}")
+                time.sleep(rate_delay)
             
-            # Add explicit timeout for request
+            # Apply adaptive delay
+            adaptive_delay = _adaptive_limiter.get_delay(endpoint)
+            jittered_delay = random.uniform(adaptive_delay * 0.8, adaptive_delay * 1.2)
+            time.sleep(jittered_delay)
+            
+            # Make request
             if HAS_TLS_CLIENT:
                 response = session.get(url, timeout_seconds=15)
             else:
-                response = session.get(url)  # Timeout configured in client
+                response = session.get(url)
+            
+            _rate_limiter.record_request(endpoint)
             
             with _count_lock:
                 _request_count += 1
             
             if response.status_code == 200:
                 data = response.json()
+                
+                # Validate response schema
+                schema_errors = validate_response(endpoint, data)
+                if schema_errors:
+                    logger.warning(f"Schema validation errors for {endpoint}: {schema_errors}")
+                    _health_metrics.record_request(endpoint, success=False, error_type="schema_failure")
+                else:
+                    _health_metrics.record_request(endpoint, success=True)
+                
+                # Record success for rate limiting
+                _adaptive_limiter.record_success(endpoint)
+                _circuit_breaker.record_success(endpoint)
+                
                 # Cache successful responses
                 if cache_ttl > 0:
                     _response_cache.set(endpoint, data)
+                
                 # Archive raw response for future re-processing
                 if ARCHIVE_ENABLED:
                     try:
                         _response_archive.store(endpoint, data)
                     except Exception as archive_err:
                         logger.debug(f"Archive failed: {archive_err}")
+                
                 return data
-            elif response.status_code in [403, 429]:
-                # Exponential backoff: 10s, 20s, 40s
-                wait = 10 * (2 ** attempt)
-                logger.warning(f"Rate limited ({response.status_code}), backing off {wait}s")
+                
+            elif response.status_code in [403, 429, 503]:
+                # Parse Retry-After header if present
+                retry_after = None
+                if hasattr(response, 'headers'):
+                    retry_after = parse_retry_after(response.headers.get('Retry-After'))
+                
+                # Calculate backoff with jitter
+                wait = _backoff.get_delay(attempt, retry_after=retry_after)
+                
+                logger.warning(
+                    f"Rate limited ({response.status_code}) for {endpoint}, "
+                    f"backing off {wait:.1f}s (attempt {attempt + 1}/{retries + 1})"
+                )
+                
+                # Record rate limit for adaptive limiting
+                _adaptive_limiter.record_rate_limit(endpoint, retry_after=retry_after)
+                _circuit_breaker.record_failure(endpoint, response.status_code)
+                _health_metrics.record_request(endpoint, success=False, error_type="rate_limit")
+                
                 time.sleep(wait)
+                
             elif response.status_code == 404:
+                _health_metrics.record_request(endpoint, success=True)  # 404 is expected
                 return None
+            else:
+                logger.warning(f"Unexpected status {response.status_code} for {endpoint}")
+                _health_metrics.record_request(endpoint, success=False, error_type="network_error")
+                
         except Exception as e:
+            logger.error(f"Request error for {endpoint}: {e}")
+            _health_metrics.record_request(endpoint, success=False, error_type="network_error")
+            
             if attempt < retries:
-                time.sleep(2 ** attempt)  # Exponential backoff on errors too
+                wait = _backoff.get_delay(attempt)
+                time.sleep(wait)
     
     return None
 
