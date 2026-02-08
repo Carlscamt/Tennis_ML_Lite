@@ -3,8 +3,8 @@ Value bet identification and signal generation.
 """
 import polars as pl
 import numpy as np
-from typing import Optional, List
-from dataclasses import dataclass
+from typing import Optional, List, Dict
+from dataclasses import dataclass, field
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,27 +15,42 @@ class ValueBetFinder:
     """
     Identifies value betting opportunities with uncertainty filtering.
     
-    Filters out bets that have high reported edge but low confidence
-    (near decision boundary), which are more likely noise artifacts.
+    Features:
+    - Segment-specific min_edge thresholds (slam, atp1000, challenger, longshot)
+    - Uncertainty buffer: edge > min_edge + k * uncertainty_std
+    - Entropy and margin filters for noisy predictions
     """
     
-    min_edge: float = 0.05        # 5% minimum edge
-    min_confidence: float = 0.55  # Minimum model probability
+    # Base thresholds
+    min_edge: float = 0.05            # Base minimum edge
+    min_confidence: float = 0.55      # Minimum model probability
     min_odds: float = 1.20
     max_odds: float = 5.00
     max_bets_per_day: int = 10
-    blend_weight: float = 0.5  # 0.5 = 50% Model, 50% Market (Implied)
+    blend_weight: float = 0.5         # Model vs market blend
+    
+    # Segment-specific thresholds
+    min_edge_slam: float = 0.04       # Grand Slams (efficient markets)
+    min_edge_atp_1000: float = 0.05   # ATP 1000
+    min_edge_challenger: float = 0.07 # Challengers (noisy data)
+    min_edge_longshot: float = 0.08   # Odds > threshold
+    longshot_odds_threshold: float = 3.0
     
     # Uncertainty thresholds
-    min_margin: float = 0.10      # Reject if |p - 0.5| < 0.10
-    max_entropy: float = 0.65     # Reject if entropy > 0.65
+    min_margin: float = 0.10          # Reject if |p - 0.5| < margin
+    max_entropy: float = 0.65         # Reject if entropy > threshold
     use_uncertainty_filter: bool = True
+    
+    # Uncertainty buffer
+    use_uncertainty_buffer: bool = True
+    uncertainty_multiplier: float = 1.0  # k in: edge > min_edge + k * uncertainty_std
     
     def find_value_bets(self, predictions_df: pl.DataFrame) -> pl.DataFrame:
         """
         Filter predictions to value bets only.
         
         Expects columns: model_prob, odds_player, odds_opponent
+        Optionally: tournament_tier, uncertainty_std
         
         Args:
             predictions_df: DataFrame with predictions and odds
@@ -79,10 +94,13 @@ class ValueBetFinder:
         # Add uncertainty signals
         df = self._add_uncertainty_signals(df)
         
-        # Build filter conditions
+        # Calculate effective min_edge per row (segment + uncertainty buffer)
+        df = self._add_effective_threshold(df)
+        
+        # Build filter conditions using effective threshold
         filter_conditions = (
             (pl.col("model_prob") >= self.min_confidence) &
-            (pl.col("edge") >= self.min_edge) &
+            (pl.col("edge") >= pl.col("effective_min_edge")) &
             (pl.col("odds_player") >= self.min_odds) &
             (pl.col("odds_player") <= self.max_odds)
         )
@@ -97,13 +115,19 @@ class ValueBetFinder:
         # Filter to value bets
         value_bets = df.filter(filter_conditions)
         
-        # Log rejection stats if uncertainty filter is on
+        # Log rejection stats
+        passed_basic = df.filter(
+            (pl.col("model_prob") >= self.min_confidence) &
+            (pl.col("odds_player") >= self.min_odds) &
+            (pl.col("odds_player") <= self.max_odds)
+        )
+        rejected_by_edge = len(passed_basic.filter(pl.col("edge") < pl.col("effective_min_edge")))
+        if rejected_by_edge > 0:
+            logger.debug(f"Edge threshold rejected {rejected_by_edge} matches")
+        
         if self.use_uncertainty_filter:
-            rejected_by_uncertainty = len(df.filter(
-                (pl.col("model_prob") >= self.min_confidence) &
-                (pl.col("edge") >= self.min_edge) &
-                (pl.col("odds_player") >= self.min_odds) &
-                (pl.col("odds_player") <= self.max_odds) &
+            rejected_by_uncertainty = len(passed_basic.filter(
+                (pl.col("edge") >= pl.col("effective_min_edge")) &
                 ((pl.col("margin") < self.min_margin) | (pl.col("entropy") > self.max_entropy))
             ))
             if rejected_by_uncertainty > 0:
@@ -119,6 +143,53 @@ class ValueBetFinder:
         logger.info(f"Found {len(value_bets)} value bets from {len(predictions_df)} matches")
         
         return value_bets
+    
+    def _add_effective_threshold(self, df: pl.DataFrame) -> pl.DataFrame:
+        """
+        Add effective min_edge column based on segment and uncertainty.
+        
+        Effective threshold = base_segment_threshold + k * uncertainty_std
+        """
+        # Determine base threshold by segment
+        # If tournament_tier exists, use it; otherwise use odds-based classification
+        if "tournament_tier" in df.columns:
+            df = df.with_columns([
+                pl.when(pl.col("tournament_tier") == "slam")
+                    .then(pl.lit(self.min_edge_slam))
+                .when(pl.col("tournament_tier") == "atp_1000")
+                    .then(pl.lit(self.min_edge_atp_1000))
+                .when(pl.col("tournament_tier") == "challenger")
+                    .then(pl.lit(self.min_edge_challenger))
+                .otherwise(pl.lit(self.min_edge))
+                .alias("base_segment_edge")
+            ])
+        else:
+            # Use base min_edge for all
+            df = df.with_columns([
+                pl.lit(self.min_edge).alias("base_segment_edge")
+            ])
+        
+        # Apply longshot threshold override (odds > threshold)
+        df = df.with_columns([
+            pl.when(pl.col("odds_player") > self.longshot_odds_threshold)
+                .then(pl.max_horizontal("base_segment_edge", pl.lit(self.min_edge_longshot)))
+                .otherwise(pl.col("base_segment_edge"))
+                .alias("segment_edge")
+        ])
+        
+        # Add uncertainty buffer: effective = segment + k * uncertainty_std
+        if self.use_uncertainty_buffer and "uncertainty_std" in df.columns:
+            df = df.with_columns([
+                (pl.col("segment_edge") + self.uncertainty_multiplier * pl.col("uncertainty_std"))
+                    .alias("effective_min_edge")
+            ])
+        else:
+            # No uncertainty column or buffer disabled
+            df = df.with_columns([
+                pl.col("segment_edge").alias("effective_min_edge")
+            ])
+        
+        return df
     
     def _add_uncertainty_signals(self, df: pl.DataFrame) -> pl.DataFrame:
         """Add margin, entropy, and confidence columns."""

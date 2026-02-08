@@ -121,8 +121,49 @@ class BettingSettings(BaseSettings):
     min_odds: float = Field(default=1.3, ge=1.01, description="Minimum odds")
     max_odds: float = Field(default=5.0, ge=1.5, description="Maximum odds")
     
-    # Edge threshold
-    min_edge: float = Field(default=0.05, ge=0.0, le=0.5, description="Minimum edge")
+    # Base edge thresholds
+    min_edge: float = Field(default=0.05, ge=0.0, le=0.5, description="Base minimum edge")
+    min_confidence: float = Field(default=0.55, ge=0.5, le=1.0, description="Minimum model probability")
+    
+    # Segment-specific edge thresholds
+    min_edge_slam: float = Field(
+        default=0.04, ge=0.0, le=0.3,
+        description="Min edge for Grand Slams (more efficient markets)"
+    )
+    min_edge_atp_1000: float = Field(
+        default=0.05, ge=0.0, le=0.3,
+        description="Min edge for ATP 1000 events"
+    )
+    min_edge_challenger: float = Field(
+        default=0.07, ge=0.0, le=0.5,
+        description="Min edge for Challengers (noisier data)"
+    )
+    min_edge_longshot: float = Field(
+        default=0.08, ge=0.0, le=0.5,
+        description="Min edge for odds > 3.0 (high variance)"
+    )
+    longshot_odds_threshold: float = Field(
+        default=3.0, ge=2.0, le=10.0,
+        description="Odds threshold for longshot classification"
+    )
+    
+    # Uncertainty buffer
+    use_uncertainty_buffer: bool = Field(
+        default=True,
+        description="Apply uncertainty buffer to edge threshold"
+    )
+    uncertainty_multiplier: float = Field(
+        default=1.0, ge=0.0, le=3.0,
+        description="k in: edge > min_edge + k * uncertainty_std"
+    )
+    min_margin: float = Field(
+        default=0.10, ge=0.0, le=0.5,
+        description="Reject if |p - 0.5| < margin (near coin-flip)"
+    )
+    max_entropy: float = Field(
+        default=0.65, ge=0.0, le=1.0,
+        description="Reject if entropy > threshold (too uncertain)"
+    )
 
 
 class FeatureSettings(BaseSettings):
