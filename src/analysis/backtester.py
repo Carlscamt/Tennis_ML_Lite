@@ -371,3 +371,64 @@ class EnhancedBacktester:
             print("-" * 50)
             for row in result.monthly_stats.iter_rows(named=True):
                 print(f"{row['month']:<10} | {row['bets']:>5} | {row['win_rate']:>5.1f}% | ${row['profit']:>+8.2f} | {row['roi_pct']:>+7.1f}%")
+    
+    def compare_book_strategies(
+        self,
+        predictions_df: pl.DataFrame,
+        book_columns: Optional[List[str]] = None
+    ) -> pl.DataFrame:
+        """
+        Compare ROI across different book selection strategies.
+        
+        Runs backtest with:
+        - Single book (first available)
+        - Average across books
+        - Best available (max)
+        
+        Args:
+            predictions_df: DataFrame with predictions
+            book_columns: List of bookmaker odds columns
+            
+        Returns:
+            DataFrame comparing strategies
+        """
+        results = []
+        
+        strategies = [
+            ("single", "average"),  # (selection, what to use from df)
+            ("average", "average"),
+            ("best", "best")
+        ]
+        
+        for name, selection in strategies:
+            config = BacktestConfig(
+                book_selection=selection,
+                kelly_fraction=self.config.kelly_fraction,
+                min_edge=self.config.min_edge,
+                latency_minutes=self.config.latency_minutes,
+                initial_bankroll=self.config.initial_bankroll
+            )
+            
+            bt = EnhancedBacktester(config)
+            result = bt.run(predictions_df)
+            
+            results.append({
+                "strategy": name,
+                "total_bets": result.total_bets,
+                "win_rate": result.win_rate,
+                "roi_pct": result.roi_pct,
+                "max_drawdown": result.max_drawdown,
+                "final_bankroll": result.final_bankroll
+            })
+        
+        comparison = pl.DataFrame(results)
+        
+        # Calculate ROI lift vs single book
+        if len(comparison) > 0:
+            single_roi = comparison.filter(pl.col("strategy") == "single")["roi_pct"][0]
+            comparison = comparison.with_columns([
+                (pl.col("roi_pct") - single_roi).alias("roi_lift")
+            ])
+        
+        return comparison
+

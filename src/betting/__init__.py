@@ -6,6 +6,7 @@ from src.betting.signals import ValueBetFinder
 from src.betting.tracker import BettingTracker
 from src.betting.ledger import BankrollLedger
 from src.betting.risk import RiskAnalyzer
+from src.betting.bookmakers import BookmakerSelector, BookmakerConfig
 
 __all__ = [
     "BankrollManager",
@@ -13,4 +14,7 @@ __all__ = [
     "BettingTracker",
     "BankrollLedger",
     "RiskAnalyzer",
+    "BookmakerSelector",
+    "BookmakerConfig",
 ]
+
