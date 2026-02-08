@@ -65,9 +65,18 @@ value_bet = edge >= min_edge
 ### Kelly Staking
 
 ```python
-kelly_fraction = 0.25  # Quarter Kelly
-stake_pct = kelly * kelly_fraction
-stake_pct = min(stake_pct, max_stake_pct)  # Cap at 5%
+kelly_fraction = 0.25  # Quarter Kelly (conservative)
+max_bet_fraction = 0.01  # Max 1% per bet
+max_daily_staked_fraction = 0.10  # Max 10% staked per day
+max_bets_per_day = 10
+```
+
+**Formula:**
+```python
+full_kelly = (b * p - q) / b  # where b = odds - 1
+stake = full_kelly * kelly_fraction
+stake = min(stake, max_bet_fraction)  # Per-bet cap
+stake = min(stake, remaining_daily)   # Daily cap
 ```
 
 ---

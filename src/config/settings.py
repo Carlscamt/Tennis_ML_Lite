@@ -86,6 +86,45 @@ class ObservabilitySettings(BaseSettings):
     metrics_port: int = Field(default=8000, ge=1024, le=65535)
 
 
+class BettingSettings(BaseSettings):
+    """Bankroll and stake sizing settings."""
+    
+    model_config = SettingsConfigDict(env_prefix="BETTING_")
+    
+    # Kelly sizing
+    kelly_fraction: float = Field(
+        default=0.25, ge=0.0, le=1.0,
+        description="Fractional Kelly (0.25 = quarter Kelly)"
+    )
+    
+    # Per-bet caps
+    max_bet_fraction: float = Field(
+        default=0.01, ge=0.001, le=0.10,
+        description="Max stake as fraction of bankroll (1%)"
+    )
+    min_bet_fraction: float = Field(
+        default=0.005, ge=0.001, le=0.05,
+        description="Min stake as fraction of bankroll (0.5%)"
+    )
+    
+    # Daily caps
+    max_daily_staked_fraction: float = Field(
+        default=0.10, ge=0.01, le=0.50,
+        description="Max total staked per day as fraction of bankroll (10%)"
+    )
+    max_bets_per_day: int = Field(
+        default=10, ge=1, le=50,
+        description="Maximum number of bets per day"
+    )
+    
+    # Odds filters
+    min_odds: float = Field(default=1.3, ge=1.01, description="Minimum odds")
+    max_odds: float = Field(default=5.0, ge=1.5, description="Maximum odds")
+    
+    # Edge threshold
+    min_edge: float = Field(default=0.05, ge=0.0, le=0.5, description="Minimum edge")
+
+
 class FeatureSettings(BaseSettings):
     """Feature engineering settings."""
     
@@ -114,6 +153,7 @@ class Settings(BaseSettings):
         
         settings.scraper.delay_min
         settings.model.min_edge
+        settings.betting.kelly_fraction
         settings.observability.log_level
     """
     
@@ -125,6 +165,7 @@ class Settings(BaseSettings):
     
     scraper: ScraperSettings = Field(default_factory=ScraperSettings)
     model: ModelSettings = Field(default_factory=ModelSettings)
+    betting: BettingSettings = Field(default_factory=BettingSettings)
     observability: ObservabilitySettings = Field(default_factory=ObservabilitySettings)
     features: FeatureSettings = Field(default_factory=FeatureSettings)
     
@@ -132,3 +173,4 @@ class Settings(BaseSettings):
     data_dir: Path = Field(default=Path("data"))
     models_dir: Path = Field(default=Path("models"))
     results_dir: Path = Field(default=Path("results"))
+

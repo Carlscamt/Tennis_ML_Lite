@@ -3,7 +3,8 @@ Bankroll management with Kelly criterion stake sizing.
 """
 import polars as pl
 from typing import Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import date
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,23 +14,46 @@ logger = logging.getLogger(__name__)
 class BankrollManager:
     """
     Bankroll management with Kelly criterion stake sizing.
-    Uses fractional Kelly (1/4 by default) for safety.
+    
+    Uses fractional Kelly (1/4 by default) for safety with:
+    - Per-bet cap (max 1% of bankroll)
+    - Per-day cap (max 10% of bankroll total staked)
     """
     
     initial_bankroll: float = 1000.0
-    kelly_fraction: float = 0.25  # 1/4 Kelly
-    max_stake_pct: float = 0.03   # Max 3% per bet
-    min_stake_pct: float = 0.005  # Min 0.5% per bet
+    kelly_fraction: float = 0.25     # 1/4 Kelly (conservative)
+    max_stake_pct: float = 0.01      # Max 1% per bet
+    min_stake_pct: float = 0.005     # Min 0.5% per bet
+    max_daily_staked_pct: float = 0.10  # Max 10% staked per day
+    max_bets_per_day: int = 10
     min_odds: float = 1.20
     max_odds: float = 5.00
+    
+    # Daily tracking
+    _daily_staked: float = field(default=0.0, init=False, repr=False)
+    _daily_bets: int = field(default=0, init=False, repr=False)
+    _current_date: Optional[date] = field(default=None, init=False, repr=False)
     
     def __post_init__(self):
         self.current_bankroll = self.initial_bankroll
         self.bet_history = []
+        self._reset_daily()
+    
+    def _reset_daily(self):
+        """Reset daily tracking."""
+        self._daily_staked = 0.0
+        self._daily_bets = 0
+        self._current_date = date.today()
+    
+    def _check_daily_reset(self):
+        """Reset daily counters if new day."""
+        today = date.today()
+        if self._current_date != today:
+            self._reset_daily()
     
     def kelly_stake(self, model_prob: float, odds: float) -> float:
         """
-        Calculate optimal stake using Kelly criterion.
+        Calculate optimal stake using Kelly criterion with caps.
         
         Kelly formula: f* = (bp - q) / b
         where:
@@ -42,8 +66,16 @@ class BankrollManager:
             odds: Decimal odds
             
         Returns:
-            Optimal stake as fraction of bankroll
+            Optimal stake as fraction of bankroll (0 if limits exceeded)
         """
+        # Check and reset daily counters
+        self._check_daily_reset()
+        
+        # Check daily bet count limit
+        if self._daily_bets >= self.max_bets_per_day:
+            logger.debug(f"Daily bet limit reached ({self.max_bets_per_day})")
+            return 0.0
+        
         # Basic validation
         if odds < self.min_odds or odds > self.max_odds:
             return 0.0
@@ -61,13 +93,22 @@ class BankrollManager:
         # Fractional Kelly for safety
         stake = full_kelly * self.kelly_fraction
         
-        # Apply limits
+        # Apply per-bet cap
         stake = max(0, stake)  # No negative stakes
-        stake = min(stake, self.max_stake_pct)  # Cap at max
+        stake = min(stake, self.max_stake_pct)  # Cap at max per bet
         
         # Minimum threshold
         if stake < self.min_stake_pct:
             return 0.0
+        
+        # Check daily staked limit
+        remaining_daily = self.max_daily_staked_pct - self._daily_staked
+        if remaining_daily <= 0:
+            logger.debug(f"Daily stake limit reached ({self.max_daily_staked_pct:.0%})")
+            return 0.0
+        
+        # Cap stake to remaining daily allowance
+        stake = min(stake, remaining_daily)
         
         return stake
     
