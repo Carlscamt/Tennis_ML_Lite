@@ -3,18 +3,20 @@
 Advanced Model Serving (Canary, Shadow, Fallback).
 """
 import asyncio
+import json
+import os
 import random
 import time
-import os
-import json
+from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Any
+
 import numpy as np
-from dataclasses import dataclass, asdict
 import xgboost as xgb
-import structlog
-from src.utils.observability import get_metrics, Logger, CORRELATION_ID
+
 from src.model.registry import ModelRegistry
+from src.utils.observability import CORRELATION_ID, Logger, get_metrics
+
 
 logger = Logger(__name__)
 metrics = get_metrics()
@@ -28,10 +30,10 @@ class ServingMode(str, Enum):
 @dataclass
 class PredictionResult:
     """Structured prediction result."""
-    predictions: Union[np.ndarray, List]
+    predictions: np.ndarray | list
     model_version: str
     latency_ms: float
-    confidence_scores: Optional[Union[np.ndarray, List]] = None
+    confidence_scores: np.ndarray | list | None = None
 
 @dataclass
 class ServingConfig:
@@ -39,7 +41,7 @@ class ServingConfig:
     canary_percentage: float = 0.0  # 0-1.0 (e.g., 0.1 = 10% to challenger)
     shadow_mode: bool = False      # Run challenger in parallel
     enable_fallback: bool = True   # Use challenger if champion fails
-    
+
     @classmethod
     def from_env(cls) -> 'ServingConfig':
         """Load config from environment variables or config file (Env overrides file)."""
@@ -48,44 +50,44 @@ class ServingConfig:
             "shadow_mode": False,
             "enable_fallback": True
         }
-        
+
         # 1. Load from file
         config_path = "config/serving.json"
         if os.path.exists(config_path):
             try:
-                with open(config_path, 'r') as f:
+                with open(config_path) as f:
                     file_config = json.load(f)
                     defaults.update(file_config)
             except Exception as e:
                 logger.log_error("failed_load_serving_config", error=str(e))
-        
+
         # 2. Override with Env Vars
         canary = os.getenv('CANARY_PERCENTAGE')
         if canary is not None:
              defaults["canary_percentage"] = float(canary)
-             
+
         shadow = os.getenv('SHADOW_MODE')
         if shadow is not None:
              defaults["shadow_mode"] = shadow.lower() == 'true'
-             
+
         fallback = os.getenv('ENABLE_FALLBACK')
         if fallback is not None:
              defaults["enable_fallback"] = fallback.lower() == 'true'
-        
+
         return cls(**defaults)
 
 class ModelServer:
     """
     Production model serving with canary, shadow, and fallback support.
     """
-    
+
     def __init__(self, registry: ModelRegistry, config: ServingConfig):
         self.registry = registry
         self.config = config
         self.champion_model = None
         self.challenger_model = None
         self._load_models()
-    
+
     def _load_model_artifact(self, path: str) -> Any:
         """Load model from path (supporting joblib or native xgb)."""
         import joblib
@@ -136,7 +138,7 @@ class ModelServer:
                         # On last try, maybe try to load ANY model?
                         # For now, let's just not crash the constructor.
                         pass
-                
+
                 # Load challenger (optional)
                 challenger = self.registry.get_challenger_model()
                 if challenger:
@@ -146,7 +148,7 @@ class ModelServer:
                     logger.log_event('challenger_model_loaded', version=challenger_version)
                 else:
                     logger.log_event('no_challenger_model')
-                
+
                 # Desperation Mode: If no champion and no challenger, try LATEST (Experimental)
                 if not self.champion_model and not self.challenger_model:
                      latest = self.registry.get_latest_model()
@@ -155,7 +157,7 @@ class ModelServer:
                          self.champion_model = self._load_model_artifact(p)
                          self.champion_model.version = v
                          logger.log_warning('SERVING_IN_EXPERIMENTAL_MODE', version=v, reason="No Production/Staging models found")
-                
+
                 success = True
                 break # Success
             except Exception as e:
@@ -180,12 +182,12 @@ class ModelServer:
         # if hasattr(self.registry, 'reload'):
         #     self.registry.reload()
         self._load_models()
-    
+
     async def predict_batch(
-        self, 
-        features: List[Dict[str, Any]], 
-        request_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self,
+        features: list[dict[str, Any]],
+        request_id: str | None = None
+    ) -> dict[str, Any]:
         """
         Make prediction using production serving patterns (Async Wrapper).
         
@@ -193,20 +195,19 @@ class ModelServer:
         concurrent request handling in web server context (FastAPI).
         For CLI, it effectively runs sequentially unless we use ThreadPoolExecutor.
         """
-        import asyncio
         loop = asyncio.get_running_loop()
-        
+
         # Run blocking prediction in executor
         return await loop.run_in_executor(None, self._predict_sync, features, request_id)
 
-    def _predict_sync(self, features: List[Dict[str, Any]], request_id: Optional[str]) -> Dict[str, Any]:
+    def _predict_sync(self, features: list[dict[str, Any]], request_id: str | None) -> dict[str, Any]:
         """Synchronous implementation of serving logic."""
         if not features:
             return {'predictions': []}
-            
+
         corr_id = CORRELATION_ID.get() or request_id or str(random.randint(100000, 999999))
         CORRELATION_ID.set(corr_id)
-        
+
         # Prepare Features (Dict List -> Numpy)
         feature_keys = list(features[0].keys())
         feature_array = np.array([[row[k] for k in feature_keys] for row in features])
@@ -214,7 +215,7 @@ class ModelServer:
         # Auto-fallback to challenger if no champion (e.g. freshly trained model in Staging)
         active_model = self.champion_model
         serving_mode = ServingMode.CHAMPION_ONLY
-        
+
         if not active_model:
             if self.challenger_model:
                  logger.log_event('using_challenger_as_primary', version=self.challenger_model.version)
@@ -222,28 +223,28 @@ class ModelServer:
                  serving_mode = ServingMode.FALLBACK
             else:
                 raise RuntimeError("Model Server not initialized with Production model")
-        
+
         start_time = time.time()
         corr_id = str(random.randint(100000, 999999))
         champion_result = None
         challenger_result = None
-        
+
         # Convert None to np.nan ONCE before any predictions
         # XGBoost can handle nan but not Python None
         import pandas as pd
         feature_array = pd.DataFrame(feature_array).fillna(np.nan).values.astype(np.float64)
-        
+
         try:
             # 1. Predict with Active Model (Champion or Fallback)
             model_start = time.time()
             primary_result = self._predict_single(active_model, feature_array)
-            
+
             # If we are already in FALLBACK mode, we are done
             if serving_mode == ServingMode.FALLBACK:
                 total_latency = (time.time() - start_time) * 1000
                 metrics.prediction_latency.observe(total_latency / 1000)
                 metrics.successful_predictions.inc()
-                
+
                 return {
                     'predictions': primary_result.predictions.tolist(),
                     'confidence_scores': primary_result.confidence_scores.tolist() if primary_result.confidence_scores is not None else None,
@@ -256,28 +257,28 @@ class ModelServer:
             # 2. Advanced Serving (Canary/Shadow) - Only if using Champion
             # (If we are here, active_model IS champion_model)
             champion_result = primary_result
-            
+
             if self.challenger_model:
                 challenger_start = time.time()
-                
+
                 if self.config.shadow_mode:
                     # Shadow: Run and log, discard result
                     serving_mode = ServingMode.SHADOW
                     challenger_result = self._predict_single(self.challenger_model, feature_array)
                     self._log_shadow_diff(champion_result, challenger_result, corr_id)
-                    challenger_result = None 
-                
+                    challenger_result = None
+
                 elif self.config.canary_percentage > 0:
                     if random.random() < self.config.canary_percentage:
                         serving_mode = ServingMode.CANARY
                         challenger_result = self._predict_single(self.challenger_model, feature_array)
                         primary_result = challenger_result # Swap result
-            
+
             total_latency = (time.time() - start_time) * 1000
-            
+
             metrics.prediction_latency.observe(total_latency / 1000)
             metrics.successful_predictions.inc()
-            
+
             logger.log_event(
                 'prediction_serving_completed',
                 mode=serving_mode,
@@ -285,7 +286,7 @@ class ModelServer:
                 rows=len(features),
                 latency_ms=round(total_latency, 2)
             )
-            
+
             return {
                 'predictions': primary_result.predictions.tolist(),
                 'confidence_scores': primary_result.confidence_scores.tolist() if primary_result.confidence_scores is not None else None,
@@ -294,11 +295,11 @@ class ModelServer:
                 'latency_ms': total_latency,
                 'request_id': corr_id
             }
-            
+
         except Exception as e:
             logger.log_error('prediction_failed', error=str(e), exc_info=True)
             metrics.failed_predictions.labels(error_type=type(e).__name__).inc()
-            
+
             if self.config.enable_fallback and self.challenger_model:
                 logger.log_event('attempting_fallback')
                 fallback_res = self._predict_single(self.challenger_model, feature_array)
@@ -328,7 +329,7 @@ class ModelServer:
         # Compare minimal stats
         match_rate = np.mean(champion.predictions == challenger.predictions)
         logger.log_event(
-            'shadow_comparison', 
+            'shadow_comparison',
             correlation_id=corr_id,
             match_rate=match_rate
         )

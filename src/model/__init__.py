@@ -1,17 +1,18 @@
 # Model module
-from .trainer import ModelTrainer
+from .batch_runner import BatchResult, BatchRunner, BatchStatus, get_batch_runner
+from .calibrator import ProbabilityCalibrator
 from .predictor import Predictor
 from .registry import ModelRegistry
-from .calibrator import ProbabilityCalibrator
-from .batch_runner import BatchRunner, BatchStatus, BatchResult, get_batch_runner
+from .trainer import ModelTrainer
+
 
 __all__ = [
-    "ModelTrainer",
-    "Predictor",
-    "ModelRegistry",
-    "ProbabilityCalibrator",
+    "BatchResult",
     "BatchRunner",
     "BatchStatus",
-    "BatchResult",
+    "ModelRegistry",
+    "ModelTrainer",
+    "Predictor",
+    "ProbabilityCalibrator",
     "get_batch_runner",
 ]

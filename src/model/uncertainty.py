@@ -4,10 +4,12 @@ Uncertainty quantification for betting decisions.
 Provides signals to filter out noisy predictions where the model
 has high reported edge but low actual confidence.
 """
-import numpy as np
-from dataclasses import dataclass
-from typing import Dict, Any, Optional
 import logging
+from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +20,8 @@ class UncertaintySignals:
     margin: float           # |p - 0.5| — distance from decision boundary
     entropy: float          # Binary entropy: -p*log(p) - (1-p)*log(1-p)
     confidence: float       # max(p, 1-p)
-    
-    def to_dict(self) -> Dict[str, float]:
+
+    def to_dict(self) -> dict[str, float]:
         return {
             "margin": round(self.margin, 4),
             "entropy": round(self.entropy, 4),
@@ -90,7 +92,7 @@ def calculate_uncertainty_signals(prob: float) -> UncertaintySignals:
     )
 
 
-def calculate_uncertainty_signals_batch(probs: np.ndarray) -> Dict[str, np.ndarray]:
+def calculate_uncertainty_signals_batch(probs: np.ndarray) -> dict[str, np.ndarray]:
     """
     Calculate uncertainty signals for a batch of probabilities.
     
@@ -102,14 +104,14 @@ def calculate_uncertainty_signals_batch(probs: np.ndarray) -> Dict[str, np.ndarr
     """
     probs = np.asarray(probs).flatten()
     eps = 1e-10
-    
+
     margin = np.abs(probs - 0.5)
-    
+
     p_clipped = np.clip(probs, eps, 1 - eps)
     entropy = -p_clipped * np.log2(p_clipped) - (1 - p_clipped) * np.log2(1 - p_clipped)
-    
+
     confidence = np.maximum(probs, 1 - probs)
-    
+
     return {
         "margin": margin,
         "entropy": entropy,
@@ -133,7 +135,7 @@ class UncertaintyFilter:
     min_margin: float = 0.10       # Reject if |p - 0.5| < 0.10 (p in [0.4, 0.6])
     max_entropy: float = 0.65      # Reject if entropy > 0.65
     min_confidence: float = 0.55   # Reject if max(p, 1-p) < 0.55
-    
+
     def passes_filter(self, prob: float) -> bool:
         """
         Check if a probability passes the uncertainty filter.
@@ -147,17 +149,17 @@ class UncertaintyFilter:
         margin = calculate_margin(prob)
         entropy = calculate_entropy(prob)
         confidence = calculate_confidence(prob)
-        
+
         if margin < self.min_margin:
             return False
         if entropy > self.max_entropy:
             return False
         if confidence < self.min_confidence:
             return False
-        
+
         return True
-    
-    def passes_filter_with_reason(self, prob: float) -> tuple[bool, Optional[str]]:
+
+    def passes_filter_with_reason(self, prob: float) -> tuple[bool, str | None]:
         """
         Check filter and return rejection reason if any.
         
@@ -167,16 +169,16 @@ class UncertaintyFilter:
         margin = calculate_margin(prob)
         entropy = calculate_entropy(prob)
         confidence = calculate_confidence(prob)
-        
+
         if margin < self.min_margin:
             return False, f"margin_too_low ({margin:.3f} < {self.min_margin})"
         if entropy > self.max_entropy:
             return False, f"entropy_too_high ({entropy:.3f} > {self.max_entropy})"
         if confidence < self.min_confidence:
             return False, f"confidence_too_low ({confidence:.3f} < {self.min_confidence})"
-        
+
         return True, None
-    
+
     def filter_batch(self, probs: np.ndarray) -> np.ndarray:
         """
         Return boolean mask for probabilities that pass the filter.
@@ -188,16 +190,16 @@ class UncertaintyFilter:
             Boolean array where True = passes filter
         """
         signals = calculate_uncertainty_signals_batch(probs)
-        
+
         mask = (
             (signals["margin"] >= self.min_margin) &
             (signals["entropy"] <= self.max_entropy) &
             (signals["confidence"] >= self.min_confidence)
         )
-        
+
         return mask
-    
-    def get_rejection_stats(self, probs: np.ndarray) -> Dict[str, Any]:
+
+    def get_rejection_stats(self, probs: np.ndarray) -> dict[str, Any]:
         """
         Get statistics on how many predictions would be rejected.
         
@@ -209,14 +211,14 @@ class UncertaintyFilter:
         """
         probs = np.asarray(probs).flatten()
         signals = calculate_uncertainty_signals_batch(probs)
-        
+
         margin_rejects = np.sum(signals["margin"] < self.min_margin)
         entropy_rejects = np.sum(signals["entropy"] > self.max_entropy)
         confidence_rejects = np.sum(signals["confidence"] < self.min_confidence)
-        
+
         # Total rejections (any condition)
         total_rejects = np.sum(~self.filter_batch(probs))
-        
+
         return {
             "total_samples": len(probs),
             "total_rejections": int(total_rejects),

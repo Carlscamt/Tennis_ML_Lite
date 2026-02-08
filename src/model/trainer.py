@@ -1,15 +1,16 @@
 """
 Model training pipeline with XGBoost and probability calibration.
 """
+import json
+import logging
 import os
 import random
-import polars as pl
-import numpy as np
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
-import logging
-import json
+from pathlib import Path
+
+import numpy as np
+import polars as pl
+
 
 try:
     import xgboost as xgb
@@ -26,19 +27,19 @@ logger = logging.getLogger(__name__)
 class TrainingResult:
     """Result of model training."""
     model: object
-    feature_importance: Dict[str, float]
-    metrics: Dict[str, float]
-    feature_columns: List[str]
+    feature_importance: dict[str, float]
+    metrics: dict[str, float]
+    feature_columns: list[str]
 
 
 class ModelTrainer:
     """
     XGBoost trainer with probability calibration for betting.
     """
-    
+
     def __init__(
         self,
-        params: Optional[Dict] = None,
+        params: dict | None = None,
         calibrate: bool = True,
         n_splits: int = 5
     ):
@@ -50,7 +51,7 @@ class ModelTrainer:
         """
         if not XGB_AVAILABLE:
             raise ImportError("xgboost and scikit-learn required")
-        
+
         self.params = params or {
             "objective": "binary:logistic",
             "eval_metric": "logloss",
@@ -66,7 +67,7 @@ class ModelTrainer:
         self.model = None
         self.calibrated_model = None
         self.feature_columns = []
-    
+
     @staticmethod
     def _pin_random_seeds(seed: int = 42):
         """
@@ -79,13 +80,13 @@ class ModelTrainer:
         np.random.seed(seed)
         os.environ['PYTHONHASHSEED'] = str(seed)
         logger.debug(f"Random seeds pinned to {seed}")
-    
+
     def train(
         self,
         train_df: pl.DataFrame,
-        feature_cols: List[str],
+        feature_cols: list[str],
         target_col: str = "player_won",
-        eval_df: Optional[pl.DataFrame] = None
+        eval_df: pl.DataFrame | None = None
     ) -> TrainingResult:
         """
         Train the model.
@@ -102,26 +103,26 @@ class ModelTrainer:
         # Pin all random seeds for reproducibility
         seed = self.params.get("random_state", 42)
         self._pin_random_seeds(seed)
-        
+
         self.feature_columns = feature_cols
-        
+
         # Convert to numpy
         X_train = train_df.select(feature_cols).to_numpy()
         y_train = train_df[target_col].to_numpy().astype(int)
-        
+
         # Handle missing values
         X_train = np.nan_to_num(X_train, nan=-999)
-        
+
         logger.info(f"Training on {len(X_train):,} samples with {len(feature_cols)} features")
-        
+
         # Build XGBoost model
         self.model = xgb.XGBClassifier(**self.params)
-        
+
         if eval_df is not None:
             X_eval = eval_df.select(feature_cols).to_numpy()
             X_eval = np.nan_to_num(X_eval, nan=-999)
             y_eval = eval_df[target_col].to_numpy().astype(int)
-            
+
             self.model.fit(
                 X_train, y_train,
                 eval_set=[(X_eval, y_eval)],
@@ -129,7 +130,7 @@ class ModelTrainer:
             )
         else:
             self.model.fit(X_train, y_train, verbose=False)
-        
+
         # Probability calibration
         if self.calibrate:
             logger.info("Calibrating probabilities...")
@@ -137,53 +138,53 @@ class ModelTrainer:
             calib_params = self.params.copy()
             calib_params.pop("early_stopping_rounds", None)  # Remove if exists
             base_model = xgb.XGBClassifier(**calib_params)
-            
+
             self.calibrated_model = CalibratedClassifierCV(
                 base_model,
                 method="isotonic",
                 cv=self.n_splits
             )
             self.calibrated_model.fit(X_train, y_train)
-        
+
         # Feature importance
         importance = dict(zip(
             feature_cols,
             self.model.feature_importances_.tolist()
         ))
         importance = dict(sorted(importance.items(), key=lambda x: x[1], reverse=True))
-        
+
         # Metrics
         metrics = self._evaluate(X_train, y_train, "train")
-        
+
         if eval_df is not None:
             eval_metrics = self._evaluate(X_eval, y_eval, "eval")
             metrics.update(eval_metrics)
-        
+
         logger.info(f"Training complete. Log-loss: {metrics.get('train_logloss', 0):.4f}")
-        
+
         return TrainingResult(
             model=self.calibrated_model if self.calibrate else self.model,
             feature_importance=importance,
             metrics=metrics,
             feature_columns=feature_cols
         )
-    
-    def _evaluate(self, X: np.ndarray, y: np.ndarray, prefix: str) -> Dict[str, float]:
+
+    def _evaluate(self, X: np.ndarray, y: np.ndarray, prefix: str) -> dict[str, float]:
         """Calculate evaluation metrics."""
-        from sklearn.metrics import log_loss, brier_score_loss, roc_auc_score, accuracy_score
-        
+        from sklearn.metrics import accuracy_score, brier_score_loss, log_loss, roc_auc_score
+
         model = self.calibrated_model if self.calibrate and self.calibrated_model else self.model
-        
+
         proba = model.predict_proba(X)[:, 1]
         preds = (proba >= 0.5).astype(int)
-        
+
         return {
             f"{prefix}_logloss": log_loss(y, proba),
             f"{prefix}_brier": brier_score_loss(y, proba),
             f"{prefix}_auc": roc_auc_score(y, proba),
             f"{prefix}_accuracy": accuracy_score(y, preds),
         }
-    
+
     def predict_proba(self, df: pl.DataFrame) -> np.ndarray:
         """
         Get calibrated probability predictions.
@@ -196,34 +197,34 @@ class ModelTrainer:
         """
         if self.model is None:
             raise ValueError("Model not trained")
-        
+
         # Add missing feature columns as null
         existing_cols = set(df.columns)
         missing_cols = [c for c in self.feature_columns if c not in existing_cols]
-        
+
         if missing_cols:
             logger.warning(f"Adding {len(missing_cols)} missing features as null")
             for col in missing_cols:
                 df = df.with_columns(pl.lit(None).cast(pl.Float64).alias(col))
-        
+
         X = df.select(self.feature_columns).to_numpy()
         X = np.nan_to_num(X, nan=-999)
-        
+
         model = self.calibrated_model if self.calibrate and self.calibrated_model else self.model
         return model.predict_proba(X)[:, 1]
-    
+
     def save(self, path: Path) -> None:
         """Save model and metadata."""
         import joblib
-        
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Save the actual model (calibrated or not)
         model_path = path.with_suffix(".joblib")
         model_to_save = self.calibrated_model if self.calibrate and self.calibrated_model else self.model
         joblib.dump(model_to_save, model_path)
-        
+
         # Save metadata
         meta = {
             "feature_columns": self.feature_columns,
@@ -233,28 +234,28 @@ class ModelTrainer:
         meta_path = path.with_suffix(".meta.json")
         with open(meta_path, "w") as f:
             json.dump(meta, f, indent=2)
-        
+
         logger.info(f"Model saved to {path}")
-    
+
     def load(self, path: Path) -> None:
         """Load model and metadata."""
         import joblib
-        
+
         path = Path(path)
-        
+
         # Determine actual model path
         if path.exists() and path.is_file():
             model_path = path
         else:
             model_path = path.with_suffix(".joblib")
-        
+
         # Load the model
         loaded_model = joblib.load(model_path)
-        
+
         # Set both model and calibrated_model
         self.calibrated_model = loaded_model
         self.model = loaded_model  # For predict_proba
-        
+
         # Load metadata
         # Try different metadata naming conventions
         meta_candidates = [
@@ -262,21 +263,21 @@ class ModelTrainer:
             path.parent / (path.name + ".meta.json"),
             path.parent / "model.meta.json"
         ]
-        
+
         meta_path = None
         for p in meta_candidates:
             if p.exists():
                 meta_path = p
                 break
-        
+
         if meta_path:
-            with open(meta_path, "r") as f:
+            with open(meta_path) as f:
                 meta = json.load(f)
-            
+
             self.feature_columns = meta["feature_columns"]
             self.params = meta["params"]
             self.calibrate = meta.get("calibrated", False)
         else:
             logger.warning(f"No metadata found for {path}, using defaults")
-        
+
         logger.info(f"Model loaded from {path}")

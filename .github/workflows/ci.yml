@@ -35,11 +35,15 @@ jobs:
     
     - name: Lint with ruff
       run: |
-        ruff check src/ tests/ || true
+        ruff check src/ tests/
     
-    - name: Format check with black
+    - name: Format check with ruff
       run: |
-        black --check src/ tests/ || true
+        ruff format --check src/ tests/
+    
+    - name: Type check with mypy
+      run: |
+        mypy src/ --ignore-missing-imports
     
     - name: Run unit tests
       run: |

@@ -1,16 +1,16 @@
 """
 Prediction service for live and batch predictions.
 """
-import polars as pl
-import numpy as np
-from pathlib import Path
-from typing import Optional, Dict, List, Any
-from datetime import datetime
-from .calibrator import ProbabilityCalibrator, passes_ev_gate, MIN_PROB_THRESHOLD
 import time
-import os
-import structlog
-from src.utils.observability import get_metrics, Logger, CORRELATION_ID
+from datetime import datetime
+from pathlib import Path
+
+import polars as pl
+
+from src.utils.observability import CORRELATION_ID, Logger, get_metrics
+
+from .calibrator import MIN_PROB_THRESHOLD, ProbabilityCalibrator, passes_ev_gate
+
 
 logger = Logger(__name__)
 metrics = get_metrics()
@@ -20,8 +20,8 @@ class Predictor:
     Prediction service for tennis match outcomes.
     Handles both live predictions and batch processing.
     """
-    
-    def __init__(self, model_path: Optional[Path] = None, fallback_model_path: Optional[Path] = None):
+
+    def __init__(self, model_path: Path | None = None, fallback_model_path: Path | None = None):
         """
         Args:
             model_path: Path to saved model
@@ -33,14 +33,14 @@ class Predictor:
         self.fallback_trainer = None
         self.version = "unknown"
         self.calibrator = None  # Post-hoc isotonic calibrator
-        
+
         if model_path:
             self._load_primary_model(model_path)
             self._load_calibrator(model_path)
-            
+
         if fallback_model_path:
             self._load_fallback_model(fallback_model_path)
-            
+
     def _load_primary_model(self, path: Path) -> None:
         """Load primary model with observability."""
         from .trainer import ModelTrainer
@@ -62,7 +62,7 @@ class Predictor:
             logger.log_event('fallback_model_loaded', model_path=str(path))
         except Exception as e:
             logger.log_error('fallback_model_load_failed', model_path=str(path), error=str(e))
-    
+
     def _load_calibrator(self, model_path: Path) -> None:
         """Load post-hoc calibrator if available."""
         calibrator_path = model_path.parent / "calibrator.joblib"
@@ -93,26 +93,26 @@ class Predictor:
         """
         start_time = time.time()
         correlation_id = CORRELATION_ID.get() or "unknown"
-        
+
         logger.log_event(
-            'prediction_batch_started', 
+            'prediction_batch_started',
             num_rows=len(df),
             correlation_id=correlation_id
         )
-        
+
         if self.trainer is None:
             logger.log_error('prediction_failed_no_model')
             raise ValueError("No model loaded")
-        
+
         try:
             # Primary Inference
             df_result = self._inference(self.trainer, df)
-            
+
             latency = time.time() - start_time
             metrics.prediction_latency.observe(latency)
             metrics.successful_predictions.inc(len(df))
             metrics.last_prediction_timestamp.set_to_current_time()
-            
+
             logger.log_event(
                 'prediction_batch_completed',
                 duration_seconds=latency,
@@ -121,24 +121,24 @@ class Predictor:
                 version=self.version
             )
             return df_result
-            
+
         except Exception as e:
             logger.log_error(
-                'primary_inference_failed', 
-                error=str(e), 
+                'primary_inference_failed',
+                error=str(e),
                 exc_info=True
             )
-            
+
             # Fallback
             if self.fallback_trainer:
                 try:
                     logger.log_event('attempting_fallback_inference')
                     df_result = self._inference(self.fallback_trainer, df)
-                    
+
                     latency = time.time() - start_time
                     metrics.prediction_latency.observe(latency)
                     metrics.successful_predictions.inc(len(df))
-                    
+
                     logger.log_event(
                         'fallback_inference_success',
                         duration_seconds=latency,
@@ -149,21 +149,21 @@ class Predictor:
                     logger.log_error('fallback_inference_failed', error=str(fb_e))
                     metrics.failed_predictions.labels(error_type='both_failed').inc()
                     raise
-            
+
             metrics.failed_predictions.labels(error_type=type(e).__name__).inc()
             raise
 
     def _inference(self, trainer, df: pl.DataFrame) -> pl.DataFrame:
         """Internal inference logic with optional calibration."""
         raw_probas = trainer.predict_proba(df)
-        
+
         # Apply post-hoc calibration if available
         if self.calibrator and self.calibrator.is_fitted:
             probas = self.calibrator.calibrate(raw_probas)
             logger.log_event('calibration_applied', num_samples=len(probas))
         else:
             probas = raw_probas
-        
+
         return df.with_columns([
             pl.Series("model_prob", probas),
             pl.Series("raw_prob", raw_probas),  # Keep raw for comparison
@@ -180,14 +180,14 @@ class Predictor:
         """
         # Call observable predict
         df = self.predict(df)
-        
+
         # Calculate edge if odds available
         if "odds_player" in df.columns:
             df = df.with_columns([
                 (1 / pl.col("odds_player")).alias("implied_prob"),
                 (pl.col("model_prob") - (1 / pl.col("odds_player"))).alias("edge"),
             ])
-            
+
             # Basic edge check
             df = df.with_columns([
                 (
@@ -195,7 +195,7 @@ class Predictor:
                     (1 - pl.col("model_prob"))
                 ).alias("expected_value"),
             ])
-            
+
             # Apply probability-based EV gating
             # Higher required edge for lower probability bets
             df = df.with_columns([
@@ -207,17 +207,17 @@ class Predictor:
                 .alias("passes_ev_gate"),
                 (pl.col("model_prob") >= MIN_PROB_THRESHOLD).alias("above_min_prob"),
             ])
-            
+
             # is_value_bet now combines edge threshold + EV gate
             df = df.with_columns([
                 (
-                    (pl.col("edge") >= min_edge) & 
+                    (pl.col("edge") >= min_edge) &
                     pl.col("passes_ev_gate")
                 ).alias("is_value_bet"),
             ])
-        
+
         return df
-    
+
     def get_todays_predictions(
         self,
         matches_df: pl.DataFrame,
@@ -226,27 +226,27 @@ class Predictor:
     ) -> pl.DataFrame:
         """Get today's betting recommendations."""
         predictions = self.predict_with_value(matches_df, min_edge)
-        
+
         value_bets = predictions.filter(
             (pl.col("model_prob") >= min_confidence) &
             (pl.col("is_value_bet") == True)
         )
-        
+
         value_bets = value_bets.sort("edge", descending=True)
-        
+
         # Add timestamp
         value_bets = value_bets.with_columns([
             pl.lit(datetime.now().isoformat()).alias("prediction_timestamp")
         ])
-        
+
         logger.log_event(
-            'value_bets_identified', 
-            count=len(value_bets), 
+            'value_bets_identified',
+            count=len(value_bets),
             total_matches=len(predictions)
         )
-        
+
         return value_bets
-    
+
     def save_predictions(
         self,
         predictions: pl.DataFrame,
@@ -256,12 +256,12 @@ class Predictor:
         """Save predictions to parquet file."""
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{prefix}_{timestamp}.parquet"
         path = output_dir / filename
-        
+
         predictions.write_parquet(path)
         logger.log_event('predictions_saved', path=str(path))
-        
+
         return path
