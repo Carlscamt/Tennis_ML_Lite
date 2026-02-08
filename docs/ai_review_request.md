@@ -7,7 +7,7 @@ This document provides a comprehensive overview of the Tennis ML Lite applicatio
 
 ## Executive Summary
 
-Tennis ML Lite is a CLI-based machine learning pipeline for predicting ATP tennis match outcomes and identifying value betting opportunities. The system scrapes match data, engineers features, trains XGBoost models, and uses probabilistic approaches to determine when to bet.
+Tennis ML Lite is a CLI-based machine learning pipeline for predicting ATP tennis match outcomes and identifying value betting opportunities. The system scrapes match data, engineers features, trains XGBoost models, and uses probabilistic approaches with Kelly staking to determine optimal bet sizing.
 
 ---
 
@@ -81,18 +81,20 @@ Tennis lite/
 │   ├── pipeline.py           # Main orchestration
 │   ├── scraper.py            # Historical data scraping
 │   ├── analysis/
-│   │   └── backtester.py     # Enhanced backtesting with latency simulation
+│   │   └── backtester.py     # Enhanced backtesting (latency, line movement, book selection)
 │   ├── api/
 │   │   ├── main.py           # FastAPI app
 │   │   ├── routes.py         # API endpoints
 │   │   └── schema.py         # Pydantic models
 │   ├── betting/
-│   │   ├── signals.py        # Value bet identification
-│   │   ├── bankroll.py       # Position sizing
-│   │   ├── risk.py           # Risk management
-│   │   └── tracker.py        # Bet tracking
+│   │   ├── signals.py        # Value bet identification (segment thresholds, uncertainty buffer)
+│   │   ├── bankroll.py       # Position sizing (fractional Kelly with caps)
+│   │   ├── ledger.py         # SQLite-based bankroll tracking + open bet exposure
+│   │   ├── risk.py           # Monte Carlo risk-of-ruin analysis
+│   │   ├── bookmakers.py     # Multi-bookmaker odds selection (line shopping)
+│   │   └── tracker.py        # Bet history tracking
 │   ├── config/
-│   │   └── settings.py       # Typed Pydantic-settings config
+│   │   └── settings.py       # Typed Pydantic-settings config (50+ parameters)
 │   ├── core/
 │   │   ├── container.py      # Dependency injection
 │   │   └── protocols.py      # Interface definitions
@@ -226,8 +228,9 @@ eval_metric = "logloss"
 
 **Edge Calculation**:
 ```python
-edge = (predicted_prob * odds) - 1
-value_bet = edge >= min_edge
+blended_prob = model_prob * 0.5 + fair_market_prob * 0.5
+edge = blended_prob - implied_prob
+value_bet = edge >= effective_min_edge
 ```
 
 **Segment-Specific Thresholds**:
@@ -249,7 +252,7 @@ value_bet = edge >= min_edge
 
 ### 6. Bankroll Management
 
-**Kelly Staking** (`src/config/settings.py`):
+**Kelly Staking** (`src/betting/bankroll.py`):
 ```python
 kelly_fraction = 0.25           # Quarter Kelly (conservative)
 max_bet_fraction = 0.01         # Max 1% per bet
@@ -260,21 +263,61 @@ max_bets_per_day = 10
 
 **Formula**:
 ```python
-full_kelly = (b * p - q) / b    # where b = odds - 1
+full_kelly = (b * p - q) / b    # where b = odds - 1, p = prob, q = 1-p
 stake = full_kelly * kelly_fraction
 stake = min(stake, max_bet_fraction)
 stake = min(stake, remaining_daily)
 ```
 
+**Open Bet Tracking** (`src/betting/ledger.py`):
+- SQLite-based persistence
+- Effective bankroll = current_bankroll - open_exposure
+- Prevents over-betting when bets are pending
+
 ---
 
-### 7. Enhanced Backtesting
+### 7. Risk Analysis
+
+**Implementation** (`src/betting/risk.py`):
+
+**Analytical Risk-of-Ruin**:
+```python
+ruin_prob = ruin_probability(edge=0.05, win_prob=0.55, kelly_fraction=0.25, n_bets=500)
+```
+
+**Monte Carlo Simulation**:
+- 10,000 simulation paths
+- Tracks max drawdown distribution
+- Returns 95th/99th percentile drawdowns
+- Estimates ruin probability empirically
+
+---
+
+### 8. Multi-Bookmaker Line Shopping
+
+**Implementation** (`src/betting/bookmakers.py`):
+
+**Selection Strategies**:
+| Strategy | Description |
+|----------|-------------|
+| max | Best available from vetted books |
+| percentile | 75th percentile (avoid outliers) |
+| average | Mean across all books |
+| single | Specific bookmaker only |
+
+**Vetted Bookmakers**:
+- Tier 1: Pinnacle, Bet365, Betfair, William Hill, BWin, Marathonbet
+- Tier 2: Betway, 888Sport, Betsson, Interwetten
+
+---
+
+### 9. Enhanced Backtesting
 
 **Implementation** (`src/analysis/backtester.py`):
 
-**Features**:
+**Realism Features**:
 - Latency simulation (configurable delay in minutes)
-- Line movement modeling (odds move against you)
+- Line movement modeling (odds move against you based on latency)
 - Book selection strategies: best, average, specific
 - Sequential Kelly sizing with bankroll tracking
 
@@ -286,11 +329,11 @@ stake = min(stake, remaining_daily)
 
 **Parameter Tuning**:
 - Grid search over Kelly fractions, edge thresholds, latencies
-- Walk-forward validation
+- Compare single-book vs best-available ROI lift
 
 ---
 
-### 8. Observability
+### 10. Observability
 
 **Structured Logging** (`structlog`):
 - JSON format option for production
@@ -302,7 +345,7 @@ stake = min(stake, remaining_daily)
 
 ---
 
-### 9. Configuration System
+### 11. Configuration System
 
 **Implementation** (`src/config/settings.py`):
 
@@ -311,7 +354,7 @@ Strongly typed via `pydantic-settings`:
 class Settings(BaseSettings):
     scraper: ScraperSettings      # SCRAPER_* env vars
     model: ModelSettings          # MODEL_* env vars
-    betting: BettingSettings      # BETTING_* env vars
+    betting: BettingSettings      # BETTING_* env vars (50+ parameters)
     observability: ObservabilitySettings  # ENVIRONMENT, LOG_LEVEL
     features: FeatureSettings     # FEATURE_* env vars
 ```
@@ -329,81 +372,120 @@ class Settings(BaseSettings):
 3. **No Live Odds API**: No integration with bookmaker APIs for real-time odds
 4. **Manual Deployment**: No automated model promotion CI/CD
 5. **Single Model**: Only XGBoost, no ensemble or stacking
-6. **No Database**: All storage is file-based (Parquet)
+6. **No Database**: All storage is file-based (Parquet) except bankroll (SQLite)
 7. **Limited Backtesting Realism**: No slippage, order book depth, or market impact
+8. **No Feature Store**: Features computed on-demand, not cached
 
 ---
 
-## Questions for AI Analysis
+## AI Prompt for Improvement Recommendations
 
-1. What architectural patterns could improve maintainability?
-2. Are there better ML approaches for this problem domain?
-3. How can we improve feature engineering for tennis predictions?
-4. What are the risks in the current scraping approach?
-5. How could the betting logic be more sophisticated?
-6. What observability improvements would add the most value?
-7. Are there any obvious performance bottlenecks?
-8. What security concerns exist?
-
----
-
-## AI Prompt for Improvements
-
-Use the following prompt when asking an AI for recommendations:
+Copy and paste the following prompt into an AI assistant:
 
 ```
-You are a senior ML engineer and sports betting systems architect reviewing a tennis match prediction and value betting application.
+You are a senior ML engineer and sports betting systems architect with expertise in:
+- Machine learning for sports predictions
+- Quantitative betting strategies
+- Production ML systems
+- Python best practices
 
-### Context
-I have a Python application with the following stack:
-- XGBoost classifier with isotonic calibration for match outcome prediction
-- Polars for data processing (130+ matches scraped via unofficial API)
-- Feature engineering: Elo ratings, rolling win rates, H2H, surface-specific stats
-- Value betting: Kelly staking with segment-specific edge thresholds
-- Model lifecycle: experimental → staging → production with shadow/canary modes
-- Enhanced backtesting with latency simulation and line movement modeling
-- Pydantic-settings for typed configuration
+## System Overview
 
-### Current Architecture Highlights
-1. Data comes from a single unofficial API (SofaScore) with TLS fingerprint spoofing
-2. Model is trained to maximize ROI via Walk-Forward validation
-3. Betting thresholds vary by tournament tier (Grand Slam: 4%, Challenger: 7%)
-4. Uncertainty filtering rejects bets with high entropy or near 50% probability
-5. Kelly staking capped at 1% per bet, 10% daily exposure
+I have a Python CLI application for ATP tennis match prediction and value betting with:
 
-### Request
-Please analyze this system and provide specific, actionable recommendations in these areas:
+### Technology Stack
+- Python 3.11+ with strict type hints
+- XGBoost classifier with isotonic calibration
+- Polars for data processing
+- pydantic-settings for typed configuration
+- FastAPI for optional REST endpoints
+- SQLite for bankroll tracking
+- Parquet for data storage
 
-1. **Machine Learning Improvements**
-   - Alternative models or ensembles to consider
-   - Feature engineering enhancements specific to tennis
-   - Calibration alternatives to isotonic regression
+### ML Pipeline
+- Data: SofaScore API (unofficial, with TLS fingerprint spoofing)
+- Features: 50+ including Elo, rolling win rates, H2H, surface stats, fatigue
+- Training: Walk-Forward Validation optimizing for ROI (not accuracy)
+- Calibration: Isotonic regression for probability calibration
+- Registry: Experimental → Staging → Production lifecycle
 
-2. **Betting Strategy Improvements**
-   - Staking optimizations beyond simple Kelly
-   - Portfolio-level risk management
-   - Market efficiency considerations
+### Betting System
+- Value detection: edge = blended_prob - implied_prob
+- Segment thresholds: Grand Slams 4%, Challengers 7%, Longshots 8%
+- Uncertainty buffer: effective_edge = min_edge + k * uncertainty_std
+- Entropy/margin filters reject uncertain predictions
+- Kelly staking: 25% Kelly, 1% max per bet, 10% daily cap
+- Open bet tracking: Effective bankroll accounts for pending bets
 
-3. **Data Pipeline Improvements**
-   - Alternative data sources
-   - Reducing scraping risk
-   - Real-time odds integration
+### Risk Management
+- Monte Carlo ruin probability simulation
+- Max drawdown analysis (95th/99th percentile)
+- Analytical risk-of-ruin estimates
 
-4. **Architecture Improvements**
-   - Database vs file storage trade-offs
-   - Queue-based processing for predictions
-   - Microservices vs monolith considerations
+### Backtesting
+- Latency simulation (line movement based on delay)
+- Book selection comparison (single vs best-of-N)
+- Parameter grid search (Kelly, edge, latency)
+- Daily/monthly ROI aggregation
 
-5. **Observability & Reliability**
-   - Critical metrics to track
-   - Alerting recommendations
-   - Disaster recovery
+### Line Shopping
+- Multi-bookmaker odds selection: max, percentile, average, single
+- Vetted bookmaker lists (Tier 1/2)
+- ROI lift analysis vs single book
 
-6. **Quick Wins**
-   - Low-effort, high-impact changes
-   - Common mistakes to avoid
+## Current Limitations
+1. Single unofficial data source (SofaScore)
+2. Single model type (XGBoost only)
+3. No real-time odds integration
+4. File-based storage (no proper database for matches)
+5. No drift detection or model monitoring
+6. Basic A/B testing (canary mode)
+7. No ensemble or stacking
 
-Provide prioritized recommendations with effort estimates (low/medium/high) and expected impact.
+## Request
+
+Provide specific, actionable recommendations in these areas:
+
+### 1. Machine Learning
+- Alternative models or ensembles worth trying
+- Feature engineering specific to tennis
+- Better calibration methods
+- Uncertainty quantification improvements
+
+### 2. Betting Strategy
+- Kelly variations or alternatives
+- Portfolio-level optimization
+- Correlated bet handling
+- Market efficiency adaptation
+
+### 3. Data & Infrastructure
+- Alternative data sources
+- Database recommendations
+- Real-time odds integration options
+- Feature store benefits
+
+### 4. Risk Management
+- Drawdown control methods
+- Dynamic sizing adjustments
+- Ruin probability thresholds
+
+### 5. Production Readiness
+- Model monitoring and drift detection
+- Alerting recommendations
+- Deployment automation
+
+### 6. Quick Wins
+- Low-effort, high-impact changes
+- Common mistakes to avoid
+
+For each recommendation:
+- Current limitation
+- Why it matters (quantify if possible)
+- Specific implementation suggestion
+- Effort estimate (Low/Medium/High)
+- Expected impact
+
+Prioritize by impact-to-effort ratio. Be specific about libraries, algorithms, and implementation details.
 ```
 
 ---
@@ -412,11 +494,15 @@ Provide prioritized recommendations with effort estimates (low/medium/high) and 
 
 | Document | Path |
 |----------|------|
-| README | [README.md](../README.md) |
 | Architecture | [docs/architecture.md](architecture.md) |
 | Features | [docs/features.md](features.md) |
 | Model Config | [docs/model.md](model.md) |
+| Betting Docs | [docs/betting.md](betting.md) |
+| Backtesting Docs | [docs/backtesting.md](backtesting.md) |
 | Settings | [src/config/settings.py](../src/config/settings.py) |
 | Backtester | [src/analysis/backtester.py](../src/analysis/backtester.py) |
 | Value Betting | [src/betting/signals.py](../src/betting/signals.py) |
+| Bookmakers | [src/betting/bookmakers.py](../src/betting/bookmakers.py) |
+| Ledger | [src/betting/ledger.py](../src/betting/ledger.py) |
+| Risk | [src/betting/risk.py](../src/betting/risk.py) |
 | Optimization | [src/model/optimization.py](../src/model/optimization.py) |
