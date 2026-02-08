@@ -2,10 +2,13 @@
 Bankroll management with Kelly criterion stake sizing.
 """
 import polars as pl
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from dataclasses import dataclass, field
 from datetime import date
 import logging
+
+if TYPE_CHECKING:
+    from src.betting.ledger import BankrollLedger
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,7 @@ class BankrollManager:
     Uses fractional Kelly (1/4 by default) for safety with:
     - Per-bet cap (max 1% of bankroll)
     - Per-day cap (max 10% of bankroll total staked)
+    - Effective bankroll (minus open exposure) when ledger is attached
     """
     
     initial_bankroll: float = 1000.0
@@ -34,10 +38,35 @@ class BankrollManager:
     _daily_bets: int = field(default=0, init=False, repr=False)
     _current_date: Optional[date] = field(default=None, init=False, repr=False)
     
+    # Optional ledger for persistence
+    _ledger: Optional["BankrollLedger"] = field(default=None, init=False, repr=False)
+    
     def __post_init__(self):
         self.current_bankroll = self.initial_bankroll
         self.bet_history = []
         self._reset_daily()
+    
+    def attach_ledger(self, ledger: "BankrollLedger") -> None:
+        """
+        Attach a ledger for persistent tracking.
+        
+        When attached, uses effective bankroll (minus open exposure)
+        for Kelly calculations.
+        """
+        self._ledger = ledger
+        self.current_bankroll = ledger.get_bankroll()
+        logger.info(f"Ledger attached. Bankroll: {self.current_bankroll:.2f}")
+    
+    def get_effective_bankroll(self) -> float:
+        """
+        Get effective bankroll for Kelly calculations.
+        
+        If ledger attached: bankroll - open exposure
+        Otherwise: current_bankroll
+        """
+        if self._ledger:
+            return self._ledger.get_effective_bankroll()
+        return self.current_bankroll
     
     def _reset_daily(self):
         """Reset daily tracking."""
