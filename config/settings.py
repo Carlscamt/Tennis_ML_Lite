@@ -119,6 +119,16 @@ class BettingConfig:
     
     # Bankroll
     initial_bankroll: float = 1000.0
+    
+    # Uncertainty thresholds
+    min_margin: float = float(os.getenv("BETTING_MIN_MARGIN", "0.10"))
+    max_entropy: float = float(os.getenv("BETTING_MAX_ENTROPY", "0.65"))
+    use_uncertainty_filter: bool = os.getenv("BETTING_USE_UNCERTAINTY_FILTER", "true").lower() == "true"
+    
+    # Calibration settings
+    calibration_method: str = os.getenv("CALIBRATION_METHOD", "isotonic")  # isotonic, platt, ensemble
+    group_calibration: bool = os.getenv("GROUP_CALIBRATION", "true").lower() == "true"
+    min_calibration_samples: int = int(os.getenv("MIN_CALIBRATION_SAMPLES", "500"))
 
 
 # =============================================================================
@@ -175,6 +185,51 @@ class ScraperConfig:
 
 
 # =============================================================================
+# CROSS-VALIDATION CONFIGURATION
+# =============================================================================
+
+@dataclass
+class CrossValidationConfig:
+    """Time-series cross-validation parameters."""
+    n_splits: int = int(os.getenv("CV_N_SPLITS", "5"))
+    gap_days: int = int(os.getenv("CV_GAP_DAYS", "7"))
+    min_train_size: int = int(os.getenv("CV_MIN_TRAIN_SIZE", "5000"))
+    rolling_window_days: int = int(os.getenv("CV_ROLLING_WINDOW_DAYS", "0"))  # 0 = expanding
+    
+    @property
+    def use_rolling(self) -> bool:
+        """True if using rolling window, False for expanding."""
+        return self.rolling_window_days > 0
+
+
+# =============================================================================
+# OPTIMIZATION CONFIGURATION
+# =============================================================================
+
+@dataclass
+class OptimizationConfig:
+    """Hyperparameter optimization settings for Optuna."""
+    n_trials: int = int(os.getenv("OPTUNA_N_TRIALS", "50"))
+    timeout_seconds: int = int(os.getenv("OPTUNA_TIMEOUT", "3600"))
+    variance_penalty: float = float(os.getenv("OPTUNA_VARIANCE_PENALTY", "0.1"))
+    objective: str = os.getenv("OPTUNA_OBJECTIVE", "composite")  # composite, log_loss, roi
+    n_jobs: int = int(os.getenv("OPTUNA_N_JOBS", "1"))
+    storage: str = os.getenv("OPTUNA_STORAGE", "")  # e.g., sqlite:///optuna.db
+
+
+# =============================================================================
+# MODEL PROMOTION CONFIGURATION
+# =============================================================================
+
+@dataclass
+class ModelPromotionConfig:
+    """Thresholds for model promotion to Production."""
+    min_auc: float = float(os.getenv("PROMOTION_MIN_AUC", "0.80"))
+    min_sharpe: float = float(os.getenv("PROMOTION_MIN_SHARPE", "0.0"))
+    require_positive_roi: bool = os.getenv("PROMOTION_REQUIRE_POSITIVE_ROI", "false").lower() == "true"
+
+
+# =============================================================================
 # INSTANTIATE DEFAULTS
 # =============================================================================
 
@@ -184,3 +239,6 @@ BETTING = BettingConfig()
 API = APIConfig()
 SCRAPER = ScraperConfig()
 DATA_QUALITY = DataQualityConfig()
+CV = CrossValidationConfig()
+PROMOTION = ModelPromotionConfig()
+OPTIMIZATION = OptimizationConfig()

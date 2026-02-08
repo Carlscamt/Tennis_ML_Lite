@@ -2,6 +2,7 @@
 Value bet identification and signal generation.
 """
 import polars as pl
+import numpy as np
 from typing import Optional, List
 from dataclasses import dataclass
 import logging
@@ -12,7 +13,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ValueBetFinder:
     """
-    Identifies value betting opportunities.
+    Identifies value betting opportunities with uncertainty filtering.
+    
+    Filters out bets that have high reported edge but low confidence
+    (near decision boundary), which are more likely noise artifacts.
     """
     
     min_edge: float = 0.05        # 5% minimum edge
@@ -21,6 +25,11 @@ class ValueBetFinder:
     max_odds: float = 5.00
     max_bets_per_day: int = 10
     blend_weight: float = 0.5  # 0.5 = 50% Model, 50% Market (Implied)
+    
+    # Uncertainty thresholds
+    min_margin: float = 0.10      # Reject if |p - 0.5| < 0.10
+    max_entropy: float = 0.65     # Reject if entropy > 0.65
+    use_uncertainty_filter: bool = True
     
     def find_value_bets(self, predictions_df: pl.DataFrame) -> pl.DataFrame:
         """
@@ -32,7 +41,7 @@ class ValueBetFinder:
             predictions_df: DataFrame with predictions and odds
             
         Returns:
-            Filtered DataFrame with value bets only
+            Filtered DataFrame with value bets and uncertainty signals
         """
         # Calculate edge and EV
         df = predictions_df.with_columns([
@@ -51,31 +60,54 @@ class ValueBetFinder:
         ])
         
         # Calculate Blended Probability (Model + Fair Market)
-        # We blend with FAIR market prob, not raw (which is inflated)
         df = df.with_columns([
             ((pl.col("model_prob") * self.blend_weight) + 
              (pl.col("fair_market_prob") * (1 - self.blend_weight))).alias("blended_prob")
         ])
         
         df = df.with_columns([
-            # Edge = blended_prob - implied_prob (Cost of bet)
-            # We must beat the bookie's price, so we compare Fair Blend vs Raw Price
+            # Edge = blended_prob - implied_prob
             (pl.col("blended_prob") - pl.col("implied_prob")).alias("edge"),
             
-            # Expected value per unit (using conservative blended prob)
+            # Expected value per unit
             (
                 pl.col("blended_prob") * (pl.col("odds_player") - 1) -
                 (1 - pl.col("blended_prob"))
             ).alias("expected_value"),
         ])
         
-        # Filter to value bets
-        value_bets = df.filter(
+        # Add uncertainty signals
+        df = self._add_uncertainty_signals(df)
+        
+        # Build filter conditions
+        filter_conditions = (
             (pl.col("model_prob") >= self.min_confidence) &
             (pl.col("edge") >= self.min_edge) &
             (pl.col("odds_player") >= self.min_odds) &
             (pl.col("odds_player") <= self.max_odds)
         )
+        
+        # Add uncertainty filter if enabled
+        if self.use_uncertainty_filter:
+            filter_conditions = filter_conditions & (
+                (pl.col("margin") >= self.min_margin) &
+                (pl.col("entropy") <= self.max_entropy)
+            )
+        
+        # Filter to value bets
+        value_bets = df.filter(filter_conditions)
+        
+        # Log rejection stats if uncertainty filter is on
+        if self.use_uncertainty_filter:
+            rejected_by_uncertainty = len(df.filter(
+                (pl.col("model_prob") >= self.min_confidence) &
+                (pl.col("edge") >= self.min_edge) &
+                (pl.col("odds_player") >= self.min_odds) &
+                (pl.col("odds_player") <= self.max_odds) &
+                ((pl.col("margin") < self.min_margin) | (pl.col("entropy") > self.max_entropy))
+            ))
+            if rejected_by_uncertainty > 0:
+                logger.info(f"Uncertainty filter rejected {rejected_by_uncertainty} potential bets")
         
         # Sort by edge descending
         value_bets = value_bets.sort("edge", descending=True)
@@ -87,6 +119,29 @@ class ValueBetFinder:
         logger.info(f"Found {len(value_bets)} value bets from {len(predictions_df)} matches")
         
         return value_bets
+    
+    def _add_uncertainty_signals(self, df: pl.DataFrame) -> pl.DataFrame:
+        """Add margin, entropy, and confidence columns."""
+        eps = 1e-10
+        
+        return df.with_columns([
+            # Margin: distance from decision boundary
+            pl.col("model_prob").sub(0.5).abs().alias("margin"),
+            
+            # Entropy: -p*log2(p) - (1-p)*log2(1-p)
+            (
+                -pl.col("model_prob").clip(eps, 1-eps) * 
+                pl.col("model_prob").clip(eps, 1-eps).log(base=2) -
+                (1 - pl.col("model_prob").clip(eps, 1-eps)) * 
+                (1 - pl.col("model_prob").clip(eps, 1-eps)).log(base=2)
+            ).alias("entropy"),
+            
+            # Confidence: max(p, 1-p)
+            pl.when(pl.col("model_prob") > 0.5)
+              .then(pl.col("model_prob"))
+              .otherwise(1 - pl.col("model_prob"))
+              .alias("bet_confidence"),
+        ])
     
     def grade_bet(self, edge: float, confidence: float) -> str:
         """

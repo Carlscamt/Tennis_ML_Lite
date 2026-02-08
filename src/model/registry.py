@@ -26,6 +26,12 @@ class ModelVersion:
     training_dataset_size: int
     model_file: str  # Relative path to model file
     notes: Optional[str] = None
+    # Betting metrics (optional for backward compatibility)
+    log_loss: Optional[float] = None
+    roi: Optional[float] = None
+    sharpe_ratio: Optional[float] = None
+    max_drawdown: Optional[float] = None
+    cv_folds: Optional[int] = None
 
 class ModelRegistry:
     """
@@ -108,10 +114,31 @@ class ModelRegistry:
         feature_schema_version: str,
         training_dataset_size: int,
         notes: Optional[str] = None,
-        stage: str = "Experimental"
+        stage: str = "Experimental",
+        # Betting metrics (optional)
+        log_loss: Optional[float] = None,
+        roi: Optional[float] = None,
+        sharpe_ratio: Optional[float] = None,
+        max_drawdown: Optional[float] = None,
+        cv_folds: Optional[int] = None,
     ) -> str:
         """
         Register new model version.
+        
+        Args:
+            model_path: Path to the model file
+            auc: Area Under ROC Curve
+            precision: Precision score
+            recall: Recall score
+            feature_schema_version: Version of the feature schema
+            training_dataset_size: Number of samples used for training
+            notes: Optional notes about the model
+            stage: Initial stage (Experimental, Staging, Production)
+            log_loss: Log loss score (optional)
+            roi: Return on Investment from betting simulation (optional)
+            sharpe_ratio: Risk-adjusted return metric (optional)
+            max_drawdown: Maximum drawdown from betting simulation (optional)
+            cv_folds: Number of CV folds used (optional)
         
         Returns: version identifier (e.g., 'v1.2.3')
         """
@@ -176,6 +203,12 @@ class ModelRegistry:
             training_dataset_size=training_dataset_size,
             model_file=rel_model_path,
             notes=notes,
+            # Betting metrics
+            log_loss=log_loss,
+            roi=roi,
+            sharpe_ratio=sharpe_ratio,
+            max_drawdown=max_drawdown,
+            cv_folds=cv_folds,
         )
         
         self.registry[new_version] = asdict(model_version)
@@ -217,6 +250,25 @@ class ModelRegistry:
             model_auc = self.registry[version].get('auc', 0.0)
             if model_auc < 0.80:
                 raise ValueError(f"Minimum AUC of 0.80 required for Production (Got {model_auc})")
+            
+            # Enforce Sharpe ratio check if available (backward compatible)
+            sharpe = self.registry[version].get('sharpe_ratio')
+            if sharpe is not None and sharpe < 0.0:
+                raise ValueError(
+                    f"Sharpe ratio must be non-negative for Production (Got {sharpe:.4f}). "
+                    "A negative Sharpe indicates the model loses money on a risk-adjusted basis."
+                )
+            
+            # Log betting metrics if available for visibility
+            roi = self.registry[version].get('roi')
+            if roi is not None:
+                logger.log_event(
+                    'production_betting_metrics',
+                    version=version,
+                    roi=roi,
+                    sharpe_ratio=sharpe,
+                    max_drawdown=self.registry[version].get('max_drawdown'),
+                )
 
             for v, meta in self.registry.items():
                 if meta['stage'] == 'Production' and v != version:

@@ -1,14 +1,14 @@
 # Model Audit Report
 
-**Generated**: 2026-01-26T18:33:32.004474
-**Model**: `model.bin`
+**Generated**: 2026-02-06T14:40:14.933827
+**Model**: `model.joblib`
 **Test Set Size**: 2,439 matches
 
 ## Overall Results
 
 | Metric | Value |
 |--------|-------|
-| **Overall Score** | 68.7/100 |
+| **Overall Score** | 71.3/100 |
 | **Tests Passed** | 6/8 |
 | **Total Warnings** | 3 |
 
@@ -21,57 +21,57 @@
 leakage_detected: False
 leaky_feature_count: 0
 leakage_percentage: 0.0
-safe_feature_count: 45
+safe_feature_count: 58
 ```
 
 ## [PASS] Statistical Performance
 
-**Score**: 31.1/100
+**Score**: 32.2/100
 
 ### Key Metrics
 ```
-accuracy: 0.6937
-precision: 0.7065
-recall: 0.9344
-f1_score: 0.8046
-auc_roc: 0.6557
-auc_pr: 0.7853
-brier_score: 0.2041
-log_loss: 0.5954
+accuracy: 0.6945
+precision: 0.7032
+recall: 0.9471
+f1_score: 0.8071
+auc_roc: 0.6612
+auc_pr: 0.7845
+brier_score: 0.2017
+log_loss: 0.5885
 ```
 
 ## [PASS] Calibration
 
-**Score**: 79.8/100
+**Score**: 98.3/100
 
 ### Key Metrics
 ```
-expected_calibration_error: 0.0202
-maximum_calibration_error: 0.0937
+expected_calibration_error: 0.0017
+maximum_calibration_error: 0.015
 ```
 
 ### Warnings
-- [!] 25.0% of wrong predictions had >70% confidence
+- [!] 24.8% of wrong predictions had >70% confidence
 
 ## [PASS] Temporal Stability
 
-**Score**: 81.3/100
+**Score**: 82.0/100
 
 ### Key Metrics
 ```
 n_months: 12
-accuracy_mean: 0.6982
-accuracy_std: 0.0374
+accuracy_mean: 0.6996
+accuracy_std: 0.0359
 ```
 
 ## [PASS] Robustness
 
-**Score**: 87.1/100
+**Score**: 87.7/100
 
 ### Key Metrics
 ```
 bootstrap_samples: 100
-accuracy_ci_width: 0.038
+accuracy_ci_width: 0.0415
 ```
 
 ## [PASS] Feature Importance
@@ -80,7 +80,7 @@ accuracy_ci_width: 0.038
 
 ### Key Metrics
 ```
-n_features: 45
+n_features: 58
 zero_importance_count: 1
 ```
 
@@ -93,7 +93,7 @@ zero_importance_count: 1
 ```
 
 ### Warnings
-- [!] Large accuracy gap between odds segments: 78.0% vs 52.1%
+- [!] Large accuracy gap between odds segments: 78.2% vs 54.1%
 
 ## [WARN] Adversarial Edge Cases
 
@@ -104,4 +104,4 @@ zero_importance_count: 1
 ```
 
 ### Warnings
-- [!] 12.7% of predictions are high-confidence errors
+- [!] 11.4% of predictions are high-confidence errors

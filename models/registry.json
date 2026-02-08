@@ -1800,6 +1800,18 @@
       "training_dataset_size": 3257,
       "model_file": "v1.0.2/model.joblib",
       "notes": "Trained on 3257 samples"
+    },
+    "v1.0.3": {
+      "version": "v1.0.3",
+      "stage": "Staging",
+      "trained_at": "2026-02-07T01:04:55.521765+00:00",
+      "auc": 0.6813056245080826,
+      "precision": 0.7187053783912423,
+      "recall": 0.9096385542168675,
+      "feature_schema_version": "1.0",
+      "training_dataset_size": 3257,
+      "model_file": "v1.0.3/model.joblib",
+      "notes": "Type: stacking | Trained on 3257 samples"
     }
   }
 }

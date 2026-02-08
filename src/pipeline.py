@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT))
 
 from config import (
     RAW_DATA_DIR, PROCESSED_DATA_DIR, MODELS_DIR,
-    FEATURES, MODEL
+    FEATURES, MODEL, CV, BETTING
 )
 from src.extract import load_all_parquet_files
 from src.extract.data_loader import prepare_base_dataset, get_dataset_stats
@@ -192,6 +192,208 @@ class TennisPipeline:
             metrics.training_dataset_size.set(len(df_materialized))
             
             return {'output_path': str(output_path), 'count': len(df_materialized)}
+
+    def run_cv_training_pipeline(
+        self, 
+        data_path: Path, 
+        model_type: str = "xgboost",
+        use_cv: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Run training with time-series cross-validation and betting metrics.
+        
+        This is the recommended training method for production use as it provides
+        more robust performance estimates and betting-specific metrics.
+        
+        Args:
+            data_path: Path to the feature dataset parquet file
+            model_type: Type of model to train ("xgboost" or "stacking")
+            use_cv: If True, use full CV; if False, fall back to single split
+            
+        Returns:
+            Dictionary with training results and metrics
+        """
+        import numpy as np
+        import joblib
+        from src.model.cv import TimeSeriesBettingCV
+        from src.model.metrics import BettingMetrics, CVMetricsAggregator
+        from sklearn.metrics import precision_score, recall_score
+        
+        with self.observability_context(f'cv_training_pipeline_{model_type}'):
+            # Load data
+            df = pl.read_parquet(data_path).drop_nulls(subset=["player_won"])
+            
+            # Sort by date for proper CV
+            if "match_date" in df.columns:
+                df = df.sort("match_date")
+            elif "start_timestamp" in df.columns:
+                df = df.sort("start_timestamp")
+            
+            # Prepare features
+            fe = FeatureEngineer()
+            feature_cols = fe.get_feature_columns(df.lazy())
+            numeric_types = [pl.Int8, pl.Int16, pl.Int32, pl.Int64, 
+                             pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64,
+                             pl.Float32, pl.Float64, pl.Boolean]
+            existing_cols = [c for c in feature_cols if c in df.columns]
+            numeric_cols = [c for c in existing_cols if df[c].dtype in numeric_types]
+            
+            # Check for odds column (required for betting metrics)
+            has_odds = "odds_player" in df.columns
+            if not has_odds:
+                logger.log_warning("no_odds_column", message="odds_player not found, betting metrics will be zero")
+            
+            logger.log_event('cv_training_started', 
+                           n_samples=len(df), 
+                           n_features=len(numeric_cols),
+                           use_cv=use_cv,
+                           has_odds=has_odds)
+            
+            # Initialize CV and metrics
+            cv = TimeSeriesBettingCV(
+                n_splits=CV.n_splits,
+                gap_days=CV.gap_days,
+                min_train_size=CV.min_train_size,
+                rolling_window_days=CV.rolling_window_days if CV.use_rolling else None
+            )
+            
+            metrics_calc = BettingMetrics(
+                kelly_fraction=BETTING.kelly_fraction,
+                min_edge=BETTING.min_edge,
+                min_odds=BETTING.min_odds,
+                max_odds=BETTING.max_odds,
+            )
+            
+            aggregator = CVMetricsAggregator()
+            
+            # Determine date column
+            date_col = "match_date" if "match_date" in df.columns else "start_timestamp"
+            
+            # Run CV loop
+            final_model = None
+            for fold_idx, (train_idx, test_idx) in enumerate(cv.split(df, date_col)):
+                logger.log_event('cv_fold_started', fold=fold_idx, train_size=len(train_idx), test_size=len(test_idx))
+                
+                train_data = df[train_idx]
+                test_data = df[test_idx]
+                
+                # Prepare numpy arrays
+                X_train = train_data.select(numeric_cols).to_numpy()
+                y_train = train_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
+                
+                X_test = test_data.select(numeric_cols).to_numpy()
+                y_test = test_data.select(pl.col("player_won").cast(pl.Int8)).to_numpy().flatten()
+                
+                # Handle NaN
+                X_train = np.nan_to_num(X_train, nan=-999)
+                X_test = np.nan_to_num(X_test, nan=-999)
+                
+                # Train model
+                if model_type == "xgboost":
+                    model = xgb.XGBClassifier(**MODEL.xgb_params)
+                    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+                    y_prob = model.predict_proba(X_test)[:, 1]
+                else:
+                    from src.model.stacking import StackedTrainer
+                    trainer = StackedTrainer()
+                    trainer.train(train_data, numeric_cols, "player_won")
+                    model = trainer.model
+                    y_prob = trainer.predict_proba(test_data)
+                
+                # Get odds for betting simulation
+                if has_odds:
+                    odds = test_data["odds_player"].to_numpy()
+                    odds = np.nan_to_num(odds, nan=2.0)  # Default odds if missing
+                else:
+                    odds = np.full(len(y_test), 2.0)  # Dummy odds
+                
+                # Calculate betting metrics for this fold
+                fold_result = metrics_calc.calculate(y_test, y_prob, odds)
+                aggregator.add_fold(fold_result)
+                
+                logger.log_event('cv_fold_completed', 
+                               fold=fold_idx,
+                               auc=fold_result.auc,
+                               roi=fold_result.roi,
+                               sharpe=fold_result.sharpe_ratio,
+                               n_bets=fold_result.n_bets)
+                
+                # Keep last model as final model
+                final_model = model
+            
+            # Get aggregated metrics
+            summary = aggregator.get_summary()
+            agg_result = aggregator.get_aggregated_result()
+            
+            logger.log_event('cv_training_completed', **{k: round(v, 4) if isinstance(v, float) else v for k, v in summary.items()})
+            
+            # Calculate precision/recall on last fold for registry (backward compat)
+            y_pred = (y_prob >= 0.5).astype(int)
+            prec = precision_score(y_test, y_pred, zero_division=0)
+            rec = recall_score(y_test, y_pred, zero_division=0)
+            
+            # --- REGISTRY Integration with betting metrics ---
+            temp_path = f"temp_model_{model_type}.joblib"
+            joblib.dump(final_model, temp_path)
+            
+            meta = {
+                "feature_columns": numeric_cols,
+                "params": MODEL.xgb_params if model_type == "xgboost" else {},
+                "calibrated": False,
+                "model_type": model_type,
+                "cv_folds": CV.n_splits,
+            }
+            with open(f"temp_model_{model_type}.meta.json", "w") as f:
+                json.dump(meta, f)
+            
+            try:
+                version = self.registry.register_model(
+                    model_path=temp_path,
+                    auc=agg_result.auc,
+                    precision=prec,
+                    recall=rec,
+                    feature_schema_version="1.0",
+                    training_dataset_size=len(df),
+                    notes=f"Type: {model_type} | CV: {CV.n_splits}-fold | ROI: {agg_result.roi:.2%}",
+                    stage="Experimental",
+                    # Betting metrics
+                    log_loss=agg_result.log_loss,
+                    roi=agg_result.roi,
+                    sharpe_ratio=agg_result.sharpe_ratio,
+                    max_drawdown=agg_result.max_drawdown,
+                    cv_folds=CV.n_splits,
+                )
+                logger.log_event('model_registered_with_cv_metrics', version=version, type=model_type)
+                
+                # Auto-promote to Staging if AUC decent
+                if agg_result.auc > 0.65:
+                    self.registry.transition_stage(version, "Staging")
+                
+                # Save local reference
+                special_path = self.models_dir / f"{model_type}_model.joblib"
+                joblib.dump(final_model, special_path)
+                with open(self.models_dir / f"{model_type}_model.meta.json", "w") as f:
+                    json.dump(meta, f)
+                    
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                if os.path.exists(f"temp_model_{model_type}.meta.json"):
+                    os.remove(f"temp_model_{model_type}.meta.json")
+            
+            # Reload server
+            if self.model_server:
+                self.model_server.reload_models()
+            
+            return {
+                "version": version,
+                "metrics": summary,
+                "auc_mean": agg_result.auc,
+                "roi_mean": agg_result.roi,
+                "sharpe_mean": agg_result.sharpe_ratio,
+                "max_drawdown_mean": agg_result.max_drawdown,
+                "n_folds": CV.n_splits,
+            }
 
     def run_training_pipeline(self, data_path: Path, model_type: str = "xgboost") -> None:
         """Run training with observability, drift baseline fitting, and model registration."""
