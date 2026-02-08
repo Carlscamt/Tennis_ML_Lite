@@ -1,10 +1,10 @@
 {
-  "audit_timestamp": "2026-02-06T14:40:14.933827",
-  "model_path": "C:\\Users\\Carlos\\Documents\\Antigravity\\Tennis lite\\models\\v1.0.2\\model.joblib",
+  "audit_timestamp": "2026-02-08T13:16:17.049192",
+  "model_path": "C:\\Users\\Carlos\\Documents\\Antigravity\\Tennis lite\\models\\v1.0.3\\model.joblib",
   "test_set_size": 2439,
-  "overall_score": 71.3,
+  "overall_score": 53.0,
   "all_tests_passed": false,
-  "total_warnings": 3,
+  "total_warnings": 7,
   "sections": [
     {
       "section": "Data Leakage",
@@ -89,157 +89,159 @@
     {
       "section": "Statistical Performance",
       "passed": true,
-      "score": 32.231984297597904,
+      "score": 19.912846152313925,
       "metrics": {
-        "accuracy": 0.6945,
-        "precision": 0.7032,
-        "recall": 0.9471,
-        "f1_score": 0.8071,
-        "auc_roc": 0.6612,
-        "auc_pr": 0.7845,
-        "brier_score": 0.2017,
-        "log_loss": 0.5885,
+        "accuracy": 0.6622,
+        "precision": 0.6746,
+        "recall": 0.9648,
+        "f1_score": 0.794,
+        "auc_roc": 0.5996,
+        "auc_pr": 0.7646,
+        "brier_score": 0.2686,
+        "log_loss": 0.7915,
         "confusion_matrix": {
-          "true_neg": 135,
-          "false_pos": 658,
-          "false_neg": 87,
-          "true_pos": 1559
+          "true_neg": 27,
+          "false_pos": 766,
+          "false_neg": 58,
+          "true_pos": 1588
         }
       },
-      "warnings": [],
+      "warnings": [
+        "Brier Score (0.269) indicates poor probability estimates"
+      ],
       "details": null
     },
     {
       "section": "Calibration",
-      "passed": true,
-      "score": 98.31570686742684,
+      "passed": false,
+      "score": 0,
       "metrics": {
-        "expected_calibration_error": 0.0017,
-        "maximum_calibration_error": 0.015,
+        "expected_calibration_error": 0.2153,
+        "maximum_calibration_error": 0.5846,
         "calibration_curve": {
           "prob_true": [
-            0.0,
-            0.2692,
-            0.3404,
-            0.4521,
-            0.5345,
-            0.6404,
-            0.7446,
-            0.8075,
-            0.9074
+            0.7324,
+            0.5,
+            0.25,
+            0.5,
+            0.5,
+            0.4545,
+            0.9032,
+            0.6733
           ],
           "prob_pred": [
-            0.0,
-            0.2692,
-            0.3404,
-            0.4667,
-            0.5339,
-            0.642,
-            0.7446,
-            0.8075,
-            0.9074
+            0.1478,
+            0.2472,
+            0.3423,
+            0.4631,
+            0.5539,
+            0.6629,
+            0.76,
+            0.8793
           ]
         },
         "bin_sizes": [
-          7,
           0,
-          26,
-          47,
-          142,
-          120,
-          1179,
-          278,
-          478,
-          157
+          71,
+          6,
+          4,
+          4,
+          10,
+          11,
+          31,
+          2302,
+          0
         ]
       },
       "warnings": [
-        "24.8% of wrong predictions had >70% confidence"
+        "ECE (0.215) exceeds recommended threshold (0.05)",
+        "MCE (0.585) shows severe miscalibration in some bins",
+        "98.3% of wrong predictions had >70% confidence"
       ],
       "details": null
     },
     {
       "section": "Temporal Stability",
       "passed": true,
-      "score": 82.03446006934387,
+      "score": 82.99293243318466,
       "metrics": {
         "monthly_performance": [
           {
             "month": "2025-01",
             "n_matches": 190,
-            "accuracy": 0.7263,
-            "auc_roc": 0.7344
+            "accuracy": 0.6579,
+            "auc_roc": 0.7266
           },
           {
             "month": "2025-02",
             "n_matches": 242,
-            "accuracy": 0.6983,
-            "auc_roc": 0.6274
+            "accuracy": 0.6736,
+            "auc_roc": 0.6303
           },
           {
             "month": "2025-03",
             "n_matches": 220,
-            "accuracy": 0.6636,
-            "auc_roc": 0.6297
+            "accuracy": 0.6091,
+            "auc_roc": 0.5743
           },
           {
             "month": "2025-04",
             "n_matches": 256,
-            "accuracy": 0.6758,
-            "auc_roc": 0.6662
+            "accuracy": 0.6602,
+            "auc_roc": 0.667
           },
           {
             "month": "2025-05",
             "n_matches": 273,
-            "accuracy": 0.6923,
-            "auc_roc": 0.676
+            "accuracy": 0.663,
+            "auc_roc": 0.6515
           },
           {
             "month": "2025-06",
             "n_matches": 200,
-            "accuracy": 0.665,
-            "auc_roc": 0.5635
+            "accuracy": 0.69,
+            "auc_roc": 0.5544
           },
           {
             "month": "2025-07",
             "n_matches": 219,
-            "accuracy": 0.7352,
-            "auc_roc": 0.677
+            "accuracy": 0.6667,
+            "auc_roc": 0.5709
           },
           {
             "month": "2025-08",
             "n_matches": 230,
-            "accuracy": 0.6652,
-            "auc_roc": 0.673
+            "accuracy": 0.6,
+            "auc_roc": 0.5041
           },
           {
             "month": "2025-09",
             "n_matches": 115,
-            "accuracy": 0.6783,
-            "auc_roc": 0.7015
+            "accuracy": 0.6609,
+            "auc_roc": 0.539
           },
           {
             "month": "2025-10",
             "n_matches": 249,
-            "accuracy": 0.6707,
-            "auc_roc": 0.6393
+            "accuracy": 0.6747,
+            "auc_roc": 0.5965
           },
           {
             "month": "2025-11",
             "n_matches": 59,
-            "accuracy": 0.7627,
-            "auc_roc": 0.7481
+            "accuracy": 0.661,
+            "auc_roc": 0.6115
           },
           {
             "month": "2026-01",
             "n_matches": 181,
-            "accuracy": 0.7624,
-            "auc_roc": 0.7186
+            "accuracy": 0.7403,
+            "auc_roc": 0.6322
           }
         ],
         "n_months": 12,
-        "accuracy_mean": 0.6996,
-        "accuracy_std": 0.0359
+        "accuracy_mean": 0.6631,
+        "accuracy_std": 0.034
       },
       "warnings": [],
       "details": null
@@ -247,155 +249,157 @@
     {
       "section": "Robustness",
       "passed": true,
-      "score": 87.72550225502252,
+      "score": 71.13058630586305,
       "metrics": {
         "bootstrap_samples": 100,
         "accuracy_ci_95": [
-          0.6755,
-          0.7169
+          0.6423,
+          0.6802
         ],
         "auc_roc_ci_95": [
-          0.6417,
-          0.6835
+          0.5768,
+          0.6191
         ],
-        "accuracy_ci_width": 0.0415
+        "accuracy_ci_width": 0.038
       },
       "warnings": [],
       "details": null
     },
     {
       "section": "Feature Importance",
-      "passed": true,
-      "score": 70,
+      "passed": false,
+      "score": 50,
       "metrics": {
         "n_features": 58,
         "top_20_features": [
           {
-            "name": "odds_ratio",
-            "importance": 34.0342
-          },
-          {
-            "name": "implied_prob_opponent",
-            "importance": 21.4806
+            "name": "odds_player",
+            "importance": 0
           },
           {
             "name": "odds_opponent",
-            "importance": 13.4811
-          },
-          {
-            "name": "odds_player",
-            "importance": 10.6806
+            "importance": 0
           },
           {
             "name": "implied_prob_player",
-            "importance": 8.3588
+            "importance": 0
           },
           {
-            "name": "player_bh_winners_avg_10",
-            "importance": 6.4562
+            "name": "implied_prob_opponent",
+            "importance": 0
           },
           {
-            "name": "h2h_wins",
-            "importance": 5.2381
+            "name": "round_num",
+            "importance": 0
           },
           {
-            "name": "player_first_serve_pct_avg_10",
-            "importance": 4.9457
-          },
-          {
-            "name": "player_first_serve_won_pct_avg_20",
-            "importance": 4.6905
-          },
-          {
-            "name": "player_total_winners_avg_10",
-            "importance": 4.6874
-          },
-          {
-            "name": "player_bp_converted_avg_20",
-            "importance": 4.6805
-          },
-          {
-            "name": "player_total_errors_surface_avg_10",
-            "importance": 4.617
-          },
-          {
-            "name": "player_first_serve_pct_surface_avg_10",
-            "importance": 4.6162
-          },
-          {
-            "name": "player_win_rate_5",
-            "importance": 4.5491
-          },
-          {
-            "name": "player_first_serve_won_pct_surface_avg_10",
-            "importance": 4.5035
-          },
-          {
-            "name": "player_second_serve_won_pct_avg_20",
-            "importance": 4.5015
-          },
-          {
-            "name": "player_max_points_streak_avg_10",
-            "importance": 4.3989
-          },
-          {
-            "name": "h2h_win_rate",
-            "importance": 4.3876
-          },
-          {
-            "name": "player_second_return_won_avg_20",
-            "importance": 4.3555
-          },
-          {
-            "name": "player_fh_winners_surface_avg_10",
-            "importance": 4.269
-          }
-        ],
-        "bottom_10_features": [
-          {
-            "name": "player_double_faults_surface_avg_10",
-            "importance": 3.6664
-          },
-          {
-            "name": "player_surface_win_rate_10",
-            "importance": 3.5754
-          },
-          {
-            "name": "player_bp_converted_surface_avg_10",
-            "importance": 3.523
-          },
-          {
-            "name": "opp_first_serve_pct_avg_10",
-            "importance": 3.4749
-          },
-          {
-            "name": "player_double_faults_avg_10",
-            "importance": 3.3836
-          },
-          {
-            "name": "player_bh_winners_surface_avg_10",
-            "importance": 2.8128
-          },
-          {
-            "name": "player_winner_error_ratio_avg_10",
-            "importance": 2.4276
-          },
-          {
-            "name": "player_fh_winners_avg_10",
-            "importance": 2.3379
-          },
-          {
-            "name": "player_total_errors_avg_10",
-            "importance": 0.3167
+            "name": "odds_ratio",
+            "importance": 0
           },
           {
             "name": "is_underdog",
             "importance": 0
+          },
+          {
+            "name": "player_win_rate_5",
+            "importance": 0
+          },
+          {
+            "name": "player_win_rate_10",
+            "importance": 0
+          },
+          {
+            "name": "player_win_rate_20",
+            "importance": 0
+          },
+          {
+            "name": "player_win_rate_50",
+            "importance": 0
+          },
+          {
+            "name": "days_since_last_match",
+            "importance": 0
+          },
+          {
+            "name": "h2h_wins",
+            "importance": 0
+          },
+          {
+            "name": "h2h_matches",
+            "importance": 0
+          },
+          {
+            "name": "h2h_win_rate",
+            "importance": 0
+          },
+          {
+            "name": "player_surface_win_rate_10",
+            "importance": 0
+          },
+          {
+            "name": "player_surface_win_rate_20",
+            "importance": 0
+          },
+          {
+            "name": "player_aces_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_double_faults_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_first_serve_pct_avg_10",
+            "importance": 0
           }
         ],
-        "zero_importance_count": 1
+        "bottom_10_features": [
+          {
+            "name": "player_first_serve_won_pct_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_second_serve_won_pct_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_first_return_won_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_second_return_won_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_bp_converted_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_total_winners_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_fh_winners_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_bh_winners_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_total_errors_surface_avg_10",
+            "importance": 0
+          },
+          {
+            "name": "player_total_ue_surface_avg_10",
+            "importance": 0
+          }
+        ],
+        "zero_importance_count": 58
       },
-      "warnings": [],
+      "warnings": [
+        "58 features (100.0%) have zero importance"
+      ],
       "details": null
     },
     {
@@ -407,65 +411,65 @@
           "surface": {
             "Hardcourt outdoor": {
               "n": 1178,
-              "accuracy": 0.6885
+              "accuracy": 0.6392
             },
             "Hardcourt indoor": {
               "n": 324,
-              "accuracy": 0.7191
+              "accuracy": 0.6852
             },
             "Red clay": {
               "n": 679,
-              "accuracy": 0.6922
+              "accuracy": 0.6789
             },
             "Grass": {
               "n": 258,
-              "accuracy": 0.6977
+              "accuracy": 0.6938
             }
           },
           "odds_range": {
-            "Heavy Favorite (<1.5)": {
-              "n": 1314,
-              "accuracy": 0.7823
-            },
             "Even (2.0-3.0)": {
               "n": 340,
-              "accuracy": 0.5412
+              "accuracy": 0.4824
+            },
+            "Heavy Favorite (<1.5)": {
+              "n": 1314,
+              "accuracy": 0.7595
             },
             "Favorite (1.5-2.0)": {
               "n": 699,
-              "accuracy": 0.6066
+              "accuracy": 0.6123
             },
             "Underdog (>3.0)": {
               "n": 86,
-              "accuracy": 0.6744
+              "accuracy": 0.2907
             }
           },
           "round": {
             "4": {
               "n": 477,
-              "accuracy": 0.6834
+              "accuracy": 0.6436
             },
             "2": {
               "n": 922,
-              "accuracy": 0.6779
+              "accuracy": 0.6584
             },
             "7": {
               "n": 88,
-              "accuracy": 0.6705
+              "accuracy": 0.5909
             },
             "3": {
               "n": 634,
-              "accuracy": 0.724
+              "accuracy": 0.6877
             },
             "1": {
               "n": 318,
-              "accuracy": 0.7075
+              "accuracy": 0.6698
             }
           }
         }
       },
       "warnings": [
-        "Large accuracy gap between odds segments: 78.2% vs 54.1%"
+        "Large accuracy gap between odds segments: 75.9% vs 29.1%"
       ],
       "details": null
     },
@@ -476,30 +480,30 @@
       "metrics": {
         "edge_case_analysis": {
           "high_confidence_wrong": {
-            "count": 277,
-            "rate": 0.1136
+            "count": 815,
+            "rate": 0.3342
           },
           "no_h2h_data": {
             "n": 1367,
-            "accuracy": 0.7074
+            "accuracy": 0.6737
           },
           "extreme_underdog": {
             "n": 13,
-            "accuracy": 0.6154
+            "accuracy": 0.3846
           },
           "extreme_favorite": {
             "n": 449,
-            "accuracy": 0.8886
+            "accuracy": 0.8419
           },
           "model_vs_odds_disagreement": {
-            "n": 130,
-            "accuracy": 0.4615,
-            "actual_win_rate": 0.4615
+            "n": 349,
+            "accuracy": 0.404,
+            "actual_win_rate": 0.404
           }
         }
       },
       "warnings": [
-        "11.4% of predictions are high-confidence errors"
+        "33.4% of predictions are high-confidence errors"
       ],
       "details": null
     }
