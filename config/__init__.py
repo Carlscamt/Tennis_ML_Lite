@@ -10,6 +10,7 @@ from .settings import (
     FEATURES,
     MODEL,
     BETTING,
+    CV,
 )
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "FEATURES",
     "MODEL",
     "BETTING",
+    "CV",
 ]
