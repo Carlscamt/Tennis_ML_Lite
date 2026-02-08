@@ -32,6 +32,10 @@ class ModelVersion:
     sharpe_ratio: Optional[float] = None
     max_drawdown: Optional[float] = None
     cv_folds: Optional[int] = None
+    # Reproducibility fields
+    data_snapshot_hash: Optional[str] = None
+    git_commit: Optional[str] = None
+    random_seed: Optional[int] = None
 
 class ModelRegistry:
     """

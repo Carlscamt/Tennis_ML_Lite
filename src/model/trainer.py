@@ -1,6 +1,8 @@
 """
 Model training pipeline with XGBoost and probability calibration.
 """
+import os
+import random
 import polars as pl
 import numpy as np
 from pathlib import Path
@@ -65,6 +67,19 @@ class ModelTrainer:
         self.calibrated_model = None
         self.feature_columns = []
     
+    @staticmethod
+    def _pin_random_seeds(seed: int = 42):
+        """
+        Pin all random seeds for reproducibility.
+        
+        Args:
+            seed: Random seed value
+        """
+        random.seed(seed)
+        np.random.seed(seed)
+        os.environ['PYTHONHASHSEED'] = str(seed)
+        logger.debug(f"Random seeds pinned to {seed}")
+    
     def train(
         self,
         train_df: pl.DataFrame,
@@ -84,6 +99,10 @@ class ModelTrainer:
         Returns:
             TrainingResult with model and metrics
         """
+        # Pin all random seeds for reproducibility
+        seed = self.params.get("random_state", 42)
+        self._pin_random_seeds(seed)
+        
         self.feature_columns = feature_cols
         
         # Convert to numpy

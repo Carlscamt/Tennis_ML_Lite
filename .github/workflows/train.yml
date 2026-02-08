@@ -1,0 +1,123 @@
+name: Train Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      description:
+        description: 'Training run description'
+        required: false
+        default: 'Automated training run'
+      data_cutoff_date:
+        description: 'Data cutoff date (YYYY-MM-DD)'
+        required: false
+        default: ''
+  schedule:
+    # Weekly on Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+env:
+  PYTHON_VERSION: "3.12"
+  RANDOM_SEED: 42
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Generate version
+      id: version
+      run: |
+        VERSION="v$(date +'%Y%m%d_%H%M%S')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Generated version: $VERSION"
+    
+    - name: Compute data snapshot hash
+      id: data_hash
+      run: |
+        if [ -f "data/processed/features.parquet" ]; then
+          HASH=$(sha256sum data/processed/features.parquet | cut -d' ' -f1)
+        else
+          HASH="no-data-file"
+        fi
+        echo "hash=$HASH" >> $GITHUB_OUTPUT
+        echo "Data hash: $HASH"
+    
+    - name: Train model
+      env:
+        RANDOM_STATE: ${{ env.RANDOM_SEED }}
+        MODEL_VERSION: ${{ steps.version.outputs.version }}
+        DATA_SNAPSHOT_HASH: ${{ steps.data_hash.outputs.hash }}
+      run: |
+        python -c "
+        import os
+        import json
+        import random
+        import numpy as np
+        
+        # Pin all random seeds
+        seed = int(os.environ.get('RANDOM_STATE', 42))
+        random.seed(seed)
+        np.random.seed(seed)
+        
+        # Run training
+        from src.flows import TennisPipeline
+        pipeline = TennisPipeline()
+        
+        # Train with description
+        description = '${{ github.event.inputs.description || 'Scheduled training' }}'
+        result = pipeline.train(description=description)
+        
+        # Save metrics
+        metrics = {
+            'version': os.environ['MODEL_VERSION'],
+            'data_snapshot_hash': os.environ['DATA_SNAPSHOT_HASH'],
+            'random_seed': seed,
+            'description': description,
+            'metrics': result if isinstance(result, dict) else {'status': 'completed'}
+        }
+        
+        with open('training_metrics.json', 'w') as f:
+            json.dump(metrics, f, indent=2, default=str)
+        
+        print('Training completed successfully')
+        print(json.dumps(metrics, indent=2, default=str))
+        "
+    
+    - name: Upload training metrics
+      uses: actions/upload-artifact@v4
+      with:
+        name: training-metrics-${{ steps.version.outputs.version }}
+        path: training_metrics.json
+        retention-days: 30
+    
+    - name: Upload candidate model
+      uses: actions/upload-artifact@v4
+      with:
+        name: candidate-model-${{ steps.version.outputs.version }}
+        path: models/xgboost_model/
+        retention-days: 30
+    
+    - name: Summary
+      run: |
+        echo "## Training Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Data Hash**: ${{ steps.data_hash.outputs.hash }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Random Seed**: ${{ env.RANDOM_SEED }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Metrics" >> $GITHUB_STEP_SUMMARY
+        cat training_metrics.json >> $GITHUB_STEP_SUMMARY

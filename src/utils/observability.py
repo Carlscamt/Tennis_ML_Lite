@@ -81,6 +81,36 @@ class MetricsRegistry:
             registry=self.registry
         )
         
+        # Model-versioned prediction tracking
+        self.model_predictions_total = Counter(
+            'model_predictions_total',
+            'Total predictions by model version and predicted outcome',
+            labelnames=['model_version', 'predicted_outcome'],
+            registry=self.registry
+        )
+        
+        # Betting metrics
+        self.bets_placed_total = Counter(
+            'bets_placed_total',
+            'Total bets placed by model version and actual outcome',
+            labelnames=['model_version', 'actual_outcome'],
+            registry=self.registry
+        )
+        
+        self.bets_by_surface = Counter(
+            'bets_by_surface_total',
+            'Bets by surface type',
+            labelnames=['surface', 'outcome'],
+            registry=self.registry
+        )
+        
+        self.bets_by_odds_band = Counter(
+            'bets_by_odds_band_total',
+            'Bets by odds band',
+            labelnames=['odds_band', 'outcome'],
+            registry=self.registry
+        )
+        
         # GAUGES (point-in-time snapshots)
         self.model_drift = Gauge(
             'model_drift_auc_change',
@@ -104,6 +134,89 @@ class MetricsRegistry:
             'model_version_info',
             'Model version metadata',
             labelnames=['version', 'trained_date'],
+            registry=self.registry
+        )
+        
+        # Realized ROI by model version
+        self.model_realized_roi = Gauge(
+            'model_realized_roi',
+            'Realized ROI by model version (updated daily)',
+            labelnames=['model_version'],
+            registry=self.registry
+        )
+        
+        # Bankroll metrics
+        self.bankroll_current = Gauge(
+            'bankroll_current',
+            'Current bankroll value',
+            registry=self.registry
+        )
+        
+        self.bankroll_peak = Gauge(
+            'bankroll_peak',
+            'Peak bankroll value',
+            registry=self.registry
+        )
+        
+        self.bankroll_drawdown_pct = Gauge(
+            'bankroll_drawdown_pct',
+            'Current drawdown as percentage from peak',
+            registry=self.registry
+        )
+        
+        self.total_stakes = Gauge(
+            'total_stakes',
+            'Total amount staked',
+            registry=self.registry
+        )
+        
+        self.total_returns = Gauge(
+            'total_returns',
+            'Total returns from bets',
+            registry=self.registry
+        )
+        
+        # Data drift detection metrics
+        self.feature_mean = Gauge(
+            'feature_mean',
+            'Rolling mean of feature values',
+            labelnames=['feature_name'],
+            registry=self.registry
+        )
+        
+        self.feature_stddev = Gauge(
+            'feature_stddev',
+            'Rolling standard deviation of feature values',
+            labelnames=['feature_name'],
+            registry=self.registry
+        )
+        
+        self.feature_null_rate = Gauge(
+            'feature_null_rate',
+            'Null rate for feature',
+            labelnames=['feature_name'],
+            registry=self.registry
+        )
+        
+        # Scraper health metrics
+        self.scraper_success_rate = Gauge(
+            'scraper_success_rate',
+            'Scraper success rate (0-1)',
+            labelnames=['endpoint'],
+            registry=self.registry
+        )
+        
+        self.scraper_rate_limit_hits = Counter(
+            'scraper_rate_limit_hits_total',
+            'Rate limit hits by endpoint',
+            labelnames=['endpoint'],
+            registry=self.registry
+        )
+        
+        self.scraper_circuit_breaker_state = Gauge(
+            'scraper_circuit_breaker_state',
+            'Circuit breaker state (0=closed, 1=half-open, 2=open)',
+            labelnames=['endpoint'],
             registry=self.registry
         )
 

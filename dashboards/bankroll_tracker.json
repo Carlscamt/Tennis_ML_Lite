@@ -1,0 +1,312 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "title": "Current Bankroll",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 0,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "bankroll_current",
+                    "legendFormat": "Balance"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD",
+                    "thresholds": {
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 800
+                            },
+                            {
+                                "color": "green",
+                                "value": 1000
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Peak Bankroll",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 6,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "bankroll_peak",
+                    "legendFormat": "Peak"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD"
+                }
+            }
+        },
+        {
+            "title": "Current Drawdown",
+            "type": "gauge",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 12,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "bankroll_drawdown_pct",
+                    "legendFormat": "Drawdown"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "min": 0,
+                    "max": 50,
+                    "thresholds": {
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 10
+                            },
+                            {
+                                "color": "orange",
+                                "value": 20
+                            },
+                            {
+                                "color": "red",
+                                "value": 30
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Total ROI",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 18,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "(total_returns - total_stakes) / total_stakes * 100",
+                    "legendFormat": "ROI %"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "thresholds": {
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 0
+                            },
+                            {
+                                "color": "green",
+                                "value": 5
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Bankroll Over Time",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 10,
+                "w": 16,
+                "x": 0,
+                "y": 6
+            },
+            "targets": [
+                {
+                    "expr": "bankroll_current",
+                    "legendFormat": "Balance"
+                },
+                {
+                    "expr": "bankroll_peak",
+                    "legendFormat": "Peak"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD"
+                }
+            }
+        },
+        {
+            "title": "Drawdown History",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 10,
+                "w": 8,
+                "x": 16,
+                "y": 6
+            },
+            "targets": [
+                {
+                    "expr": "bankroll_drawdown_pct",
+                    "legendFormat": "Drawdown %"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "custom": {
+                        "fillOpacity": 30
+                    },
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            }
+        },
+        {
+            "title": "Total Stakes",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 0,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "expr": "total_stakes",
+                    "legendFormat": "Staked"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD"
+                }
+            }
+        },
+        {
+            "title": "Total Returns",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 6,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "expr": "total_returns",
+                    "legendFormat": "Returns"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD"
+                }
+            }
+        },
+        {
+            "title": "Net Profit/Loss",
+            "type": "stat",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 12,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "expr": "total_returns - total_stakes",
+                    "legendFormat": "P/L"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD",
+                    "thresholds": {
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "green",
+                                "value": 0
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Bets by Odds Band",
+            "type": "barchart",
+            "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 18,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "expr": "sum(bets_by_odds_band_total) by (odds_band)",
+                    "legendFormat": "{{odds_band}}"
+                }
+            ]
+        }
+    ],
+    "refresh": "1m",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [
+        "tennis",
+        "bankroll",
+        "betting"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-30d",
+        "to": "now"
+    },
+    "title": "Tennis ML - Bankroll Tracker",
+    "uid": "tennis-bankroll-tracker",
+    "version": 1
+}

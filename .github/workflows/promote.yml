@@ -1,0 +1,101 @@
+name: Promote Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_version:
+        description: 'Model version to promote (e.g., v20260208_120000)'
+        required: true
+      target_stage:
+        description: 'Target stage'
+        required: true
+        default: 'Production'
+        type: choice
+        options:
+          - Staging
+          - Production
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Validate model exists
+      run: |
+        python -c "
+        from src.model.registry import ModelRegistry
+        
+        registry = ModelRegistry()
+        version = '${{ github.event.inputs.model_version }}'
+        
+        # Check if model exists
+        metadata = registry.get_model_metadata(version)
+        if not metadata:
+            print(f'ERROR: Model {version} not found in registry')
+            exit(1)
+        
+        print(f'Found model: {version}')
+        print(f'Current stage: {metadata.get(\"stage\", \"Unknown\")}')
+        "
+    
+    - name: Promote model
+      run: |
+        python -c "
+        from src.model.registry import ModelRegistry
+        
+        registry = ModelRegistry()
+        version = '${{ github.event.inputs.model_version }}'
+        target_stage = '${{ github.event.inputs.target_stage }}'
+        
+        print(f'Promoting {version} to {target_stage}...')
+        registry.transition_stage(version, target_stage)
+        print(f'Successfully promoted {version} to {target_stage}')
+        "
+    
+    - name: Commit registry changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add models/registry.json
+        git commit -m "chore: Promote ${{ github.event.inputs.model_version }} to ${{ github.event.inputs.target_stage }}" || echo "No changes to commit"
+        git push
+    
+    - name: Create Git tag
+      if: github.event.inputs.target_stage == 'Production'
+      run: |
+        git tag -a "model-${{ github.event.inputs.model_version }}" -m "Model ${{ github.event.inputs.model_version }} promoted to Production"
+        git push origin "model-${{ github.event.inputs.model_version }}"
+    
+    - name: Summary
+      run: |
+        echo "## Promotion Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Model Version**: ${{ github.event.inputs.model_version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target Stage**: ${{ github.event.inputs.target_stage }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Promoted By**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ github.event.inputs.target_stage }}" == "Production" ]; then
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Git Tag Created**: \`model-${{ github.event.inputs.model_version }}\`" >> $GITHUB_STEP_SUMMARY
+        fi
