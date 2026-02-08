@@ -5,6 +5,7 @@ import sys
 import time
 import uuid
 import os
+import importlib.util
 from pathlib import Path
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any
@@ -25,7 +26,15 @@ from src.extract.data_loader import prepare_base_dataset, get_dataset_stats
 from src.transform import FeatureEngineer, create_train_test_split, DataValidator
 from src.transform.leakage_guard import validate_temporal_order, assert_no_leakage
 from src.model.trainer import ModelTrainer # Backward compat for params?
-from src.scraper import scrape_upcoming, scrape_players
+
+# Direct import of scraper.py module (avoiding package naming conflict with src/scraper/)
+_scraper_path = Path(__file__).parent / "scraper.py"
+_spec = importlib.util.spec_from_file_location("scraper_module", _scraper_path)
+_scraper_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_scraper_module)
+scrape_upcoming = _scraper_module.scrape_upcoming
+scrape_players = _scraper_module.scrape_players
+
 from src.utils.observability import get_metrics, Logger, CORRELATION_ID
 
 # Data Quality Imports
@@ -783,7 +792,7 @@ class TennisPipeline:
         """Trigger fast scraper for specific IDs."""
         if not player_ids: return
         
-        from src.scraper import scrape_players
+        # scrape_players is imported at module level via importlib
         # Use smart_update=True to avoid re-scraping recently updated players
         scrape_players(player_ids, smart_update=True, workers=2)
         
