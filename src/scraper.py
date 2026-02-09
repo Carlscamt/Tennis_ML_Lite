@@ -660,6 +660,104 @@ def get_scheduled_events(date_str: str) -> List[Dict]:
     return data.get("events", []) if data else []
 
 
+def fetch_ongoing_tournaments() -> List[Dict]:
+    """
+    Get list of ongoing ATP/Challenger tournaments.
+    Extracts unique tournaments from today's scheduled events.
+    """
+    today = datetime.now().strftime("%Y-%m-%d")
+    events = get_scheduled_events(today)
+    
+    tournaments = {}
+    for event in events:
+        if not is_valid_event(event):
+            continue
+            
+        tourney = event.get("tournament", {})
+        unique_tourney = tourney.get("uniqueTournament", {})
+        tourney_id = unique_tourney.get("id")
+        
+        if not tourney_id or tourney_id in tournaments:
+            continue
+            
+        category = tourney.get("category", {})
+        cat_name = category.get("name", "")
+        
+        tournaments[tourney_id] = {
+            "id": tourney_id,
+            "name": unique_tourney.get("name", tourney.get("name", "Unknown")),
+            "category": cat_name,
+            "slug": unique_tourney.get("slug", ""),
+            "season_id": tourney.get("season", {}).get("id"),
+        }
+    
+    return sorted(tournaments.values(), key=lambda x: x["name"])
+
+
+def fetch_tournament_matches(tournament_id: int, season_id: int = None) -> List[Dict]:
+    """
+    Get all matches for a tournament (completed + upcoming).
+    
+    Args:
+        tournament_id: SofaScore unique tournament ID
+        season_id: Optional season ID (fetched if not provided)
+    
+    Returns:
+        List of match dictionaries with results and odds
+    """
+    # If no season_id, try to get current season
+    if season_id is None:
+        seasons_data = fetch_json(f"/unique-tournament/{tournament_id}/seasons")
+        if seasons_data and seasons_data.get("seasons"):
+            season_id = seasons_data["seasons"][0].get("id")
+    
+    if not season_id:
+        print(f"Could not find season for tournament {tournament_id}")
+        return []
+    
+    all_matches = []
+    
+    # Fetch completed matches (last events)
+    page = 0
+    while True:
+        data = fetch_json(f"/unique-tournament/{tournament_id}/season/{season_id}/events/last/{page}")
+        if not data or not data.get("events"):
+            break
+        
+        events = data["events"]
+        for event in events:
+            if is_valid_event(event):
+                # Fetch odds for each match
+                odds = fetch_match_odds(event["id"]) or {}
+                event["_odds"] = odds
+                all_matches.append(event)
+        
+        if not data.get("hasNextPage", False):
+            break
+        page += 1
+    
+    # Fetch upcoming matches (next events)
+    page = 0
+    while True:
+        data = fetch_json(f"/unique-tournament/{tournament_id}/season/{season_id}/events/next/{page}")
+        if not data or not data.get("events"):
+            break
+        
+        events = data["events"]
+        for event in events:
+            if is_valid_event(event):
+                odds = fetch_match_odds(event["id"]) or {}
+                event["_odds"] = odds
+                all_matches.append(event)
+        
+        if not data.get("hasNextPage", False):
+            break
+        page += 1
+    
+    print(f"Found {len(all_matches)} matches for tournament {tournament_id}")
+    return all_matches
+
+
 # =============================================================================
 # DATA PROCESSING
 # =============================================================================
@@ -1059,6 +1157,16 @@ def scrape_players(
     if not all_records:
         print("No new matches found")
         return existing_df if existing_df is not None else pl.DataFrame()
+    
+    # Normalize schemas - collect all keys and fill missing ones with None
+    all_keys = set()
+    for record in all_records:
+        all_keys.update(record.keys())
+    
+    for record in all_records:
+        for key in all_keys:
+            if key not in record:
+                record[key] = None
     
     # Create DataFrame
     new_df = pl.DataFrame(all_records)

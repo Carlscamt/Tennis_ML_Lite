@@ -190,6 +190,94 @@ def cmd_backtest(args):
     from scripts.backtest_roi_analysis import main as run_backtest
     run_backtest()
 
+
+def cmd_tournaments(args):
+    """List ongoing tournaments."""
+    import importlib.util
+    _path = Path(__file__).parent / "src" / "scraper.py"
+    _spec = importlib.util.spec_from_file_location("scraper_mod", _path)
+    _mod = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)
+    fetch_ongoing_tournaments = _mod.fetch_ongoing_tournaments
+    
+    print("\n=== ONGOING TOURNAMENTS ===\n")
+    tournaments = fetch_ongoing_tournaments()
+    
+    if not tournaments:
+        print("No ongoing tournaments found")
+        return
+    
+    print(f"{'ID':<8} | {'Name':<35} | {'Category':<15}")
+    print(f"{'-'*8}-+-{'-'*35}-+-{'-'*15}")
+    
+    for t in tournaments:
+        print(f"{t['id']:<8} | {t['name'][:35]:<35} | {t['category'][:15]:<15}")
+    
+    print(f"\nUse: python tennis.py analyze --tournament <ID>\n")
+
+
+def cmd_analyze(args):
+    """Analyze tournament matches with predictions."""
+    from src.pipeline import TennisPipeline
+    
+    logger.log_event('analyze_command_started', tournament=args.tournament)
+    
+    pipeline = TennisPipeline()
+    df = pipeline.analyze_tournament(args.tournament, args.season)
+    
+    if len(df) == 0:
+        print("No matches to analyze")
+        return
+    
+    # Save to file if requested
+    if args.output:
+        out_path = Path(args.output)
+        if out_path.suffix == '.csv':
+            df.write_csv(out_path)
+        elif out_path.suffix == '.json':
+            df.write_json(out_path, row_oriented=True)
+        else:
+            df.write_csv(out_path)
+        print(f"[OK] Saved to: {out_path}")
+    
+    # Print ASCII table
+    _print_tournament_analysis(df)
+
+
+def _print_tournament_analysis(df):
+    """Print tournament analysis as ASCII table."""
+    print(f"\n{'='*100}")
+    print(f"TOURNAMENT ANALYSIS ({len(df)} matches)".center(100))
+    print(f"{'='*100}")
+    
+    # Header
+    print(f"| {'Date':<12} | {'Player 1':<18} | {'P%':>3} | {'Req':>5} | {'Odds':>5} | {'Edge':>6} | {'Player 2':<18} | {'Status':<3} | {'Winner':<12} |")
+    print(f"|{'-'*14}|{'-'*20}|{'-'*5}|{'-'*7}|{'-'*7}|{'-'*8}|{'-'*20}|{'-'*5}|{'-'*14}|")
+    
+    for row in df.iter_rows(named=True):
+        date = row.get('date', '')[:12]
+        p1 = row.get('p1', '')[:18]
+        p2 = row.get('p2', '')[:18]
+        pred = row.get('pred_p1', 50)
+        req = row.get('req_p1', 2.0)
+        odds = row.get('odds_p1')
+        edge = row.get('edge_p1')
+        status = row.get('status', '')
+        winner = row.get('winner', '-')[:12]
+        
+        odds_str = f"{odds:.2f}" if odds else "  -  "
+        edge_str = f"{edge:+.1f}%" if edge else "   -  "
+        
+        # Color code edge (using ASCII indicators)
+        if edge and edge > 5:
+            edge_str = f"{edge:+.1f}%!"
+        
+        print(f"| {date:<12} | {p1:<18} | {pred:>3}% | {req:>5.2f} | {odds_str:>5} | {edge_str:>6} | {p2:<18} | {status:<3} | {winner:<12} |")
+    
+    print(f"|{'='*14}|{'='*20}|{'='*5}|{'='*7}|{'='*7}|{'='*8}|{'='*20}|{'='*5}|{'='*14}|")
+    print(f"  Req = Required odds (break-even) = 1/Prediction  |  Edge = (Odds × Pred) - 1\n")
+
+
 # --- MODEL REGISTRY COMMANDS ---
 
 def cmd_list_models(args):
@@ -554,6 +642,16 @@ def main():
     run_flow.add_argument('--skip-scrape', action='store_true', help='Skip scraping step')
     run_flow.add_argument('--skip-features', action='store_true', help='Skip feature building')
     run_flow.set_defaults(func=cmd_run_flow)
+    
+    # Tournament Analysis Commands
+    tournaments = subparsers.add_parser('tournaments', help='List ongoing tournaments')
+    tournaments.set_defaults(func=cmd_tournaments)
+    
+    analyze = subparsers.add_parser('analyze', help='Analyze tournament with predictions')
+    analyze.add_argument('--tournament', '-t', type=int, required=True, help='Tournament ID')
+    analyze.add_argument('--season', '-s', type=int, help='Season ID (auto-detected if omitted)')
+    analyze.add_argument('--output', '-o', help='Save to file (.csv, .json)')
+    analyze.set_defaults(func=cmd_analyze)
     
     args = parser.parse_args()
     

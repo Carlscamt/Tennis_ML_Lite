@@ -34,6 +34,7 @@ _scraper_module = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_scraper_module)
 scrape_upcoming = _scraper_module.scrape_upcoming
 scrape_players = _scraper_module.scrape_players
+fetch_tournament_matches = _scraper_module.fetch_tournament_matches
 
 from src.utils.observability import get_metrics, Logger, CORRELATION_ID
 
@@ -848,6 +849,122 @@ class TennisPipeline:
             predictions = predictions.drop(cols_to_drop)
             
         return predictions
+
+    def analyze_tournament(self, tournament_id: int, season_id: int = None) -> pl.DataFrame:
+        """
+        Analyze all matches in a tournament with predictions.
+        
+        Shows predictions, required odds (1/probability), and results.
+        """
+        print(f"[Pipeline] Fetching matches for tournament {tournament_id}...")
+        matches = fetch_tournament_matches(tournament_id, season_id)
+        
+        if not matches:
+            print("No matches found for this tournament")
+            return pl.DataFrame()
+        
+        historical = self._load_historical_data()
+        results = []
+        
+        for match in matches:
+            home = match.get("homeTeam", {})
+            away = match.get("awayTeam", {})
+            home_id, away_id = home.get("id"), away.get("id")
+            home_name, away_name = home.get("name", "?"), away.get("name", "?")
+            
+            tourney = match.get("tournament", {}).get("uniqueTournament", {})
+            tourney_name = tourney.get("name", "Unknown")
+            
+            status = match.get("status", {}).get("type", "")
+            is_finished = status == "finished"
+            winner_code = match.get("winnerCode")
+            
+            # Get odds - check both direct keys and nested structure
+            odds_data = match.get("_odds", {})
+            home_odds = odds_data.get("odds_home")
+            away_odds = odds_data.get("odds_away")
+            
+            # Fallback to nested structure if direct keys not found
+            if home_odds is None:
+                for market in odds_data.get("markets", []):
+                    if market.get("marketName") == "Full time":
+                        for choice in market.get("choices", []):
+                            frac = choice.get("fractionalValue")
+                            if choice.get("name") == "1" and frac:
+                                try:
+                                    if "/" in str(frac):
+                                        n, d = map(int, str(frac).split("/"))
+                                        home_odds = round(1 + n/d, 2)
+                                    else:
+                                        home_odds = float(frac)
+                                except: pass
+                            elif choice.get("name") == "2" and frac:
+                                try:
+                                    if "/" in str(frac):
+                                        n, d = map(int, str(frac).split("/"))
+                                        away_odds = round(1 + n/d, 2)
+                                    else:
+                                        away_odds = float(frac)
+                                except: pass
+            
+            # Calculate probability - prefer historical data, then implied from odds, then 50/50
+            home_prob, away_prob = 0.5, 0.5
+            has_historical = False
+            
+            if historical is not None and len(historical) > 0:
+                try:
+                    h_hist = historical.filter(pl.col("player_id") == home_id)
+                    a_hist = historical.filter(pl.col("player_id") == away_id)
+                    if len(h_hist) > 0 and len(a_hist) > 0:
+                        h_wr = len(h_hist.filter(pl.col("player_won") == True)) / len(h_hist)
+                        a_wr = len(a_hist.filter(pl.col("player_won") == True)) / len(a_hist)
+                        total = h_wr + a_wr
+                        if total > 0:
+                            home_prob, away_prob = h_wr/total, a_wr/total
+                            has_historical = True
+                except: pass
+            
+            # Use implied probability from odds if no historical data
+            if not has_historical and home_odds and away_odds:
+                # Implied probability = 1/odds, then normalize (remove overround)
+                home_implied = 1 / home_odds
+                away_implied = 1 / away_odds
+                total_implied = home_implied + away_implied
+                if total_implied > 0:
+                    home_prob = home_implied / total_implied
+                    away_prob = away_implied / total_implied
+            
+            # Required odds = break-even = 1/probability
+            home_req = round(1/home_prob, 2) if home_prob > 0 else 99
+            away_req = round(1/away_prob, 2) if away_prob > 0 else 99
+            
+            # Edge = (odds * prob) - 1
+            home_edge = round((home_odds * home_prob - 1) * 100, 1) if home_odds else None
+            away_edge = round((away_odds * away_prob - 1) * 100, 1) if away_odds else None
+            
+            start_ts = match.get("startTimestamp", 0)
+            match_date = datetime.fromtimestamp(start_ts).strftime("%m/%d %H:%M") if start_ts else "TBD"
+            
+            results.append({
+                "date": match_date,
+                "p1": home_name[:20],
+                "p2": away_name[:20],
+                "pred_p1": round(home_prob * 100),
+                "req_p1": home_req,
+                "odds_p1": home_odds,
+                "edge_p1": home_edge,
+                "pred_p2": round(away_prob * 100),
+                "req_p2": away_req,
+                "odds_p2": away_odds,
+                "edge_p2": away_edge,
+                "status": "FIN" if is_finished else "UP",
+                "winner": home_name[:15] if winner_code == 1 else (away_name[:15] if winner_code == 2 else "-"),
+            })
+        
+        df = pl.DataFrame(results)
+        print(f"[Pipeline] Analyzed {len(df)} matches")
+        return df
+
 
 def run_data_pipeline(raw_dir: Path, output_dir: Path):
     pipeline = TennisPipeline()
