@@ -26,3 +26,4 @@ tqdm>=4.66.0
 
 # Visualization
 plotly>=5.18.0
+streamlit>=1.29.0

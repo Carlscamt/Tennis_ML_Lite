@@ -1,0 +1,1527 @@
+2026-02-09 12:09:33,963 - monitor - INFO - Starting Sofascore Monitor for 1 users...
+2026-02-09 12:09:33,963 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:09:34,240 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:09:34,241 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:10:34,242 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:10:34,274 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:10:34,274 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:11:34,275 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:11:34,306 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:11:34,307 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:12:34,308 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:12:34,340 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:12:34,340 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:13:34,341 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:13:34,370 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:13:34,370 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:14:34,371 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:14:34,405 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:14:34,406 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:15:24,953 - monitor - INFO - Auto-discovering Top Predictors...
+2026-02-09 12:15:25,135 - monitor - INFO - Discovered 100 new top predictors.
+2026-02-09 12:15:25,136 - monitor - INFO - Starting Sofascore Monitor for 101 users...
+2026-02-09 12:15:25,136 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:15:25,293 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:15:25,293 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:15:25,510 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:15:25,699 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:15:25,890 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:15:26,087 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:15:26,534 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:15:26,948 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:15:26,949 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:15:34,407 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:15:34,435 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:15:34,436 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:16:26,949 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:16:26,982 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:16:26,983 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:16:27,014 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:16:27,046 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:16:27,079 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:16:27,115 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:16:27,181 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:16:27,255 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:16:27,257 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:16:34,436 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:16:34,466 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:16:34,466 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:17:27,257 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:17:27,287 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:17:27,288 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:17:27,320 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:17:27,353 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:17:27,384 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:17:27,414 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:17:27,484 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:17:27,556 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:17:27,752 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:17:27,945 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:17:27,946 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:17:34,467 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:17:34,498 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:17:34,498 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:18:27,947 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:18:27,978 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:18:27,979 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:18:28,013 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:18:28,045 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:18:28,081 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:18:28,114 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:18:28,180 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:18:28,246 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:18:28,277 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:18:28,308 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:18:28,520 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:18:28,743 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:18:28,744 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:18:34,499 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:18:34,532 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:18:34,533 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:19:28,746 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:19:28,777 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:19:28,777 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:19:28,808 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:19:28,839 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:19:28,870 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:19:28,899 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:19:28,962 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:19:29,027 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:19:29,058 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:19:29,088 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:19:29,119 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:19:29,150 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:19:29,151 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:19:34,534 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:19:34,565 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:19:34,565 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:20:29,152 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:20:29,182 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:20:29,183 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:20:29,213 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:20:29,243 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:20:29,274 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:20:29,307 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:20:29,371 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:20:29,442 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:20:29,474 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:20:29,506 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:20:29,537 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:20:29,567 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:20:29,568 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:20:34,566 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:20:34,596 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:20:34,596 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:21:29,569 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:21:29,599 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:21:29,599 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:21:29,630 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:21:29,660 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:21:29,691 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:21:29,723 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:21:29,784 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:21:29,857 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:21:29,886 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:21:29,916 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:21:29,947 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:21:29,980 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:21:30,218 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:21:30,428 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:21:30,645 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:21:30,646 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:21:34,598 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:21:34,631 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:21:34,632 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:22:30,646 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:22:30,677 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:22:30,677 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:22:30,708 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:22:30,738 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:22:30,772 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:22:30,802 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:22:30,866 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:22:30,936 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:22:30,967 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:22:30,998 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:22:31,032 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:22:31,063 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:22:31,095 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:22:31,125 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:22:31,159 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:22:31,392 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:22:31,583 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:22:31,783 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:22:31,984 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:22:31,985 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:22:34,633 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:22:34,662 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:22:34,662 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:23:31,986 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:23:32,017 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:23:32,017 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:23:32,051 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:23:32,082 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:23:32,114 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:23:32,148 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:23:32,212 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:23:32,280 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:23:32,311 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:23:32,344 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:23:32,379 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:23:32,412 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:23:32,446 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:23:32,479 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:23:32,515 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:23:32,548 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:23:32,579 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:23:32,617 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:23:32,649 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:23:32,651 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:23:34,663 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:23:34,693 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:23:34,694 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:24:32,651 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:24:32,681 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:24:32,682 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:24:32,716 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:24:32,752 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:24:32,785 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:24:32,816 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:24:32,888 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:24:32,964 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:24:32,997 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:24:33,029 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:24:33,067 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:24:33,101 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:24:33,136 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:24:33,168 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:24:33,202 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:24:33,234 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:24:33,265 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:24:33,302 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:24:33,336 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:24:33,337 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:24:34,695 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:24:34,726 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:24:34,727 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:25:33,338 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:25:33,370 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:25:33,371 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:25:33,524 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:25:33,679 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:25:33,832 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:25:33,986 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:25:34,414 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:25:34,751 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:25:34,755 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:25:34,791 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:25:34,792 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:25:34,798 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:25:34,832 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:25:34,863 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:25:34,898 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:25:34,930 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:25:34,960 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:25:34,993 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:25:35,026 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:25:35,057 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:25:35,090 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:25:35,120 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:25:35,121 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:26:34,793 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:26:34,823 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:26:34,824 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:26:35,123 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:26:35,154 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:26:35,154 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:26:35,311 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:26:35,465 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:26:35,618 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:26:35,771 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:26:36,083 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:26:36,400 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:26:36,431 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:26:36,465 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:26:36,497 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:26:36,533 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:26:36,564 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:26:36,595 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:26:36,629 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:26:36,661 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:26:36,691 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:26:36,722 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:26:36,753 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:26:36,754 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:27:34,825 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:27:34,860 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:27:34,861 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:27:36,755 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:27:36,787 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:27:36,787 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:27:36,819 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:27:36,849 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:27:36,881 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:27:36,916 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:27:36,983 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:27:37,055 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:27:37,327 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:27:37,511 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:27:37,559 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:27:37,590 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:27:37,626 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:27:37,657 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:27:37,688 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:27:37,719 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:27:37,748 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:27:37,781 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:27:37,815 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:27:37,817 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:28:34,862 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:28:34,892 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:28:34,892 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:28:37,817 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:28:37,849 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:28:37,849 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:28:37,882 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:28:37,913 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:28:37,944 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:28:37,976 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:28:38,047 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:28:38,111 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:28:38,268 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:28:38,424 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:28:38,741 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:28:38,960 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:28:38,993 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:28:39,027 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:28:39,059 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:28:39,090 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:28:39,120 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:28:39,150 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:28:39,181 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:28:39,182 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:29:34,893 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:29:34,931 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:29:34,932 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:29:39,183 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:29:39,215 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:29:39,215 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:29:39,248 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:29:39,284 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:29:39,316 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:29:39,347 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:29:39,409 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:29:39,479 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:29:39,511 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:29:39,542 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:29:39,573 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:29:39,605 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:29:39,637 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:29:39,668 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:29:39,700 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:29:39,734 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:29:39,765 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:29:39,795 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:29:39,830 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:29:39,833 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:30:34,934 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:30:34,965 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:30:34,966 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:30:39,834 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:30:39,866 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:30:39,866 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:30:39,897 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:30:39,929 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:30:39,961 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:30:39,991 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:30:40,056 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:30:40,120 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:30:40,153 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:30:40,185 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:30:40,216 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:30:40,247 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:30:40,279 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:30:40,308 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:30:40,339 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:30:40,370 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:30:40,401 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:30:40,432 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:30:40,463 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:30:40,463 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:31:34,967 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:31:34,996 - client - WARNING - Endpoint not found: /user/857093/predictions
+2026-02-09 12:31:34,997 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:31:40,464 - monitor - INFO - Checking user: Sofascore (857093)
+2026-02-09 12:31:40,495 - client - WARNING - Endpoint not found: /user/857093/predictions?page=0
+2026-02-09 12:31:40,495 - monitor - INFO - Checking user: Albert PL (678767edb8435cc2d1bba515)
+2026-02-09 12:31:40,526 - monitor - INFO - Checking user: BTTS is the best (675d85b17907d6eedb8055e3)
+2026-02-09 12:31:40,583 - monitor - INFO - Checking user: Guest68864018740173ade94578cf (68864018740173ade94578cf)
+2026-02-09 12:31:40,614 - monitor - INFO - Checking user: Lucassixel (651efc1f5f8b7abc2e672977)
+2026-02-09 12:31:40,645 - monitor - INFO - Checking user: Avexo Julius (5dadb1036996486450251cb6)
+2026-02-09 12:31:40,708 - monitor - INFO - Checking user: Swift GB (6758979fed09a67b595d5ba2)
+2026-02-09 12:31:40,776 - monitor - INFO - Checking user: Cold Germany (689f517a3679e4ed61895a5a)
+2026-02-09 12:31:40,806 - monitor - INFO - Checking user: M M 215 (68c85d7add0274a6b7c8d690)
+2026-02-09 12:31:40,835 - monitor - INFO - Checking user: Ali Santiago (69208abc1c4a9870579db588)
+2026-02-09 12:31:40,865 - monitor - INFO - Checking user: Tekomonamata (6917b355735cad3a48cad5ac)
+2026-02-09 12:31:40,897 - monitor - INFO - Checking user: DRoPx_7 (669feac0632b43a2dedb8160)
+2026-02-09 12:31:41,113 - monitor - INFO - Checking user: Cù Chí Minh (68be6292e1b3b9969922fbd3)
+2026-02-09 12:31:41,427 - monitor - INFO - Checking user: Dexie (5ef8e7361bc0ebb87035d003)
+2026-02-09 12:31:41,634 - monitor - INFO - Checking user: gonzalo álvarez roman (695e1c793cfffce47340709c)
+2026-02-09 12:31:41,666 - monitor - INFO - Checking user: Cristian Martinez Padilla (690d9aecd78e9904b0104c08)
+2026-02-09 12:31:41,698 - monitor - INFO - Checking user: Hector Schemeiz (6934a086e6486a771a6af419)
+2026-02-09 12:31:41,730 - monitor - INFO - Checking user: marzz (6964f4b2ab0ddca628c3a2f7)
+2026-02-09 12:31:41,764 - monitor - ERROR - Error in monitor loop: could not convert string to float: '-'
+Traceback (most recent call last):
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 35, in run
+    self.check_all_users()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 73, in check_all_users
+    new_bets = self.check_user(user)
+  File "C:\Users\Carlos\Documents\Antigravity\Tennis lite\sofascore_monitor\monitor.py", line 114, in check_user
+    odds=float(odds_obj.get('decimalValue', 0.0)),
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '-'
+2026-02-09 12:31:41,767 - monitor - INFO - Sleeping for 60s...
+2026-02-09 12:33:11,177 - monitor - INFO - Starting Async Sofascore Monitor...
+2026-02-09 12:33:11,177 - monitor - INFO - Auto-discovering Top Predictors...
+2026-02-09 12:33:11,321 - monitor - INFO - Discovered 100 new top predictors.
+2026-02-09 12:33:11,321 - monitor - INFO - Monitoring 101 users with 60s base interval.
+2026-02-09 12:33:11,364 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.61
+2026-02-09 12:33:11,370 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.65
+2026-02-09 12:33:11,376 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.2
+2026-02-09 12:33:11,381 - monitor - INFO - New bet found for BTTS is the best: 1 @ 2.35
+2026-02-09 12:33:11,387 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.53
+2026-02-09 12:33:11,393 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.44
+2026-02-09 12:33:11,398 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.33
+2026-02-09 12:33:11,403 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.83
+2026-02-09 12:33:11,408 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.5
+2026-02-09 12:33:11,414 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.91
+2026-02-09 12:33:11,419 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.73
+2026-02-09 12:33:11,424 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.57
+2026-02-09 12:33:11,429 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.8
+2026-02-09 12:33:11,435 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.45
+2026-02-09 12:33:11,440 - monitor - INFO - New bet found for BTTS is the best: 2 @ 2.05
+2026-02-09 12:33:11,445 - monitor - INFO - New bet found for BTTS is the best: 1 @ 3.1
+2026-02-09 12:33:11,450 - monitor - INFO - New bet found for BTTS is the best: 1 @ 2.55
+2026-02-09 12:33:11,456 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.48
+2026-02-09 12:33:11,461 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.22
+2026-02-09 12:33:11,467 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.29
+2026-02-09 12:33:11,473 - monitor - INFO - New bet found for BTTS is the best: 2 @ 5.5
+2026-02-09 12:33:11,478 - monitor - INFO - New bet found for BTTS is the best: 2 @ 3.3
+2026-02-09 12:33:11,484 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.33
+2026-02-09 12:33:11,490 - monitor - INFO - New bet found for BTTS is the best: 2 @ 3.3
+2026-02-09 12:33:11,496 - monitor - INFO - New bet found for BTTS is the best: 2 @ 2.1
+2026-02-09 12:33:11,501 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.29
+2026-02-09 12:33:11,507 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.8
+2026-02-09 12:33:11,512 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.5
+2026-02-09 12:33:11,517 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.1
+2026-02-09 12:33:11,523 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.53
+2026-02-09 12:33:11,528 - monitor - INFO - New bet found for Lucassixel: 2 @ 4.33
+2026-02-09 12:33:11,534 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.73
+2026-02-09 12:33:11,539 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.67
+2026-02-09 12:33:11,545 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.7
+2026-02-09 12:33:11,552 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.91
+2026-02-09 12:33:11,557 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.95
+2026-02-09 12:33:11,563 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.95
+2026-02-09 12:33:11,569 - monitor - INFO - New bet found for Lucassixel: 2 @ 3.0
+2026-02-09 12:33:11,574 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.14
+2026-02-09 12:33:11,580 - monitor - INFO - New bet found for Lucassixel: 2 @ 2.25
+2026-02-09 12:33:11,586 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.67
+2026-02-09 12:33:11,591 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.3
+2026-02-09 12:33:11,597 - monitor - INFO - New bet found for Lucassixel: X @ 3.5
+2026-02-09 12:33:11,603 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.1
+2026-02-09 12:33:11,608 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.73
+2026-02-09 12:33:11,613 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.8
+2026-02-09 12:33:11,619 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.62
+2026-02-09 12:33:11,624 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.39
+2026-02-09 12:33:11,630 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.53
+2026-02-09 12:33:11,635 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.61
+2026-02-09 12:33:11,640 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.15
+2026-02-09 12:33:11,646 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.36
+2026-02-09 12:33:11,651 - monitor - INFO - New bet found for Albert PL: 1 @ 2.25
+2026-02-09 12:33:11,657 - monitor - INFO - New bet found for Albert PL: 1 @ 2.9
+2026-02-09 12:33:11,663 - monitor - INFO - New bet found for Albert PL: 1 @ 2.4
+2026-02-09 12:33:11,668 - monitor - INFO - New bet found for Albert PL: 1 @ 4.2
+2026-02-09 12:33:11,674 - monitor - INFO - New bet found for Albert PL: 2 @ 1.9
+2026-02-09 12:33:11,679 - monitor - INFO - New bet found for Albert PL: 2 @ 1.8
+2026-02-09 12:33:11,684 - monitor - INFO - New bet found for Albert PL: 1 @ 1.9
+2026-02-09 12:33:11,690 - monitor - INFO - New bet found for Albert PL: 1 @ 2.1
+2026-02-09 12:33:11,695 - monitor - INFO - New bet found for Albert PL: 2 @ 2.15
+2026-02-09 12:33:11,701 - monitor - INFO - New bet found for Albert PL: 2 @ 2.35
+2026-02-09 12:33:11,708 - monitor - INFO - New bet found for Albert PL: 2 @ 1.95
+2026-02-09 12:33:11,713 - monitor - INFO - New bet found for Albert PL: 2 @ 2.0
+2026-02-09 12:33:11,719 - monitor - INFO - New bet found for Albert PL: 1 @ 2.0
+2026-02-09 12:33:11,725 - monitor - INFO - New bet found for Albert PL: 2 @ 2.4
+2026-02-09 12:33:11,732 - monitor - INFO - New bet found for Albert PL: 2 @ 2.63
+2026-02-09 12:33:11,739 - monitor - INFO - New bet found for Albert PL: 1 @ 2.63
+2026-02-09 12:33:11,746 - monitor - INFO - New bet found for Albert PL: 2 @ 1.9
+2026-02-09 12:33:11,752 - monitor - INFO - New bet found for Albert PL: 1 @ 1.73
+2026-02-09 12:33:11,758 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 10.0
+2026-02-09 12:33:11,764 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.0
+2026-02-09 12:33:11,770 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 5.0
+2026-02-09 12:33:11,776 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 2.6
+2026-02-09 12:33:11,781 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 1.27
+2026-02-09 12:33:11,787 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.25
+2026-02-09 12:33:11,793 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 3.4
+2026-02-09 12:33:11,799 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.0
+2026-02-09 12:33:11,805 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 26.0
+2026-02-09 12:33:11,811 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.55
+2026-02-09 12:33:11,817 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 3.3
+2026-02-09 12:33:11,822 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 1.17
+2026-02-09 12:33:11,828 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 10.0
+2026-02-09 12:33:11,833 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 5.25
+2026-02-09 12:33:11,839 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.88
+2026-02-09 12:33:11,845 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.75
+2026-02-09 12:33:11,850 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 12.0
+2026-02-09 12:33:11,856 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 4.75
+2026-02-09 12:33:11,861 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.2
+2026-02-09 12:33:11,868 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.9
+2026-02-09 12:33:11,874 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 1.3
+2026-02-09 12:33:11,879 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 4.5
+2026-02-09 12:33:11,885 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 3.3
+2026-02-09 12:33:12,148 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.2
+2026-02-09 12:33:12,154 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.9
+2026-02-09 12:33:12,161 - monitor - INFO - New bet found for Avexo Julius: 1 @ 3.5
+2026-02-09 12:33:12,167 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.1
+2026-02-09 12:33:12,173 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.8
+2026-02-09 12:33:12,179 - monitor - INFO - New bet found for Avexo Julius: 2 @ 4.0
+2026-02-09 12:33:12,184 - monitor - INFO - New bet found for Avexo Julius: 2 @ 4.1
+2026-02-09 12:33:12,191 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.05
+2026-02-09 12:33:12,197 - monitor - INFO - New bet found for Avexo Julius: 2 @ 4.75
+2026-02-09 12:33:12,204 - monitor - INFO - New bet found for Avexo Julius: 2 @ 2.9
+2026-02-09 12:33:12,210 - monitor - INFO - New bet found for Avexo Julius: 2 @ 1.85
+2026-02-09 12:33:12,217 - monitor - INFO - New bet found for Swift GB: 1 @ 1.67
+2026-02-09 12:33:12,223 - monitor - INFO - New bet found for Swift GB: 2 @ 1.83
+2026-02-09 12:33:12,229 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 12:33:12,234 - monitor - INFO - New bet found for Swift GB: 1 @ 1.42
+2026-02-09 12:33:12,239 - monitor - INFO - New bet found for Swift GB: 2 @ 2.55
+2026-02-09 12:33:12,245 - monitor - INFO - New bet found for Swift GB: 2 @ 1.4
+2026-02-09 12:33:12,251 - monitor - INFO - New bet found for Swift GB: 2 @ 2.15
+2026-02-09 12:33:12,257 - monitor - INFO - New bet found for Swift GB: 1 @ 3.7
+2026-02-09 12:33:12,263 - monitor - INFO - New bet found for Swift GB: 1 @ 2.38
+2026-02-09 12:33:12,268 - monitor - INFO - New bet found for Swift GB: 1 @ 1.53
+2026-02-09 12:33:12,274 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 12:33:12,279 - monitor - INFO - New bet found for Swift GB: 1 @ 2.1
+2026-02-09 12:33:12,286 - monitor - INFO - New bet found for Swift GB: 2 @ 2.9
+2026-02-09 12:33:12,292 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 12:33:12,297 - monitor - INFO - New bet found for Swift GB: X @ 2.7
+2026-02-09 12:33:12,580 - monitor - INFO - New bet found for Cold Germany: 1 @ 3.1
+2026-02-09 12:33:12,585 - monitor - INFO - New bet found for Cold Germany: 1 @ 2.55
+2026-02-09 12:33:12,591 - monitor - INFO - New bet found for Cold Germany: 1 @ 1.25
+2026-02-09 12:33:12,596 - monitor - INFO - New bet found for Cold Germany: 2 @ 3.25
+2026-02-09 12:33:12,601 - monitor - INFO - New bet found for Cold Germany: 1 @ 1.3
+2026-02-09 12:33:12,608 - monitor - INFO - New bet found for Cold Germany: 2 @ 2.65
+2026-02-09 12:33:12,614 - monitor - INFO - New bet found for Cold Germany: 1 @ 1.67
+2026-02-09 12:33:12,625 - monitor - INFO - New bet found for M M 215: 1 @ 1.36
+2026-02-09 12:33:12,630 - monitor - INFO - New bet found for M M 215: 2 @ 2.5
+2026-02-09 12:33:12,636 - monitor - INFO - New bet found for M M 215: 1 @ 1.66
+2026-02-09 12:33:12,642 - monitor - INFO - New bet found for M M 215: 1 @ 1.36
+2026-02-09 12:33:12,648 - monitor - INFO - New bet found for M M 215: 1 @ 2.35
+2026-02-09 12:33:12,654 - monitor - INFO - New bet found for M M 215: 1 @ 1.42
+2026-02-09 12:33:12,661 - monitor - INFO - New bet found for M M 215: 1 @ 1.49
+2026-02-09 12:33:12,666 - monitor - INFO - New bet found for M M 215: 2 @ 3.5
+2026-02-09 12:33:12,672 - monitor - INFO - New bet found for M M 215: 2 @ 5.5
+2026-02-09 12:33:12,678 - monitor - INFO - New bet found for M M 215: 1 @ 1.85
+2026-02-09 12:33:12,683 - monitor - INFO - New bet found for M M 215: 2 @ 6.25
+2026-02-09 12:33:12,689 - monitor - INFO - New bet found for M M 215: 1 @ 1.91
+2026-02-09 12:33:12,695 - monitor - INFO - New bet found for M M 215: 2 @ 4.5
+2026-02-09 12:33:12,702 - monitor - INFO - New bet found for M M 215: 1 @ 2.35
+2026-02-09 12:33:12,708 - monitor - INFO - New bet found for M M 215: 1 @ 1.62
+2026-02-09 12:33:12,715 - monitor - INFO - New bet found for M M 215: 1 @ 1.95
+2026-02-09 12:33:12,721 - monitor - INFO - New bet found for M M 215: 2 @ 2.1
+2026-02-09 12:33:12,727 - monitor - INFO - New bet found for M M 215: 2 @ 2.3
+2026-02-09 12:33:12,732 - monitor - INFO - New bet found for M M 215: 1 @ 2.8
+2026-02-09 12:33:12,737 - monitor - INFO - New bet found for M M 215: 2 @ 0.0
+2026-02-09 12:33:12,752 - monitor - INFO - New bet found for Ali Santiago: 1 @ 1.41
+2026-02-09 12:33:12,759 - monitor - INFO - New bet found for Tekomonamata: 2 @ 1.3
+2026-02-09 12:33:12,764 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.95
+2026-02-09 12:33:12,770 - monitor - INFO - New bet found for Tekomonamata: 1 @ 4.75
+2026-02-09 12:33:12,776 - monitor - INFO - New bet found for Tekomonamata: 2 @ 3.9
+2026-02-09 12:33:12,782 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.42
+2026-02-09 12:33:12,789 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.56
+2026-02-09 12:33:12,795 - monitor - INFO - New bet found for Tekomonamata: 1 @ 5.0
+2026-02-09 12:33:12,803 - monitor - INFO - New bet found for Tekomonamata: 2 @ 2.8
+2026-02-09 12:33:12,811 - monitor - INFO - New bet found for Tekomonamata: 1 @ 2.35
+2026-02-09 12:33:12,818 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.9
+2026-02-09 12:33:12,823 - monitor - INFO - New bet found for Tekomonamata: 1 @ 5.0
+2026-02-09 12:33:12,829 - monitor - INFO - New bet found for Tekomonamata: 1 @ 0.0
+2026-02-09 12:33:12,834 - monitor - INFO - New bet found for Tekomonamata: 1 @ 2.05
+2026-02-09 12:33:12,840 - monitor - INFO - New bet found for Tekomonamata: 1 @ 2.2
+2026-02-09 12:33:12,846 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.36
+2026-02-09 12:33:12,851 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.95
+2026-02-09 12:33:12,857 - monitor - INFO - New bet found for Tekomonamata: 1 @ 0.0
+2026-02-09 12:33:12,862 - monitor - INFO - New bet found for Tekomonamata: 1 @ 2.01
+2026-02-09 12:33:12,868 - monitor - INFO - New bet found for Tekomonamata: 1 @ 0.0
+2026-02-09 12:33:12,874 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.91
+2026-02-09 12:33:12,879 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.75
+2026-02-09 12:33:12,885 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.35
+2026-02-09 12:33:12,890 - monitor - INFO - New bet found for Tekomonamata: 2 @ 26.0
+2026-02-09 12:33:12,895 - monitor - INFO - New bet found for Tekomonamata: 1 @ 2.45
+2026-02-09 12:33:12,901 - monitor - INFO - New bet found for Tekomonamata: 1 @ 1.71
+2026-02-09 12:33:12,915 - monitor - INFO - New bet found for Cù Chí Minh: 2 @ 2.5
+2026-02-09 12:33:12,921 - monitor - INFO - New bet found for Cù Chí Minh: 2 @ 1.55
+2026-02-09 12:33:12,927 - monitor - INFO - New bet found for Cù Chí Minh: 1 @ 1.71
+2026-02-09 12:33:12,932 - monitor - INFO - New bet found for Cù Chí Minh: 2 @ 2.75
+2026-02-09 12:33:12,938 - monitor - INFO - New bet found for Cù Chí Minh: 1 @ 1.25
+2026-02-09 12:33:12,943 - monitor - INFO - New bet found for Cù Chí Minh: 2 @ 2.45
+2026-02-09 12:33:12,953 - monitor - INFO - New bet found for DRoPx_7: 1 @ 1.71
+2026-02-09 12:33:12,962 - monitor - INFO - New bet found for DRoPx_7: 1 @ 1.08
+2026-02-09 12:33:12,971 - monitor - INFO - New bet found for DRoPx_7: 1 @ 1.49
+2026-02-09 12:33:12,979 - monitor - INFO - New bet found for DRoPx_7: X @ 3.5
+2026-02-09 12:33:12,985 - monitor - INFO - New bet found for DRoPx_7: X @ 3.8
+2026-02-09 12:33:12,991 - monitor - INFO - New bet found for DRoPx_7: 2 @ 1.7
+2026-02-09 12:33:12,997 - monitor - INFO - New bet found for DRoPx_7: 1 @ 1.36
+2026-02-09 12:33:13,002 - monitor - INFO - New bet found for DRoPx_7: 2 @ 2.15
+2026-02-09 12:33:13,007 - monitor - INFO - New bet found for DRoPx_7: 1 @ 2.25
+2026-02-09 12:33:13,013 - monitor - INFO - New bet found for DRoPx_7: 2 @ 1.85
+2026-02-09 12:33:13,020 - monitor - INFO - New bet found for Dexie: 1 @ 1.6
+2026-02-09 12:33:13,026 - monitor - INFO - New bet found for Dexie: 2 @ 1.96
+2026-02-09 12:33:13,032 - monitor - INFO - New bet found for Dexie: 1 @ 1.42
+2026-02-09 12:33:13,038 - monitor - INFO - New bet found for Dexie: 1 @ 1.8
+2026-02-09 12:33:13,086 - monitor - INFO - New bet found for Dexie: 1 @ 0.0
+2026-02-09 12:33:13,099 - monitor - INFO - New bet found for Dexie: 2 @ 2.4
+2026-02-09 12:33:13,122 - monitor - INFO - New bet found for Dexie: 2 @ 3.3
+2026-02-09 12:33:13,130 - monitor - INFO - New bet found for Dexie: 2 @ 2.75
+2026-02-09 12:33:13,151 - monitor - INFO - New bet found for Dexie: 1 @ 1.85
+2026-02-09 12:33:13,158 - monitor - INFO - New bet found for Dexie: 2 @ 3.1
+2026-02-09 12:33:13,165 - monitor - INFO - New bet found for Dexie: 2 @ 1.57
+2026-02-09 12:33:13,170 - monitor - INFO - New bet found for Dexie: 1 @ 1.44
+2026-02-09 12:33:13,176 - monitor - INFO - New bet found for Dexie: 1 @ 1.45
+2026-02-09 12:33:13,182 - monitor - INFO - New bet found for Dexie: 1 @ 2.55
+2026-02-09 12:33:13,187 - monitor - INFO - New bet found for Dexie: 2 @ 2.82
+2026-02-09 12:33:13,194 - monitor - INFO - New bet found for Dexie: 2 @ 3.6
+2026-02-09 12:33:13,204 - monitor - INFO - New bet found for Hector Schemeiz: 1 @ 2.1
+2026-02-09 12:33:13,209 - monitor - INFO - New bet found for Hector Schemeiz: 1 @ 1.81
+2026-02-09 12:33:13,215 - monitor - INFO - New bet found for Hector Schemeiz: 2 @ 2.55
+2026-02-09 12:33:13,221 - monitor - INFO - New bet found for Hector Schemeiz: 1 @ 1.62
+2026-02-09 12:33:13,226 - monitor - INFO - New bet found for Hector Schemeiz: 2 @ 2.5
+2026-02-09 12:33:13,232 - monitor - INFO - New bet found for Hector Schemeiz: 1 @ 1.56
+2026-02-09 12:33:13,239 - monitor - INFO - New bet found for Hector Schemeiz: 1 @ 2.0
+2026-02-09 12:33:13,248 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 1.17
+2026-02-09 12:33:13,254 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 2.1
+2026-02-09 12:33:13,262 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.75
+2026-02-09 12:33:13,267 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 1.62
+2026-02-09 12:33:13,273 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 2.3
+2026-02-09 12:33:13,279 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.55
+2026-02-09 12:33:13,284 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 1.62
+2026-02-09 12:33:13,290 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 1.4
+2026-02-09 12:33:13,296 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.27
+2026-02-09 12:33:13,302 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 3.3
+2026-02-09 12:33:13,307 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.85
+2026-02-09 12:33:13,313 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.65
+2026-02-09 12:33:13,319 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 2.15
+2026-02-09 12:33:13,324 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 2.2
+2026-02-09 12:33:13,331 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 3.75
+2026-02-09 12:33:13,336 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.53
+2026-02-09 12:33:13,342 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.2
+2026-02-09 12:33:13,347 - monitor - INFO - New bet found for Cristian Martinez Padilla: 1 @ 1.3
+2026-02-09 12:33:13,352 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 1.3
+2026-02-09 12:33:13,358 - monitor - INFO - New bet found for Cristian Martinez Padilla: 2 @ 3.0
+2026-02-09 12:33:13,549 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.62
+2026-02-09 12:33:13,554 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.44
+2026-02-09 12:33:13,560 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 2.63
+2026-02-09 12:33:13,565 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.5
+2026-02-09 12:33:13,571 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.73
+2026-02-09 12:33:13,576 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.73
+2026-02-09 12:33:13,582 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.3
+2026-02-09 12:33:13,587 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.57
+2026-02-09 12:33:13,593 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.25
+2026-02-09 12:33:13,598 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.25
+2026-02-09 12:33:13,604 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.62
+2026-02-09 12:33:13,610 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.25
+2026-02-09 12:33:13,615 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.2
+2026-02-09 12:33:13,621 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.53
+2026-02-09 12:33:13,626 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.36
+2026-02-09 12:33:13,631 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.4
+2026-02-09 12:33:13,637 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.73
+2026-02-09 12:33:13,642 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 2.0
+2026-02-09 12:33:13,649 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.3
+2026-02-09 12:33:13,655 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.36
+2026-02-09 12:33:13,663 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.36
+2026-02-09 12:33:13,670 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.8
+2026-02-09 12:33:13,678 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.3
+2026-02-09 12:33:13,686 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 2.0
+2026-02-09 12:33:13,692 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.62
+2026-02-09 12:33:13,698 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.8
+2026-02-09 12:33:13,706 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 2.38
+2026-02-09 12:33:13,712 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.4
+2026-02-09 12:33:13,720 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 2.75
+2026-02-09 12:33:13,726 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.13
+2026-02-09 12:33:13,732 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.33
+2026-02-09 12:33:13,738 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.29
+2026-02-09 12:33:13,744 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 1.44
+2026-02-09 12:33:13,751 - monitor - INFO - New bet found for gonzalo álvarez roman: 2 @ 1.14
+2026-02-09 12:33:13,757 - monitor - INFO - New bet found for gonzalo álvarez roman: 1 @ 2.0
+2026-02-09 12:33:13,772 - monitor - INFO - New bet found for marzz: 2 @ 1.42
+2026-02-09 12:33:13,778 - monitor - INFO - New bet found for marzz: 1 @ 1.13
+2026-02-09 12:33:13,783 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,789 - monitor - INFO - New bet found for marzz: 2 @ 0.0
+2026-02-09 12:33:13,794 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,800 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,805 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,811 - monitor - INFO - New bet found for marzz: 2 @ 0.0
+2026-02-09 12:33:13,818 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,824 - monitor - INFO - New bet found for marzz: 2 @ 0.0
+2026-02-09 12:33:13,830 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,835 - monitor - INFO - New bet found for marzz: 2 @ 0.0
+2026-02-09 12:33:13,841 - monitor - INFO - New bet found for marzz: 1 @ 0.0
+2026-02-09 12:33:13,847 - monitor - INFO - New bet found for marzz: 2 @ 0.0
+2026-02-09 12:33:13,920 - monitor - INFO - New bet found for Thaw Khant797: X @ 3.0
+2026-02-09 12:33:13,926 - monitor - INFO - New bet found for Thaw Khant797: 1 @ 1.95
+2026-02-09 12:33:13,933 - monitor - INFO - New bet found for Thaw Khant797: X @ 3.5
+2026-02-09 12:33:13,938 - monitor - INFO - New bet found for Thaw Khant797: 1 @ 1.83
+2026-02-09 12:33:13,944 - monitor - INFO - New bet found for Thaw Khant797: 1 @ 1.6
+2026-02-09 12:33:13,951 - monitor - INFO - New bet found for Thaw Khant797: 2 @ 1.57
+2026-02-09 12:33:13,956 - monitor - INFO - New bet found for Thaw Khant797: 1 @ 2.05
+2026-02-09 12:33:13,962 - monitor - INFO - New bet found for Thaw Khant797: 2 @ 1.4
+2026-02-09 12:33:13,967 - monitor - INFO - New bet found for Thaw Khant797: 2 @ 3.0
+2026-02-09 12:33:13,973 - monitor - INFO - New bet found for Thaw Khant797: 2 @ 1.7
+2026-02-09 12:33:13,978 - monitor - INFO - New bet found for Thaw Khant797: 1 @ 3.9
+2026-02-09 12:33:13,985 - monitor - INFO - New bet found for Alessteel: 2 @ 5.75
+2026-02-09 12:33:13,992 - monitor - INFO - New bet found for Alessteel: 2 @ 4.0
+2026-02-09 12:33:13,997 - monitor - INFO - New bet found for Alessteel: X @ 3.2
+2026-02-09 12:33:14,003 - monitor - INFO - New bet found for Alessteel: 1 @ 1.14
+2026-02-09 12:33:14,008 - monitor - INFO - New bet found for Alessteel: 1 @ 2.3
+2026-02-09 12:33:14,014 - monitor - INFO - New bet found for Alessteel: 1 @ 1.25
+2026-02-09 12:33:14,019 - monitor - INFO - New bet found for Alessteel: 2 @ 1.65
+2026-02-09 12:33:14,025 - monitor - INFO - New bet found for Alessteel: 2 @ 1.48
+2026-02-09 12:33:14,031 - monitor - INFO - New bet found for Alessteel: 1 @ 1.71
+2026-02-09 12:33:14,037 - monitor - INFO - New bet found for Alessteel: 1 @ 2.15
+2026-02-09 12:33:14,043 - monitor - INFO - New bet found for Alessteel: 1 @ 1.36
+2026-02-09 12:33:14,049 - monitor - INFO - New bet found for Alessteel: 1 @ 1.5
+2026-02-09 12:33:14,055 - monitor - INFO - New bet found for Alessteel: 1 @ 1.55
+2026-02-09 12:33:14,061 - monitor - INFO - New bet found for Alessteel: 1 @ 1.57
+2026-02-09 12:33:14,066 - monitor - INFO - New bet found for Alessteel: 1 @ 4.75
+2026-02-09 12:33:14,073 - monitor - INFO - New bet found for Alessteel: 1 @ 1.95
+2026-02-09 12:33:14,078 - monitor - INFO - New bet found for Alessteel: 1 @ 3.6
+2026-02-09 12:33:14,092 - monitor - INFO - New bet found for Jafet Erubey: 2 @ 4.1
+2026-02-09 12:33:14,098 - monitor - INFO - New bet found for Jafet Erubey: 1 @ 1.96
+2026-02-09 12:33:14,105 - monitor - INFO - New bet found for Jafet Erubey: X @ 3.6
+2026-02-09 12:33:14,113 - monitor - INFO - New bet found for Jafet Erubey: X @ 2.9
+2026-02-09 12:33:14,121 - monitor - INFO - New bet found for Jafet Erubey: 2 @ 1.57
+2026-02-09 12:33:14,127 - monitor - INFO - New bet found for Jafet Erubey: 2 @ 1.71
+2026-02-09 12:33:14,133 - monitor - INFO - New bet found for Jafet Erubey: 2 @ 2.05
+2026-02-09 12:33:14,138 - monitor - INFO - New bet found for Jafet Erubey: 1 @ 1.36
+2026-02-09 12:33:14,144 - monitor - INFO - New bet found for Jafet Erubey: X @ 3.4
+2026-02-09 12:33:14,149 - monitor - INFO - New bet found for Jafet Erubey: X @ 3.4
+2026-02-09 12:33:14,157 - monitor - INFO - New bet found for Jafet Erubey: X @ 3.75
+2026-02-09 12:33:14,168 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 2.2
+2026-02-09 12:33:14,174 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 1.71
+2026-02-09 12:33:14,180 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 3.25
+2026-02-09 12:33:14,187 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 1.62
+2026-02-09 12:33:14,194 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 2.0
+2026-02-09 12:33:14,200 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 1.57
+2026-02-09 12:33:14,206 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 2.25
+2026-02-09 12:33:14,212 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 2.05
+2026-02-09 12:33:14,218 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 1.83
+2026-02-09 12:33:14,224 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 1.62
+2026-02-09 12:33:14,230 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 1.38
+2026-02-09 12:33:14,235 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 2.55
+2026-02-09 12:33:14,241 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 0.0
+2026-02-09 12:33:14,247 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,252 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,264 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,270 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 0.0
+2026-02-09 12:33:14,276 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,281 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,287 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 0.0
+2026-02-09 12:33:14,292 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,298 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,303 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,309 - monitor - INFO - New bet found for Valdemar Lopes761: 2 @ 0.0
+2026-02-09 12:33:14,315 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 0.0
+2026-02-09 12:33:14,327 - monitor - INFO - New bet found for Julian agripino: 1 @ 1.6
+2026-02-09 12:33:14,338 - monitor - INFO - New bet found for Julian agripino: 2 @ 4.5
+2026-02-09 12:33:14,344 - monitor - INFO - New bet found for Julian agripino: 2 @ 3.25
+2026-02-09 12:33:14,350 - monitor - INFO - New bet found for Julian agripino: 1 @ 1.17
+2026-02-09 12:33:14,355 - monitor - INFO - New bet found for Julian agripino: 1 @ 0.0
+2026-02-09 12:33:14,362 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.9
+2026-02-09 12:33:14,367 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,373 - monitor - INFO - New bet found for Costiano1904: 2 @ 1.29
+2026-02-09 12:33:14,379 - monitor - INFO - New bet found for Costiano1904: 2 @ 1.27
+2026-02-09 12:33:14,384 - monitor - INFO - New bet found for Costiano1904: 1 @ 2.32
+2026-02-09 12:33:14,390 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.96
+2026-02-09 12:33:14,396 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.86
+2026-02-09 12:33:14,402 - monitor - INFO - New bet found for Costiano1904: 2 @ 3.25
+2026-02-09 12:33:14,407 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.36
+2026-02-09 12:33:14,413 - monitor - INFO - New bet found for Costiano1904: 2 @ 1.7
+2026-02-09 12:33:14,418 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.8
+2026-02-09 12:33:14,424 - monitor - INFO - New bet found for Costiano1904: 1 @ 2.1
+2026-02-09 12:33:14,430 - monitor - INFO - New bet found for Costiano1904: 2 @ 3.4
+2026-02-09 12:33:14,435 - monitor - INFO - New bet found for Costiano1904: 2 @ 1.44
+2026-02-09 12:33:14,441 - monitor - INFO - New bet found for Costiano1904: 2 @ 9.0
+2026-02-09 12:33:14,447 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.13
+2026-02-09 12:33:14,452 - monitor - INFO - New bet found for Costiano1904: 1 @ 2.25
+2026-02-09 12:33:14,458 - monitor - INFO - New bet found for Costiano1904: 2 @ 2.1
+2026-02-09 12:33:14,463 - monitor - INFO - New bet found for Costiano1904: 1 @ 3.1
+2026-02-09 12:33:14,469 - monitor - INFO - New bet found for Costiano1904: 2 @ 1.9
+2026-02-09 12:33:14,475 - monitor - INFO - New bet found for Costiano1904: 2 @ 2.75
+2026-02-09 12:33:14,481 - monitor - INFO - New bet found for Costiano1904: 1 @ 1.62
+2026-02-09 12:33:14,487 - monitor - INFO - New bet found for Costiano1904: 2 @ 0.0
+2026-02-09 12:33:14,492 - monitor - INFO - New bet found for Costiano1904: 2 @ 0.0
+2026-02-09 12:33:14,497 - monitor - INFO - New bet found for Costiano1904: 1 @ 3.6
+2026-02-09 12:33:14,506 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,512 - monitor - INFO - New bet found for Costiano1904: X @ 0.0
+2026-02-09 12:33:14,517 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,523 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,529 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,534 - monitor - INFO - New bet found for Costiano1904: 1 @ 0.0
+2026-02-09 12:33:14,544 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.65
+2026-02-09 12:33:14,550 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.6
+2026-02-09 12:33:14,556 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 2 @ 2.9
+2026-02-09 12:33:14,561 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.33
+2026-02-09 12:33:14,568 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.65
+2026-02-09 12:33:14,574 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 2 @ 3.8
+2026-02-09 12:33:14,579 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.44
+2026-02-09 12:33:14,585 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.14
+2026-02-09 12:33:14,590 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 2 @ 2.55
+2026-02-09 12:33:14,596 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.05
+2026-02-09 12:33:14,602 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.57
+2026-02-09 12:33:14,607 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.25
+2026-02-09 12:33:14,613 - monitor - INFO - New bet found for Guest689aad45c70c346dae3825aa: 1 @ 1.13
+2026-02-09 12:33:14,619 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.75
+2026-02-09 12:33:14,625 - monitor - INFO - New bet found for Arthur Tutu758: 2 @ 1.65
+2026-02-09 12:33:14,631 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.8
+2026-02-09 12:33:14,637 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 4.75
+2026-02-09 12:33:14,643 - monitor - INFO - New bet found for Arthur Tutu758: 2 @ 1.3
+2026-02-09 12:33:14,648 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.7
+2026-02-09 12:33:14,654 - monitor - INFO - New bet found for Arthur Tutu758: 2 @ 2.15
+2026-02-09 12:33:14,659 - monitor - INFO - New bet found for Arthur Tutu758: 2 @ 1.53
+2026-02-09 12:33:14,665 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.42
+2026-02-09 12:33:14,671 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.36
+2026-02-09 12:33:14,677 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 1.79
+2026-02-09 12:33:14,683 - monitor - INFO - New bet found for Arthur Tutu758: 1 @ 2.2
+2026-02-09 12:33:14,692 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 1.27
+2026-02-09 12:33:14,698 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 1.63
+2026-02-09 12:33:14,705 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 2.7
+2026-02-09 12:33:14,711 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 5.0
+2026-02-09 12:33:14,717 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 1.67
+2026-02-09 12:33:14,724 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 2.1
+2026-02-09 12:33:14,729 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 2.75
+2026-02-09 12:33:14,735 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 2.1
+2026-02-09 12:33:14,742 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 1.81
+2026-02-09 12:33:14,747 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 1.96
+2026-02-09 12:33:14,753 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 1.08
+2026-02-09 12:33:14,759 - monitor - INFO - New bet found for Fernando Ramírez349: 1 @ 3.2
+2026-02-09 12:33:14,765 - monitor - INFO - New bet found for Fernando Ramírez349: 2 @ 3.0
+2026-02-09 12:33:14,771 - monitor - INFO - New bet found for Stanislaw  Wenta: 2 @ 2.15
+2026-02-09 12:33:14,780 - monitor - INFO - New bet found for Stanislaw  Wenta: 1 @ 1.44
+2026-02-09 12:33:14,786 - monitor - INFO - New bet found for Stanislaw  Wenta: 1 @ 1.83
+2026-02-09 12:33:14,863 - monitor - INFO - New bet found for Stanislaw  Wenta: 1 @ 1.95
+2026-02-09 12:33:14,871 - monitor - INFO - New bet found for Stanislaw  Wenta: 2 @ 3.4
+2026-02-09 12:33:14,881 - monitor - INFO - New bet found for Eric Zoungrana904: 2 @ 2.15
+2026-02-09 12:33:14,888 - monitor - INFO - New bet found for Eric Zoungrana904: 1 @ 2.7
+2026-02-09 12:33:14,896 - monitor - INFO - New bet found for Eric Zoungrana904: 2 @ 2.25
+2026-02-09 12:33:14,903 - monitor - INFO - New bet found for Eric Zoungrana904: 1 @ 1.3
+2026-02-09 12:33:14,910 - monitor - INFO - New bet found for Eric Zoungrana904: 2 @ 2.3
+2026-02-09 12:33:14,916 - monitor - INFO - New bet found for Eric Zoungrana904: 1 @ 3.0
+2026-02-09 12:33:14,923 - monitor - INFO - New bet found for Eric Zoungrana904: 1 @ 1.53
+2026-02-09 12:33:14,933 - monitor - INFO - New bet found for Eric Zoungrana904: 2 @ 0.0
+2026-02-09 12:33:14,946 - monitor - INFO - New bet found for Guest6850e7e9aa56633910cdfcdd: 1 @ 2.5
+2026-02-09 12:33:14,953 - monitor - INFO - New bet found for Guest6850e7e9aa56633910cdfcdd: 1 @ 2.3
+2026-02-09 12:33:14,965 - monitor - INFO - New bet found for Guest6850e7e9aa56633910cdfcdd: 1 @ 1.22
+2026-02-09 12:33:14,974 - monitor - INFO - New bet found for Guest6850e7e9aa56633910cdfcdd: 2 @ 2.2
+2026-02-09 12:33:14,983 - monitor - INFO - New bet found for Tiago Neves 777: 1 @ 2.63
+2026-02-09 12:33:14,989 - monitor - INFO - New bet found for Tiago Neves 777: 1 @ 3.6
+2026-02-09 12:33:14,996 - monitor - INFO - New bet found for Tiago Neves 777: X @ 3.1
+2026-02-09 12:33:15,003 - monitor - INFO - New bet found for Tiago Neves 777: 1 @ 6.5
+2026-02-09 12:33:15,012 - monitor - INFO - New bet found for Tiago Neves 777: 2 @ 1.35
+2026-02-09 12:33:15,019 - monitor - INFO - New bet found for Tiago Neves 777: 2 @ 1.22
+2026-02-09 12:33:15,025 - monitor - INFO - New bet found for Tiago Neves 777: 2 @ 17.0
+2026-02-09 12:33:15,032 - monitor - INFO - New bet found for Tiago Neves 777: 1 @ 3.3
+2026-02-09 12:33:15,038 - monitor - INFO - New bet found for Tiago Neves 777: 2 @ 2.6
+2026-02-09 12:33:15,045 - monitor - INFO - New bet found for Tiago Neves 777: 2 @ 0.0
+2026-02-09 12:33:15,051 - monitor - INFO - New bet found for Tiago Neves 777: 1 @ 0.0
+2026-02-09 12:33:15,085 - monitor - INFO - New bet found for ChadlabeeTikTok: 2 @ 0.0
+2026-02-09 12:33:15,095 - monitor - INFO - New bet found for AllanOrellana10: 1 @ 3.4
+2026-02-09 12:33:15,102 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,109 - monitor - INFO - New bet found for AllanOrellana10: X @ 0.0
+2026-02-09 12:33:15,118 - monitor - INFO - New bet found for AllanOrellana10: 1 @ 1.75
+2026-02-09 12:33:15,125 - monitor - INFO - New bet found for AllanOrellana10: 1 @ 2.15
+2026-02-09 12:33:15,133 - monitor - INFO - New bet found for AllanOrellana10: X @ 3.7
+2026-02-09 12:33:15,140 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,146 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,155 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,189 - monitor - INFO - New bet found for AllanOrellana10: 1 @ 0.0
+2026-02-09 12:33:15,221 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,227 - monitor - INFO - New bet found for AllanOrellana10: 1 @ 0.0
+2026-02-09 12:33:15,237 - monitor - INFO - New bet found for AllanOrellana10: 2 @ 0.0
+2026-02-09 12:33:15,260 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 2.3
+2026-02-09 12:33:15,266 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.07
+2026-02-09 12:33:15,271 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.45
+2026-02-09 12:33:15,277 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 2.82
+2026-02-09 12:33:15,282 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.3
+2026-02-09 12:33:15,287 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.95
+2026-02-09 12:33:15,293 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.71
+2026-02-09 12:33:15,298 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.03
+2026-02-09 12:33:15,304 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.15
+2026-02-09 12:33:15,309 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.25
+2026-02-09 12:33:15,315 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.65
+2026-02-09 12:33:15,320 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 2.65
+2026-02-09 12:33:15,326 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.37
+2026-02-09 12:33:15,332 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.18
+2026-02-09 12:33:15,338 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.5
+2026-02-09 12:33:15,344 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 5.25
+2026-02-09 12:33:15,350 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.76
+2026-02-09 12:33:15,356 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.61
+2026-02-09 12:33:15,366 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.17
+2026-02-09 12:33:15,376 - monitor - INFO - New bet found for EL NOURO 92: 2 @ 8.5
+2026-02-09 12:33:15,381 - monitor - INFO - New bet found for EL NOURO 92: 2 @ 3.5
+2026-02-09 12:33:15,386 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 1.37
+2026-02-09 12:33:15,393 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 1.22
+2026-02-09 12:33:15,398 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 1.62
+2026-02-09 12:33:15,405 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 3.5
+2026-02-09 12:33:15,410 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 1.61
+2026-02-09 12:33:15,416 - monitor - INFO - New bet found for EL NOURO 92: 1 @ 4.33
+2026-02-09 12:33:15,432 - monitor - INFO - New bet found for Joao Soares Barbosa: 1 @ 1.45
+2026-02-09 12:33:15,437 - monitor - INFO - New bet found for Joao Soares Barbosa: 1 @ 0.0
+2026-02-09 12:33:15,443 - monitor - INFO - New bet found for soufiane980: 1 @ 1.91
+2026-02-09 12:33:15,448 - monitor - INFO - New bet found for soufiane980: X @ 3.4
+2026-02-09 12:33:15,453 - monitor - INFO - New bet found for soufiane980: X @ 3.75
+2026-02-09 12:33:15,460 - monitor - INFO - New bet found for soufiane980: 1 @ 1.36
+2026-02-09 12:33:15,469 - monitor - INFO - New bet found for soufiane980: X @ 3.2
+2026-02-09 12:33:15,474 - monitor - INFO - New bet found for soufiane980: X @ 3.0
+2026-02-09 12:33:15,479 - monitor - INFO - New bet found for soufiane980: 2 @ 2.2
+2026-02-09 12:33:15,486 - monitor - INFO - New bet found for soufiane980: X @ 3.0
+2026-02-09 12:33:15,505 - monitor - INFO - New bet found for Lurex: 1 @ 1.91
+2026-02-09 12:33:15,511 - monitor - INFO - New bet found for Lurex: 2 @ 2.1
+2026-02-09 12:33:15,517 - monitor - INFO - New bet found for Lurex: 2 @ 1.57
+2026-02-09 12:33:15,522 - monitor - INFO - New bet found for Lurex: 2 @ 1.73
+2026-02-09 12:33:15,528 - monitor - INFO - New bet found for Lurex: 1 @ 1.44
+2026-02-09 12:33:15,534 - monitor - INFO - New bet found for Lurex: 1 @ 1.22
+2026-02-09 12:33:15,540 - monitor - INFO - New bet found for Lurex: 2 @ 1.48
+2026-02-09 12:33:15,546 - monitor - INFO - New bet found for Lurex: 1 @ 2.7
+2026-02-09 12:33:15,551 - monitor - INFO - New bet found for Lurex: 1 @ 1.14
+2026-02-09 12:33:15,557 - monitor - INFO - New bet found for Lurex: 2 @ 2.55
+2026-02-09 12:33:15,562 - monitor - INFO - New bet found for Lurex: 2 @ 1.41
+2026-02-09 12:33:15,567 - monitor - INFO - New bet found for Lurex: 1 @ 1.32
+2026-02-09 12:33:15,572 - monitor - INFO - New bet found for Lurex: 2 @ 1.14
+2026-02-09 12:33:15,577 - monitor - INFO - New bet found for Lurex: 1 @ 2.38
+2026-02-09 12:33:15,583 - monitor - INFO - New bet found for Lurex: 2 @ 0.0
+2026-02-09 12:33:15,588 - monitor - INFO - New bet found for Lurex: 1 @ 2.38
+2026-02-09 12:33:15,594 - monitor - INFO - New bet found for Lurex: 1 @ 1.57
+2026-02-09 12:33:15,599 - monitor - INFO - New bet found for Lurex: 1 @ 1.17
+2026-02-09 12:33:15,605 - monitor - INFO - New bet found for Lurex: 2 @ 3.0
+2026-02-09 12:33:15,612 - monitor - INFO - New bet found for Lurex: 2 @ 1.17
+2026-02-09 12:33:15,617 - monitor - INFO - New bet found for Lurex: 2 @ 1.44
+2026-02-09 12:33:15,622 - monitor - INFO - New bet found for Lurex: 1 @ 2.75
+2026-02-09 12:33:15,628 - monitor - INFO - New bet found for Lurex: 2 @ 1.44
+2026-02-09 12:33:15,633 - monitor - INFO - New bet found for Lurex: 2 @ 1.29
+2026-02-09 12:33:15,639 - monitor - INFO - New bet found for Lurex: 2 @ 1.3
+2026-02-09 12:33:15,644 - monitor - INFO - New bet found for Lurex: 2 @ 1.4
+2026-02-09 12:33:15,650 - monitor - INFO - New bet found for Lurex: 1 @ 1.83
+2026-02-09 12:33:15,655 - monitor - INFO - New bet found for Lurex: 1 @ 1.2
+2026-02-09 12:33:15,660 - monitor - INFO - New bet found for Lurex: 2 @ 1.13
+2026-02-09 12:33:15,666 - monitor - INFO - New bet found for Lurex: 2 @ 1.4
+2026-02-09 12:33:15,672 - monitor - INFO - New bet found for Lurex: 2 @ 1.07
+2026-02-09 12:33:15,677 - monitor - INFO - New bet found for Lurex: 2 @ 1.62
+2026-02-09 12:33:15,683 - monitor - INFO - New bet found for Lurex: 1 @ 1.8
+2026-02-09 12:33:15,688 - monitor - INFO - New bet found for Lurex: 1 @ 1.91
+2026-02-09 12:33:15,694 - monitor - INFO - New bet found for Lurex: 1 @ 1.4
+2026-02-09 12:33:15,699 - monitor - INFO - New bet found for Lurex: 2 @ 1.33
+2026-02-09 12:33:15,704 - monitor - INFO - New bet found for Lurex: 1 @ 1.33
+2026-02-09 12:33:15,710 - monitor - INFO - New bet found for Lurex: 1 @ 1.53
+2026-02-09 12:33:15,715 - monitor - INFO - New bet found for Lurex: 2 @ 1.22
+2026-02-09 12:33:15,720 - monitor - INFO - New bet found for Lurex: 1 @ 1.33
+2026-02-09 12:33:15,726 - monitor - INFO - New bet found for Lurex: 2 @ 1.67
+2026-02-09 12:33:15,733 - monitor - INFO - New bet found for megano: 1 @ 2.15
+2026-02-09 12:33:15,738 - monitor - INFO - New bet found for megano: 2 @ 2.2
+2026-02-09 12:33:15,744 - monitor - INFO - New bet found for megano: 1 @ 1.91
+2026-02-09 12:33:15,751 - monitor - INFO - New bet found for megano: 1 @ 1.25
+2026-02-09 12:33:15,756 - monitor - INFO - New bet found for megano: 1 @ 2.1
+2026-02-09 12:33:15,763 - monitor - INFO - New bet found for megano: 1 @ 1.14
+2026-02-09 12:33:15,769 - monitor - INFO - New bet found for megano: 1 @ 1.25
+2026-02-09 12:33:15,775 - monitor - INFO - New bet found for megano: 2 @ 3.0
+2026-02-09 12:33:15,780 - monitor - INFO - New bet found for megano: 2 @ 1.3
+2026-02-09 12:33:15,789 - monitor - INFO - New bet found for megano: 1 @ 0.0
+2026-02-09 12:33:15,794 - monitor - INFO - New bet found for megano: 2 @ 1.49
+2026-02-09 12:33:15,799 - monitor - INFO - New bet found for megano: 1 @ 1.7
+2026-02-09 12:33:15,805 - monitor - INFO - New bet found for megano: 1 @ 0.0
+2026-02-09 12:33:15,811 - monitor - INFO - New bet found for megano: 2 @ 1.86
+2026-02-09 12:33:15,816 - monitor - INFO - New bet found for megano: 2 @ 3.0
+2026-02-09 12:33:15,822 - monitor - INFO - New bet found for megano: 1 @ 1.66
+2026-02-09 12:33:15,827 - monitor - INFO - New bet found for megano: 2 @ 0.0
+2026-02-09 12:33:15,832 - monitor - INFO - New bet found for megano: 2 @ 1.37
+2026-02-09 12:33:15,838 - monitor - INFO - New bet found for megano: 2 @ 1.57
+2026-02-09 12:33:15,843 - monitor - INFO - New bet found for megano: 1 @ 0.0
+2026-02-09 12:33:15,859 - monitor - INFO - New bet found for Iña Robledo: 1 @ 1.71
+2026-02-09 12:33:15,864 - monitor - INFO - New bet found for Iña Robledo: 2 @ 2.7
+2026-02-09 12:33:15,869 - monitor - INFO - New bet found for Iña Robledo: 1 @ 1.86
+2026-02-09 12:33:15,878 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.95
+2026-02-09 12:33:15,884 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.3
+2026-02-09 12:33:15,890 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.22
+2026-02-09 12:33:15,895 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.87
+2026-02-09 12:33:15,902 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.69
+2026-02-09 12:33:15,908 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:15,913 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.87
+2026-02-09 12:33:15,920 - monitor - INFO - New bet found for Ange Santos: 1 @ 2.12
+2026-02-09 12:33:15,926 - monitor - INFO - New bet found for Ange Santos: 2 @ 3.2
+2026-02-09 12:33:15,932 - monitor - INFO - New bet found for Ange Santos: 2 @ 4.5
+2026-02-09 12:33:15,937 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.36
+2026-02-09 12:33:15,943 - monitor - INFO - New bet found for Ange Santos: 2 @ 2.75
+2026-02-09 12:33:15,948 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.83
+2026-02-09 12:33:15,954 - monitor - INFO - New bet found for Ange Santos: 2 @ 2.2
+2026-02-09 12:33:15,961 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.26
+2026-02-09 12:33:15,966 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.8
+2026-02-09 12:33:15,972 - monitor - INFO - New bet found for Ange Santos: 1 @ 1.42
+2026-02-09 12:33:15,977 - monitor - INFO - New bet found for Ange Santos: 2 @ 1.77
+2026-02-09 12:33:15,983 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:15,989 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:15,994 - monitor - INFO - New bet found for Ange Santos: 2 @ 0.0
+2026-02-09 12:33:16,000 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:16,005 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:16,011 - monitor - INFO - New bet found for Ange Santos: 1 @ 0.0
+2026-02-09 12:33:16,018 - monitor - INFO - New bet found for Patrik Rostáš: 1 @ 4.2
+2026-02-09 12:33:16,025 - monitor - INFO - New bet found for Patrik Rostáš: 1 @ 1.62
+2026-02-09 12:33:16,034 - monitor - INFO - New bet found for Patrik Rostáš: 2 @ 2.4
+2026-02-09 12:33:16,040 - monitor - INFO - New bet found for Patrik Rostáš: 1 @ 3.1
+2026-02-09 12:33:16,046 - monitor - INFO - New bet found for Patrik Rostáš: 2 @ 4.1
+2026-02-09 12:33:16,053 - monitor - INFO - New bet found for Patrik Rostáš: 1 @ 0.0
+2026-02-09 12:33:16,064 - monitor - INFO - New bet found for Redha Mirou: 1 @ 1.2
+2026-02-09 12:33:16,076 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 1.45
+2026-02-09 12:33:16,082 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 2.4
+2026-02-09 12:33:16,093 - monitor - INFO - New bet found for Alexandre Pereira344: 2 @ 1.57
+2026-02-09 12:33:16,101 - monitor - INFO - New bet found for Alexandre Pereira344: 2 @ 1.56
+2026-02-09 12:33:16,107 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 1.32
+2026-02-09 12:33:16,113 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 1.4
+2026-02-09 12:33:16,120 - monitor - INFO - New bet found for Alexandre Pereira344: 2 @ 1.45
+2026-02-09 12:33:16,127 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 0.0
+2026-02-09 12:33:16,132 - monitor - INFO - New bet found for Alexandre Pereira344: 1 @ 0.0
+2026-02-09 12:33:16,138 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 1.53
+2026-02-09 12:33:16,144 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.08
+2026-02-09 12:33:16,150 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 4.33
+2026-02-09 12:33:16,155 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 1.33
+2026-02-09 12:33:16,161 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 1.29
+2026-02-09 12:33:16,167 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 3.4
+2026-02-09 12:33:16,172 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.67
+2026-02-09 12:33:16,177 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.67
+2026-02-09 12:33:16,183 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 3.25
+2026-02-09 12:33:16,189 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.44
+2026-02-09 12:33:16,195 - monitor - INFO - New bet found for Jmcmesquita: 2 @ 1.44
+2026-02-09 12:33:16,201 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.91
+2026-02-09 12:33:16,207 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.33
+2026-02-09 12:33:16,212 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.83
+2026-02-09 12:33:16,217 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.44
+2026-02-09 12:33:16,223 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.67
+2026-02-09 12:33:16,229 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.14
+2026-02-09 12:33:16,235 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 1.36
+2026-02-09 12:33:16,242 - monitor - INFO - New bet found for Jmcmesquita: 1 @ 0.0
+2026-02-09 12:33:16,253 - monitor - INFO - New bet found for Novaldi: 1 @ 1.13
+2026-02-09 12:33:16,272 - monitor - INFO - New bet found for christian emmanuel rodriguez s: 2 @ 6.5
+2026-02-09 12:33:16,282 - monitor - INFO - New bet found for christian emmanuel rodriguez s: 1 @ 1.14
+2026-02-09 12:33:16,287 - monitor - INFO - New bet found for christian emmanuel rodriguez s: 1 @ 1.62
+2026-02-09 12:33:16,294 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 1.67
+2026-02-09 12:33:16,300 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 5.5
+2026-02-09 12:33:16,307 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 2.5
+2026-02-09 12:33:16,315 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 2.2
+2026-02-09 12:33:16,321 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 2.3
+2026-02-09 12:33:16,326 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 4.2
+2026-02-09 12:33:16,332 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 2.05
+2026-02-09 12:33:16,338 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 1.56
+2026-02-09 12:33:16,343 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 2.35
+2026-02-09 12:33:16,350 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 1.3
+2026-02-09 12:33:16,356 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 1.5
+2026-02-09 12:33:16,364 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 0.0
+2026-02-09 12:33:16,370 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 0.0
+2026-02-09 12:33:16,376 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 0.0
+2026-02-09 12:33:16,382 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 1.02
+2026-02-09 12:33:16,388 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 0.0
+2026-02-09 12:33:16,394 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 2.15
+2026-02-09 12:33:16,399 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 0.0
+2026-02-09 12:33:16,406 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 0.0
+2026-02-09 12:33:16,411 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 0.0
+2026-02-09 12:33:16,417 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 2 @ 0.0
+2026-02-09 12:33:16,426 - monitor - INFO - New bet found for Eduardo707: 1 @ 6.0
+2026-02-09 12:33:16,433 - monitor - INFO - New bet found for Eduardo707: X @ 3.6
+2026-02-09 12:33:16,439 - monitor - INFO - New bet found for Eduardo707: 1 @ 1.33
+2026-02-09 12:33:16,445 - monitor - INFO - New bet found for Eduardo707: 1 @ 1.33
+2026-02-09 12:33:16,451 - monitor - INFO - New bet found for Eduardo707: 2 @ 1.5
+2026-02-09 12:33:16,457 - monitor - INFO - New bet found for Eduardo707: 1 @ 1.75
+2026-02-09 12:33:16,463 - monitor - INFO - New bet found for Eduardo707: 2 @ 1.91
+2026-02-09 12:33:16,468 - monitor - INFO - New bet found for Eduardo707: 2 @ 3.1
+2026-02-09 12:33:16,479 - monitor - INFO - New bet found for Alexander Mendoza588: 1 @ 2.25
+2026-02-09 12:33:16,488 - monitor - INFO - New bet found for Alexander Mendoza588: 1 @ 1.11
+2026-02-09 12:33:16,495 - monitor - INFO - New bet found for ezcash: 2 @ 2.55
+2026-02-09 12:33:16,505 - monitor - INFO - New bet found for ezcash: 2 @ 2.05
+2026-02-09 12:33:16,511 - monitor - INFO - New bet found for ezcash: 2 @ 1.13
+2026-02-09 12:33:16,524 - monitor - INFO - New bet found for ezcash: 1 @ 0.0
+2026-02-09 12:33:16,530 - monitor - INFO - New bet found for ezcash: 2 @ 0.0
+2026-02-09 12:33:16,535 - monitor - INFO - New bet found for ezcash: 2 @ 0.0
+2026-02-09 12:33:16,541 - monitor - INFO - New bet found for ezcash: 2 @ 1.25
+2026-02-09 12:33:16,547 - monitor - INFO - New bet found for ezcash: 2 @ 0.0
+2026-02-09 12:33:16,552 - monitor - INFO - New bet found for ezcash: 2 @ 0.0
+2026-02-09 12:33:16,558 - monitor - INFO - New bet found for ezcash: 1 @ 0.0
+2026-02-09 12:33:16,564 - monitor - INFO - New bet found for ezcash: 2 @ 0.0
+2026-02-09 12:33:16,570 - monitor - INFO - New bet found for Iliq Ruikov: 1 @ 2.5
+2026-02-09 12:33:16,583 - monitor - INFO - New bet found for Iliq Ruikov: 2 @ 1.46
+2026-02-09 12:33:16,589 - monitor - INFO - New bet found for Iliq Ruikov: 1 @ 1.46
+2026-02-09 12:33:16,597 - monitor - INFO - New bet found for Iliq Ruikov: 1 @ 0.0
+2026-02-09 12:33:16,614 - monitor - INFO - New bet found for So K Ha: 2 @ 3.0
+2026-02-09 12:33:16,625 - monitor - INFO - New bet found for Gideon Shija: 1 @ 1.14
+2026-02-09 12:33:16,631 - monitor - INFO - New bet found for Gideon Shija: 1 @ 1.4
+2026-02-09 12:33:16,637 - monitor - INFO - New bet found for Gideon Shija: 2 @ 1.17
+2026-02-09 12:33:16,643 - monitor - INFO - New bet found for Gideon Shija: 1 @ 1.8
+2026-02-09 12:33:16,649 - monitor - INFO - New bet found for Gideon Shija: 1 @ 2.3
+2026-02-09 12:33:16,654 - monitor - INFO - New bet found for Gideon Shija: X @ 3.25
+2026-02-09 12:33:16,662 - monitor - INFO - New bet found for Gideon Shija: 2 @ 1.44
+2026-02-09 12:33:16,668 - monitor - INFO - New bet found for Gideon Shija: 1 @ 1.13
+2026-02-09 12:33:16,675 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.85
+2026-02-09 12:33:16,681 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.65
+2026-02-09 12:33:16,686 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.33
+2026-02-09 12:33:16,692 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.17
+2026-02-09 12:33:16,697 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.02
+2026-02-09 12:33:16,709 - monitor - INFO - New bet found for dylanlcdavies: 2 @ 1.6
+2026-02-09 12:33:16,717 - monitor - INFO - New bet found for dylanlcdavies: 1 @ 1.91
+2026-02-09 12:33:16,725 - monitor - INFO - New bet found for Bruno_frts: 1 @ 2.0
+2026-02-09 12:33:16,731 - monitor - INFO - New bet found for Bruno_frts: 1 @ 1.4
+2026-02-09 12:33:16,737 - monitor - INFO - New bet found for Bruno_frts: 1 @ 2.45
+2026-02-09 12:33:16,745 - monitor - INFO - New bet found for Bruno_frts: 1 @ 1.75
+2026-02-09 12:33:16,751 - monitor - INFO - New bet found for Bruno_frts: 1 @ 2.05
+2026-02-09 12:33:16,757 - monitor - INFO - New bet found for Bruno_frts: 2 @ 4.2
+2026-02-09 12:33:16,763 - monitor - INFO - New bet found for Bruno_frts: 1 @ 1.62
+2026-02-09 12:33:16,772 - monitor - INFO - New bet found for MADARA59: 1 @ 2.5
+2026-02-09 12:33:16,779 - monitor - INFO - New bet found for MADARA59: 1 @ 2.05
+2026-02-09 12:33:16,785 - monitor - INFO - New bet found for MADARA59: 1 @ 1.81
+2026-02-09 12:33:16,796 - monitor - INFO - New bet found for MADARA59: 1 @ 1.4
+2026-02-09 12:33:16,806 - monitor - INFO - New bet found for MADARA59: 1 @ 1.57
+2026-02-09 12:33:16,812 - monitor - INFO - New bet found for MADARA59: 1 @ 2.1
+2026-02-09 12:33:16,818 - monitor - INFO - New bet found for MADARA59: 1 @ 1.57
+2026-02-09 12:33:16,824 - monitor - INFO - New bet found for MADARA59: 1 @ 2.4
+2026-02-09 12:33:16,829 - monitor - INFO - New bet found for MADARA59: 1 @ 1.91
+2026-02-09 12:33:16,836 - monitor - INFO - New bet found for MADARA59: 1 @ 1.17
+2026-02-09 12:33:16,841 - monitor - INFO - New bet found for MADARA59: 2 @ 1.45
+2026-02-09 12:33:16,847 - monitor - INFO - New bet found for MADARA59: 2 @ 1.25
+2026-02-09 12:33:16,855 - monitor - INFO - New bet found for Mackenley samuel Calypso: 2 @ 2.9
+2026-02-09 12:33:16,861 - monitor - INFO - New bet found for Mackenley samuel Calypso: 1 @ 1.33
+2026-02-09 12:33:16,867 - monitor - INFO - New bet found for Mackenley samuel Calypso: 1 @ 2.6
+2026-02-09 12:33:16,873 - monitor - INFO - New bet found for Mackenley samuel Calypso: 1 @ 1.31
+2026-02-09 12:33:16,878 - monitor - INFO - New bet found for Mackenley samuel Calypso: 1 @ 2.0
+2026-02-09 12:33:16,884 - monitor - INFO - New bet found for Mackenley samuel Calypso: 1 @ 1.41
+2026-02-09 12:33:16,890 - monitor - INFO - New bet found for Mackenley samuel Calypso: 2 @ 2.4
+2026-02-09 12:33:16,898 - monitor - INFO - New bet found for Mackenley samuel Calypso: X @ 3.8
+2026-02-09 12:33:16,907 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 2.9
+2026-02-09 12:33:16,913 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 6.0
+2026-02-09 12:33:16,919 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.28
+2026-02-09 12:33:16,925 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 2.1
+2026-02-09 12:33:16,931 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 1.95
+2026-02-09 12:33:16,937 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.07
+2026-02-09 12:33:16,943 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 13.0
+2026-02-09 12:33:16,948 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 8.0
+2026-02-09 12:33:16,954 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 1.18
+2026-02-09 12:33:16,960 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.67
+2026-02-09 12:33:16,965 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 1.1
+2026-02-09 12:33:16,971 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.56
+2026-02-09 12:33:16,977 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 0.0
+2026-02-09 12:33:16,983 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 0.0
+2026-02-09 12:33:16,988 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 11.0
+2026-02-09 12:33:16,994 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.42
+2026-02-09 12:33:17,000 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 2.95
+2026-02-09 12:33:17,007 - monitor - INFO - New bet found for Saulius Jonauskas: 1 @ 3.1
+2026-02-09 12:33:17,013 - monitor - INFO - New bet found for Saulius Jonauskas: 2 @ 1.45
+2026-02-09 12:33:17,023 - monitor - INFO - New bet found for Diego Spagnuolo14: 2 @ 1.55
+2026-02-09 12:33:17,029 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 2.4
+2026-02-09 12:33:17,035 - monitor - INFO - New bet found for Diego Spagnuolo14: X @ 3.0
+2026-02-09 12:33:17,040 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 2.1
+2026-02-09 12:33:17,046 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 1.91
+2026-02-09 12:33:17,051 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 1.76
+2026-02-09 12:33:17,058 - monitor - INFO - New bet found for Diego Spagnuolo14: X @ 2.75
+2026-02-09 12:33:17,064 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 2.3
+2026-02-09 12:33:17,070 - monitor - INFO - New bet found for Diego Spagnuolo14: 1 @ 1.61
+2026-02-09 12:33:17,077 - monitor - INFO - New bet found for Diego Spagnuolo14: X @ 3.25
+2026-02-09 12:33:17,106 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.3
+2026-02-09 12:33:17,113 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.44
+2026-02-09 12:33:17,119 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.13
+2026-02-09 12:33:17,128 - monitor - INFO - New bet found for Guest9454618: 2 @ 1.17
+2026-02-09 12:33:17,133 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.08
+2026-02-09 12:33:17,140 - monitor - INFO - New bet found for Guest9454618: 2 @ 1.44
+2026-02-09 12:33:17,145 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.33
+2026-02-09 12:33:17,152 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.29
+2026-02-09 12:33:17,158 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.03
+2026-02-09 12:33:17,164 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.17
+2026-02-09 12:33:17,171 - monitor - INFO - New bet found for Guest9454618: 2 @ 1.1
+2026-02-09 12:33:17,177 - monitor - INFO - New bet found for Guest9454618: 2 @ 1.8
+2026-02-09 12:33:17,185 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.14
+2026-02-09 12:33:17,190 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.53
+2026-02-09 12:33:17,200 - monitor - INFO - New bet found for Guest9454618: 1 @ 0.0
+2026-02-09 12:33:17,264 - monitor - INFO - New bet found for Guest9454618: 1 @ 0.0
+2026-02-09 12:33:17,272 - monitor - INFO - New bet found for Guest9454618: 1 @ 0.0
+2026-02-09 12:33:17,285 - monitor - INFO - New bet found for Guest9454618: 1 @ 1.08
+2026-02-09 12:33:17,301 - monitor - INFO - New bet found for Ivan Silva762: 1 @ 2.5
+2026-02-09 12:33:17,318 - monitor - INFO - New bet found for Rico Sousa: X @ 3.1
+2026-02-09 12:33:17,339 - monitor - INFO - New bet found for Nathanael Van Gorp: 1 @ 0.0
+2026-02-09 12:33:17,396 - monitor - INFO - New bet found for Kiad: 1 @ 1.25
+2026-02-09 12:33:17,410 - monitor - INFO - New bet found for Kiad: 1 @ 1.8
+2026-02-09 12:33:17,419 - monitor - INFO - New bet found for Kiad: X @ 3.4
+2026-02-09 12:33:17,434 - monitor - INFO - New bet found for Yean V.G.: 1 @ 2.38
+2026-02-09 12:33:17,443 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 5.5
+2026-02-09 12:33:17,449 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 2.05
+2026-02-09 12:33:17,454 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 3.8
+2026-02-09 12:33:17,459 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 2.9
+2026-02-09 12:33:17,465 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 2.6
+2026-02-09 12:33:17,471 - monitor - INFO - New bet found for Gayllord Kalala: X @ 4.0
+2026-02-09 12:33:17,476 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 2.3
+2026-02-09 12:33:17,481 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 1.85
+2026-02-09 12:33:17,487 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 2.4
+2026-02-09 12:33:17,492 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 1.95
+2026-02-09 12:33:17,498 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 2.7
+2026-02-09 12:33:17,503 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 1.75
+2026-02-09 12:33:17,509 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 1.17
+2026-02-09 12:33:17,514 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 2.55
+2026-02-09 12:33:17,520 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 1.95
+2026-02-09 12:33:17,525 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 7.0
+2026-02-09 12:33:17,532 - monitor - INFO - New bet found for Gayllord Kalala: 2 @ 2.63
+2026-02-09 12:33:17,537 - monitor - INFO - New bet found for Gayllord Kalala: 1 @ 1.53
+2026-02-09 12:33:17,683 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.39
+2026-02-09 12:33:17,689 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.71
+2026-02-09 12:33:17,695 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 1 @ 1.36
+2026-02-09 12:33:17,701 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 2.65
+2026-02-09 12:33:17,706 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 1 @ 1.53
+2026-02-09 12:33:17,712 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 1 @ 2.35
+2026-02-09 12:33:17,717 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.87
+2026-02-09 12:33:17,723 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 1 @ 1.17
+2026-02-09 12:33:17,729 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.29
+2026-02-09 12:33:17,734 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.8
+2026-02-09 12:33:17,740 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 2.0
+2026-02-09 12:33:17,746 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 1 @ 1.33
+2026-02-09 12:33:17,751 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 1.77
+2026-02-09 12:33:17,757 - monitor - INFO - New bet found for Guest681587e37a292ae2f32ba780: 2 @ 2.4
+2026-02-09 12:33:17,769 - monitor - INFO - New bet found for Benny Asriwandudi: 2 @ 1.75
+2026-02-09 12:33:17,775 - monitor - INFO - New bet found for Benny Asriwandudi: 2 @ 41.0
+2026-02-09 12:33:17,781 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.53
+2026-02-09 12:33:17,786 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.17
+2026-02-09 12:33:17,791 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.3
+2026-02-09 12:33:17,798 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.67
+2026-02-09 12:33:17,803 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 4.1
+2026-02-09 12:33:17,810 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.18
+2026-02-09 12:33:17,816 - monitor - INFO - New bet found for Benny Asriwandudi: 1 @ 1.45
+2026-02-09 12:33:17,822 - monitor - INFO - New bet found for George Kamenis: 2 @ 2.2
+2026-02-09 12:33:17,829 - monitor - INFO - New bet found for George Kamenis: 1 @ 1.61
+2026-02-09 12:33:17,838 - monitor - INFO - New bet found for George Kamenis: 1 @ 2.4
+2026-02-09 12:33:17,844 - monitor - INFO - New bet found for George Kamenis: 1 @ 1.5
+2026-02-09 12:33:17,852 - monitor - INFO - New bet found for George Kamenis: 1 @ 0.0
+2026-02-09 12:33:17,866 - monitor - INFO - New bet found for Cristóvão do Nascimento Duarte: 1 @ 1.57
+2026-02-09 12:33:17,873 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,880 - monitor - INFO - New bet found for Rodrigo Vaqueiro: X @ 3.1
+2026-02-09 12:33:17,885 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 1.75
+2026-02-09 12:33:17,892 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 1.8
+2026-02-09 12:33:17,899 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 1.83
+2026-02-09 12:33:17,905 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 2.2
+2026-02-09 12:33:17,911 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 3.4
+2026-02-09 12:33:17,918 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,926 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,931 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,937 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:17,942 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:17,949 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,955 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:17,960 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:17,966 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,972 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 3.6
+2026-02-09 12:33:17,977 - monitor - INFO - New bet found for Rodrigo Vaqueiro: X @ 0.0
+2026-02-09 12:33:17,983 - monitor - INFO - New bet found for Rodrigo Vaqueiro: X @ 0.0
+2026-02-09 12:33:17,989 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:17,994 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:18,000 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 12:33:18,005 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:18,010 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:18,017 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 0.0
+2026-02-09 12:33:18,022 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 2 @ 5.0
+2026-02-09 12:33:18,030 - monitor - INFO - New bet found for marcos meza: 2 @ 1.85
+2026-02-09 12:33:18,042 - monitor - INFO - New bet found for marcos meza: 2 @ 0.0
+2026-02-09 12:33:18,052 - monitor - INFO - New bet found for Jorge Zubiate: 2 @ 2.15
+2026-02-09 12:33:18,065 - monitor - INFO - New bet found for Jorge Zubiate: 1 @ 1.62
+2026-02-09 12:33:18,230 - monitor - INFO - New bet found for Guest92573950: 1 @ 1.29
+2026-02-09 12:33:18,237 - monitor - INFO - New bet found for Guest92573950: 2 @ 1.5
+2026-02-09 12:33:18,245 - monitor - INFO - New bet found for Guest92573950: 2 @ 2.1
+2026-02-09 12:33:18,250 - monitor - INFO - New bet found for Guest92573950: 1 @ 1.17
+2026-02-09 12:33:18,262 - monitor - INFO - New bet found for Guest92573950: 1 @ 2.25
+2026-02-09 12:33:18,269 - monitor - INFO - New bet found for Guest92573950: 2 @ 1.5
+2026-02-09 12:33:18,276 - monitor - INFO - New bet found for Guest92573950: 2 @ 4.0
+2026-02-09 12:33:18,301 - monitor - INFO - New bet found for Guest69641e16cfcc69e2f0874706: 2 @ 1.3
+2026-02-09 12:33:18,312 - monitor - INFO - New bet found for Guest69641e16cfcc69e2f0874706: 2 @ 0.0
+2026-02-09 12:33:18,318 - monitor - INFO - New bet found for Guest69641e16cfcc69e2f0874706: 1 @ 0.0
+2026-02-09 12:33:18,326 - monitor - INFO - New bet found for Josué Aguilar Palomino: 1 @ 1.2
+2026-02-09 12:33:18,332 - monitor - INFO - New bet found for Josué Aguilar Palomino: 2 @ 1.75
+2026-02-09 12:33:18,339 - monitor - INFO - New bet found for Josué Aguilar Palomino: 2 @ 1.86
+2026-02-09 12:33:18,350 - monitor - INFO - New bet found for Josué Aguilar Palomino: 1 @ 1.42
+2026-02-09 12:33:18,364 - monitor - INFO - New bet found for Guest68747bc8fa793356425f30e4: 2 @ 2.0
+2026-02-09 12:33:18,372 - monitor - INFO - New bet found for Guest68747bc8fa793356425f30e4: 1 @ 1.36
+2026-02-09 12:33:18,381 - monitor - INFO - New bet found for Guest68747bc8fa793356425f30e4: 2 @ 0.0
+2026-02-09 12:33:18,387 - monitor - INFO - New bet found for Martim Leal362: 2 @ 1.36
+2026-02-09 12:33:18,393 - monitor - INFO - New bet found for Martim Leal362: 1 @ 2.0
+2026-02-09 12:33:18,398 - monitor - INFO - New bet found for Martim Leal362: 1 @ 1.5
+2026-02-09 12:33:18,404 - monitor - INFO - New bet found for Martim Leal362: 1 @ 1.83
+2026-02-09 12:33:18,410 - monitor - INFO - New bet found for Martim Leal362: 2 @ 1.5
+2026-02-09 12:33:18,416 - monitor - INFO - New bet found for Martim Leal362: 1 @ 2.38
+2026-02-09 12:33:18,422 - monitor - INFO - New bet found for Martim Leal362: 1 @ 0.0
+2026-02-09 12:33:18,427 - monitor - INFO - New bet found for Martim Leal362: 1 @ 2.5
+2026-02-09 12:33:18,433 - monitor - INFO - New bet found for Martim Leal362: 2 @ 1.18
+2026-02-09 12:33:18,439 - monitor - INFO - New bet found for Martim Leal362: 1 @ 9.0
+2026-02-09 12:33:18,446 - monitor - INFO - New bet found for Martim Leal362: 1 @ 1.1
+2026-02-09 12:33:18,452 - monitor - INFO - New bet found for Martim Leal362: 1 @ 3.1
+2026-02-09 12:33:18,467 - monitor - INFO - New bet found for lllrod: 2 @ 2.3
+2026-02-09 12:33:18,473 - monitor - INFO - New bet found for lllrod: 1 @ 1.62
+2026-02-09 12:33:18,479 - monitor - INFO - New bet found for lllrod: 1 @ 1.62
+2026-02-09 12:33:18,487 - monitor - INFO - New bet found for lllrod: 1 @ 2.05
+2026-02-09 12:33:18,495 - monitor - INFO - New bet found for lllrod: 2 @ 2.3
+2026-02-09 12:33:18,502 - monitor - INFO - New bet found for lllrod: 1 @ 0.0
+2026-02-09 12:33:18,507 - monitor - INFO - New bet found for lllrod: 1 @ 0.0
+2026-02-09 12:33:18,513 - monitor - INFO - New bet found for lllrod: 2 @ 0.0
+2026-02-09 12:33:18,519 - monitor - INFO - New bet found for lllrod: 2 @ 0.0
+2026-02-09 12:33:18,532 - monitor - INFO - New bet found for Felipe Gutierrez144: 1 @ 1.41
+2026-02-09 12:33:18,538 - monitor - INFO - New bet found for Felipe Gutierrez144: 1 @ 0.0
+2026-02-09 12:33:18,557 - monitor - INFO - New bet found for Mr. Deen: 1 @ 1.7
+2026-02-09 12:33:18,564 - monitor - INFO - New bet found for Mr. Deen: 1 @ 1.57
+2026-02-09 12:33:18,574 - monitor - INFO - New bet found for Mr. Deen: 2 @ 1.53
+2026-02-09 12:33:18,580 - monitor - INFO - New bet found for Joelsy: 1 @ 3.6
+2026-02-09 12:33:18,587 - monitor - INFO - New bet found for Joelsy: 1 @ 1.11
+2026-02-09 12:33:18,592 - monitor - INFO - New bet found for Joelsy: 1 @ 1.14
+2026-02-09 12:33:18,598 - monitor - INFO - New bet found for Joelsy: 1 @ 3.3
+2026-02-09 12:33:18,604 - monitor - INFO - New bet found for Joelsy: 1 @ 3.3
+2026-02-09 12:33:18,609 - monitor - INFO - New bet found for Joelsy: 2 @ 1.9
+2026-02-09 12:33:18,615 - monitor - INFO - New bet found for Joelsy: 1 @ 2.75
+2026-02-09 12:33:18,620 - monitor - INFO - New bet found for Joelsy: 1 @ 4.2
+2026-02-09 12:33:18,627 - monitor - INFO - New bet found for Joelsy: 2 @ 2.0
+2026-02-09 12:33:18,632 - monitor - INFO - New bet found for Joelsy: 2 @ 8.0
+2026-02-09 12:33:18,638 - monitor - INFO - New bet found for Joelsy: 2 @ 2.45
+2026-02-09 12:33:18,644 - monitor - INFO - New bet found for Joelsy: 1 @ 1.91
+2026-02-09 12:33:18,649 - monitor - INFO - New bet found for Joelsy: 2 @ 15.0
+2026-02-09 12:33:18,654 - monitor - INFO - New bet found for Joelsy: 1 @ 1.95
+2026-02-09 12:33:18,661 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.14
+2026-02-09 12:33:18,667 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.2
+2026-02-09 12:33:18,673 - monitor - INFO - New bet found for The real one / 21: 2 @ 4.0
+2026-02-09 12:33:18,678 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.83
+2026-02-09 12:33:18,684 - monitor - INFO - New bet found for The real one / 21: 2 @ 2.2
+2026-02-09 12:33:18,689 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.67
+2026-02-09 12:33:18,695 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.36
+2026-02-09 12:33:18,700 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.06
+2026-02-09 12:33:18,705 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.57
+2026-02-09 12:33:18,711 - monitor - INFO - New bet found for The real one / 21: 1 @ 2.55
+2026-02-09 12:33:18,717 - monitor - INFO - New bet found for The real one / 21: 1 @ 3.4
+2026-02-09 12:33:18,723 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.62
+2026-02-09 12:33:18,729 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.91
+2026-02-09 12:33:18,734 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.4
+2026-02-09 12:33:18,740 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.73
+2026-02-09 12:33:18,745 - monitor - INFO - New bet found for The real one / 21: 2 @ 2.63
+2026-02-09 12:33:18,751 - monitor - INFO - New bet found for The real one / 21: 1 @ 1.33
+2026-02-09 12:33:18,757 - monitor - INFO - New bet found for The real one / 21: 2 @ 0.0
+2026-02-09 12:33:18,762 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.83
+2026-02-09 12:33:18,768 - monitor - INFO - New bet found for The real one / 21: 2 @ 0.0
+2026-02-09 12:33:18,773 - monitor - INFO - New bet found for The real one / 21: 2 @ 1.44
+2026-02-09 12:33:18,786 - monitor - INFO - New bet found for Miro Kyskiniemi: 1 @ 2.05
+2026-02-09 12:33:18,794 - monitor - INFO - New bet found for Miro Kyskiniemi: 1 @ 2.15
+2026-02-09 12:33:18,803 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 3.4
+2026-02-09 12:33:18,810 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 3.1
+2026-02-09 12:33:18,815 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 1.5
+2026-02-09 12:33:18,822 - monitor - INFO - New bet found for Sergio Camacho-soto516: 1 @ 2.0
+2026-02-09 12:33:18,828 - monitor - INFO - New bet found for Sergio Camacho-soto516: 1 @ 1.5
+2026-02-09 12:33:18,835 - monitor - INFO - New bet found for Sergio Camacho-soto516: 1 @ 1.3
+2026-02-09 12:33:18,841 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 2.0
+2026-02-09 12:33:18,846 - monitor - INFO - New bet found for Sergio Camacho-soto516: 1 @ 2.38
+2026-02-09 12:33:18,852 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 1.33
+2026-02-09 12:33:18,858 - monitor - INFO - New bet found for Sergio Camacho-soto516: 2 @ 1.17
+2026-02-09 12:33:18,864 - monitor - INFO - New bet found for Sergio Camacho-soto516: 1 @ 2.2
+2026-02-09 12:33:18,873 - monitor - INFO - New bet found for Ali jnj: 1 @ 1.91
+2026-02-09 12:33:18,879 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.85
+2026-02-09 12:33:18,886 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.55
+2026-02-09 12:33:18,892 - monitor - INFO - New bet found for Ali jnj: 1 @ 2.1
+2026-02-09 12:33:18,897 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.01
+2026-02-09 12:33:18,903 - monitor - INFO - New bet found for Ali jnj: 1 @ 1.7
+2026-02-09 12:33:18,909 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.01
+2026-02-09 12:33:18,915 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.1
+2026-02-09 12:33:18,922 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.7
+2026-02-09 12:33:18,929 - monitor - INFO - New bet found for Ali jnj: 2 @ 2.55
+2026-02-09 12:33:18,935 - monitor - INFO - New bet found for Ali jnj: 1 @ 0.0
+2026-02-09 12:33:18,943 - monitor - INFO - New bet found for NadirEzab13: 1 @ 9.5
+2026-02-09 12:33:18,951 - monitor - INFO - New bet found for NadirEzab13: 1 @ 2.1
+2026-02-09 12:33:18,960 - monitor - INFO - New bet found for NadirEzab13: 1 @ 1.18
+2026-02-09 12:33:18,965 - monitor - INFO - New bet found for NadirEzab13: X @ 3.6
+2026-02-09 12:33:18,970 - monitor - INFO - New bet found for NadirEzab13: 1 @ 1.2
+2026-02-09 12:33:19,086 - monitor - INFO - New bet found for Easy money 216: 2 @ 2.65
+2026-02-09 12:33:19,095 - monitor - INFO - New bet found for Easy money 216: 1 @ 2.2
+2026-02-09 12:33:19,105 - monitor - INFO - New bet found for Easy money 216: 1 @ 1.01
+2026-02-09 12:33:19,112 - monitor - INFO - New bet found for Easy money 216: 2 @ 2.25
+2026-02-09 12:33:19,118 - monitor - INFO - New bet found for Easy money 216: 2 @ 1.29
+2026-02-09 12:33:19,124 - monitor - INFO - New bet found for Easy money 216: 2 @ 2.3
+2026-02-09 12:33:19,134 - monitor - INFO - New bet found for Easy money 216: 1 @ 1.18
+2026-02-09 12:33:19,173 - monitor - INFO - New bet found for Easy money 216: 2 @ 1.33
+2026-02-09 12:33:19,201 - monitor - INFO - New bet found for Easy money 216: 2 @ 1.26
+2026-02-09 12:33:19,207 - monitor - INFO - New bet found for Easy money 216: 1 @ 0.0
+2026-02-09 12:33:19,225 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,231 - monitor - INFO - New bet found for Easy money 216: 2 @ 2.4
+2026-02-09 12:33:19,238 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,244 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,250 - monitor - INFO - New bet found for Easy money 216: 1 @ 0.0
+2026-02-09 12:33:19,256 - monitor - INFO - New bet found for Easy money 216: 1 @ 0.0
+2026-02-09 12:33:19,262 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,267 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,273 - monitor - INFO - New bet found for Easy money 216: 2 @ 0.0
+2026-02-09 12:33:19,279 - monitor - INFO - New bet found for Easy money 216: 1 @ 0.0
+2026-02-09 12:33:19,285 - monitor - INFO - New bet found for Easy money 216: 1 @ 0.0
+2026-02-09 12:33:19,288 - monitor - INFO - Sleeping for 47.97s...
+2026-02-09 12:38:20,596 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 12:38:20,613 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 12:38:20,613 - monitor - INFO - Auto-discovering Top Predictors...
+2026-02-09 12:38:20,768 - monitor - INFO - Discovered 100 new top predictors.
+2026-02-09 12:38:20,768 - monitor - INFO - Monitoring 101 users with 60s base interval.
+2026-02-09 12:38:23,180 - monitor - INFO - Sleeping for 57.15s...
