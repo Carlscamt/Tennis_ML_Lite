@@ -96,7 +96,8 @@ def cmd_predict(args):
         min_odds=args.min_odds,
         max_odds=args.max_odds,
         min_confidence=args.confidence,
-        scrape_unknown=not args.no_scrape
+        scrape_unknown=not args.no_scrape,
+        skip_scrape=args.no_scrape  # Respect --no-scrape fully
     )
     
     if len(predictions) == 0:

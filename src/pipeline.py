@@ -618,17 +618,20 @@ class TennisPipeline:
         max_odds: float = 3.0,
         min_confidence: float = 0.55,
         scrape_unknown: bool = True,
-        model_type: Optional[str] = None 
+        model_type: Optional[str] = None,
+        skip_scrape: bool = False
     ) -> pl.DataFrame:
         """Get predictions with observability, data quality, and advanced serving."""
         import asyncio
         
         with self.observability_context(f'predict_upcoming_{model_type or "default"}'):
             # Step 1: Get upcoming
-            upcoming = self._get_upcoming_matches(days)
+            print(f"[Pipeline] Getting upcoming matches (days={days}, skip_scrape={skip_scrape})...", flush=True)
+            upcoming = self._get_upcoming_matches(days, skip_scrape=skip_scrape)
             if len(upcoming) == 0:
                 print("No upcoming matches found.") 
                 return pl.DataFrame()
+            print(f"[Pipeline] Found {len(upcoming)} upcoming matches.", flush=True)
             
             # --- QUALITY GATE 3: INCOMING DATA MONITOR ---
             quality_rep = self.quality_monitor.check_incoming_data(upcoming, is_live=True)
@@ -656,11 +659,15 @@ class TennisPipeline:
             historical = self._load_historical_data()
             
             # Step 2.5: Unknown players
-            if scrape_unknown:
+            if scrape_unknown and not skip_scrape:
+                print(f"[Pipeline] Identifying unknown players...", flush=True)
                 unknowns = self._identify_unknown_players(upcoming, historical)
                 if unknowns:
+                    print(f"[Pipeline] Scraping {len(unknowns)} unknown players...", flush=True)
                     self._scrape_unknown_players(unknowns)
                     historical = self._load_historical_data()
+                else:
+                    print("[Pipeline] No unknown players found.", flush=True)
             
             # Step 3: Create BOTH perspectives (A vs B and B vs A)
             # Original perspective
@@ -756,13 +763,21 @@ class TennisPipeline:
             return final_df
 
     # Helper methods
-    def _get_upcoming_matches(self, days: int) -> pl.DataFrame:
+    def _get_upcoming_matches(self, days: int, skip_scrape: bool = False) -> pl.DataFrame:
         latest_path = self.data_dir / "upcoming.parquet"
         if latest_path.exists():
             import os
             mtime = os.path.getmtime(latest_path)
-            if (datetime.now().timestamp() - mtime) / 3600 < 1:
+            age_hours = (datetime.now().timestamp() - mtime) / 3600
+            if age_hours < 1 or skip_scrape:
+                print(f"[Pipeline] Using cached upcoming.parquet (age: {age_hours:.1f}h)", flush=True)
                 return pl.read_parquet(latest_path)
+        
+        if skip_scrape:
+            print("[Pipeline] --no-scrape set but no cached data found. Returning empty.", flush=True)
+            return pl.DataFrame()
+        
+        print("[Pipeline] Scraping upcoming matches...", flush=True)
         return scrape_upcoming(days_ahead=days)
 
     def _load_historical_data(self) -> pl.DataFrame:

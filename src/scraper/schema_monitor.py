@@ -8,7 +8,7 @@ import logging
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional, Set, Callable
-from threading import Lock
+from threading import RLock  # Use RLock instead of Lock to avoid deadlock
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)
@@ -188,7 +188,7 @@ class ScraperHealthMetrics:
     
     # Time-windowed tracking
     _recent_requests: List[Dict] = field(default_factory=list)
-    _lock: Lock = field(default_factory=Lock)
+    _lock: RLock = field(default_factory=RLock)
     _alert_callbacks: List[Callable] = field(default_factory=list)
     
     def record_request(

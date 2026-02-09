@@ -16,6 +16,7 @@ Usage:
     # Update specific players
     python -m src.scraper players --ids 12345,67890
 """
+import os
 import sys
 from pathlib import Path
 import time
@@ -45,6 +46,7 @@ try:
     HAS_TQDM = True
 except ImportError:
     HAS_TQDM = False
+    print("WARNING: tqdm not installed, progress bars disabled")
 
 import polars as pl
 
@@ -115,16 +117,20 @@ RANKING_IDS = {
     "wta_singles": 6,
 }
 
-# Rate limiting - conservative to avoid bans
-MIN_DELAY = 1.5  # Increased from 0.3 to avoid rate limiting
-MAX_DELAY = 3.0  # Increased from 0.8 for safety margin
+# Rate limiting - balanced for speed without triggering bans
+MIN_DELAY = 0.5  # Reduced from 1.5 for faster operation
+MAX_DELAY = 1.5  # Reduced from 3.0
 
 # Global rate limiter instances
-_backoff = ExponentialBackoff(base_delay=2.0, max_delay=300.0, jitter_factor=0.3)
-_rate_limiter = SlidingWindowRateLimiter(window_seconds=60, max_requests=40, min_delay=1.5)
-_adaptive_limiter = AdaptiveRateLimiter(base_delay=1.5, min_delay=0.5, max_delay=10.0)
+_backoff = ExponentialBackoff(base_delay=1.0, max_delay=120.0, jitter_factor=0.2)
+_rate_limiter = SlidingWindowRateLimiter(window_seconds=60, max_requests=60, min_delay=0.5)
+_adaptive_limiter = AdaptiveRateLimiter(base_delay=0.6, min_delay=0.3, max_delay=5.0)
 _circuit_breaker = EnhancedCircuitBreaker(failure_threshold=3, success_threshold=2)
 _health_metrics = get_health_metrics()
+
+# Debug mode - set via environment
+DEBUG_SCRAPER = os.environ.get("DEBUG_SCRAPER", "").lower() in ("1", "true", "yes")
+
 
 # Data paths
 DATA_DIR = ROOT / "data"
@@ -933,7 +939,7 @@ def scrape_upcoming(days_ahead: int = 7, workers: int = 2) -> pl.DataFrame:  # R
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(fetch_match_odds, eid): eid for eid in event_ids}
         
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Fetching odds") if HAS_TQDM else as_completed(futures):
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Fetching odds", file=sys.stdout, dynamic_ncols=True, mininterval=1.0) if HAS_TQDM else as_completed(futures):
             event_id = futures[future]
             try:
                 odds_cache[event_id] = future.result()
@@ -1030,11 +1036,11 @@ def scrape_players(
         return player_id, records
     
     # Fetch in parallel
-    print(f"Fetching {len(player_ids)} players with {workers} workers...")
+    print(f"Fetching {len(player_ids)} players with {workers} workers...", flush=True)
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(fetch_single_player, pid): pid for pid in player_ids}
         
-        pbar = tqdm(total=len(player_ids), desc="Fetching players") if HAS_TQDM else None
+        pbar = tqdm(total=len(player_ids), desc="Fetching players", file=sys.stdout, dynamic_ncols=True, mininterval=1.0) if HAS_TQDM else None
         
         for future in as_completed(futures):
             player_id, records = future.result()
