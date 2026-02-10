@@ -1525,3 +1525,478 @@ ValueError: could not convert string to float: '-'
 2026-02-09 12:38:20,768 - monitor - INFO - Discovered 100 new top predictors.
 2026-02-09 12:38:20,768 - monitor - INFO - Monitoring 101 users with 60s base interval.
 2026-02-09 12:38:23,180 - monitor - INFO - Sleeping for 57.15s...
+2026-02-09 16:51:31,494 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 16:51:31,503 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 16:51:31,503 - monitor - INFO - Auto-discovering Top Predictors...
+2026-02-09 16:51:31,793 - monitor - INFO - Discovered 100 new top predictors.
+2026-02-09 16:51:31,793 - monitor - INFO - Monitoring 101 users with 60s base interval.
+2026-02-09 16:51:32,034 - monitor - INFO - New bet found for BTTS is the best: 2 @ 2.1
+2026-02-09 16:51:32,288 - monitor - INFO - New bet found for Swift GB: 1 @ 2.63
+2026-02-09 16:51:32,301 - monitor - INFO - New bet found for Swift GB: 2 @ 2.75
+2026-02-09 16:51:32,529 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.53
+2026-02-09 16:51:32,541 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.53
+2026-02-09 16:51:32,553 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.14
+2026-02-09 16:51:32,565 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.4
+2026-02-09 16:51:32,575 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.17
+2026-02-09 16:51:32,586 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.57
+2026-02-09 16:51:32,600 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 2.2
+2026-02-09 16:51:32,612 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.83
+2026-02-09 16:51:32,624 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.3
+2026-02-09 16:51:32,636 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.73
+2026-02-09 16:51:32,648 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.11
+2026-02-09 16:51:32,659 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.62
+2026-02-09 16:51:32,670 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 3.75
+2026-02-09 16:51:32,681 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.5
+2026-02-09 16:51:32,692 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.36
+2026-02-09 16:51:32,704 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.4
+2026-02-09 16:51:32,714 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 2.25
+2026-02-09 16:51:32,725 - monitor - INFO - New bet found for gonzalo �lvarez roman: 2 @ 1.83
+2026-02-09 16:51:32,737 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.57
+2026-02-09 16:51:32,748 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.73
+2026-02-09 16:51:32,759 - monitor - INFO - New bet found for gonzalo �lvarez roman: 1 @ 1.73
+2026-02-09 16:51:32,968 - monitor - INFO - New bet found for Valdemar Lopes761: 1 @ 0.0
+2026-02-09 16:51:33,029 - monitor - INFO - New bet found for Jafet Erubey: X @ 3.4
+2026-02-09 16:51:33,151 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 2.05
+2026-02-09 16:51:33,162 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.17
+2026-02-09 16:51:33,173 - monitor - INFO - New bet found for Cephas Dowuona885: 2 @ 1.29
+2026-02-09 16:51:33,183 - monitor - INFO - New bet found for Cephas Dowuona885: 1 @ 1.05
+2026-02-09 16:51:33,368 - monitor - INFO - New bet found for Lurex: 2 @ 0.0
+2026-02-09 16:51:33,379 - monitor - INFO - New bet found for Lurex: 1 @ 1.91
+2026-02-09 16:51:33,392 - monitor - INFO - New bet found for Lurex: 2 @ 0.0
+2026-02-09 16:51:33,404 - monitor - INFO - New bet found for Lurex: 2 @ 0.0
+2026-02-09 16:51:33,497 - monitor - INFO - New bet found for Patrik Rost�: 1 @ 2.38
+2026-02-09 16:51:33,618 - monitor - INFO - New bet found for Guest695ae9902667707c3e93e4b3: 1 @ 0.0
+2026-02-09 16:51:33,683 - monitor - INFO - New bet found for ezcash: 1 @ 2.75
+2026-02-09 16:51:33,701 - monitor - INFO - New bet found for ezcash: 1 @ 0.0
+2026-02-09 16:51:33,713 - monitor - INFO - New bet found for ezcash: 1 @ 0.0
+2026-02-09 16:51:33,860 - monitor - INFO - New bet found for MADARA59: 1 @ 1.7
+2026-02-09 16:51:33,875 - monitor - INFO - New bet found for MADARA59: 1 @ 0.0
+2026-02-09 16:51:33,949 - monitor - INFO - New bet found for Shodikin Shodikin: 2 @ 1.27
+2026-02-09 16:51:34,563 - monitor - INFO - New bet found for Rodrigo Vaqueiro: 1 @ 0.0
+2026-02-09 16:51:34,661 - monitor - INFO - New bet found for Josu� Aguilar Palomino: 1 @ 1.76
+2026-02-09 16:51:34,674 - monitor - INFO - New bet found for Josu� Aguilar Palomino: 1 @ 1.81
+2026-02-09 16:51:34,766 - monitor - INFO - New bet found for Mr. Deen: 1 @ 1.45
+2026-02-09 16:51:34,933 - monitor - INFO - Sleeping for 55.81s...
+2026-02-09 16:52:30,825 - storage - WARNING - Pausing user 857093 for 30m due to 3 failures.
+2026-02-09 16:52:32,882 - monitor - INFO - Sleeping for 60.07s...
+2026-02-09 16:55:15,510 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 16:55:15,518 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 16:55:15,518 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 16:55:15,661 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 16:55:15,661 - monitor - INFO - Monitoring 11 users with 60s base interval.
+2026-02-09 16:55:15,662 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 16:55:15,860 - monitor - INFO - Sleeping for 56.92s...
+2026-02-09 16:56:12,789 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 16:56:12,994 - monitor - INFO - Sleeping for 55.87s...
+2026-02-09 16:57:08,870 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 16:57:09,081 - monitor - INFO - Sleeping for 57.71s...
+2026-02-09 16:58:06,797 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 16:58:06,996 - monitor - INFO - Sleeping for 62.57s...
+2026-02-09 16:59:09,583 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 16:59:09,800 - monitor - INFO - Sleeping for 59.15s...
+2026-02-09 17:00:08,957 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:00:09,216 - monitor - INFO - Sleeping for 61.85s...
+2026-02-09 17:01:11,089 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:01:11,304 - monitor - INFO - Sleeping for 55.88s...
+2026-02-09 17:02:07,195 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:02:07,560 - monitor - INFO - Sleeping for 63.77s...
+2026-02-09 17:06:07,788 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:06:07,797 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:06:07,797 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:06:07,935 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:06:07,935 - monitor - INFO - Monitoring 11 users with 60s base interval.
+2026-02-09 17:06:07,937 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:06:08,143 - monitor - INFO - Sleeping for 62.94s...
+2026-02-09 17:07:11,095 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:07:11,291 - monitor - INFO - Sleeping for 64.42s...
+2026-02-09 17:08:15,718 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:08:15,930 - monitor - INFO - Sleeping for 60.65s...
+2026-02-09 17:09:16,587 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:09:16,797 - monitor - INFO - Sleeping for 56.64s...
+2026-02-09 17:10:13,448 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:10:13,691 - monitor - INFO - Sleeping for 54.78s...
+2026-02-09 17:11:08,481 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:11:08,695 - monitor - INFO - Sleeping for 59.72s...
+2026-02-09 17:12:08,413 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:12:08,753 - monitor - INFO - Sleeping for 58.97s...
+2026-02-09 17:13:07,725 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:13:08,042 - monitor - INFO - Sleeping for 58.40s...
+2026-02-09 17:15:57,191 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:15:57,200 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:15:57,200 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:15:57,356 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:15:57,356 - monitor - INFO - Monitoring 11 users with 60s base interval.
+2026-02-09 17:15:57,357 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:15:57,579 - monitor - INFO - Sleeping for 56.21s...
+2026-02-09 17:16:53,806 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:16:54,012 - monitor - INFO - Sleeping for 56.35s...
+2026-02-09 17:17:50,364 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:17:50,567 - monitor - INFO - Sleeping for 61.13s...
+2026-02-09 17:18:51,717 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:18:51,919 - monitor - INFO - Sleeping for 60.98s...
+2026-02-09 17:19:52,912 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:19:53,136 - monitor - INFO - Sleeping for 55.95s...
+2026-02-09 17:20:49,093 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:20:49,311 - monitor - INFO - Sleeping for 58.98s...
+2026-02-09 17:21:48,310 - monitor - INFO - Skipping paused user Sofascore until 2026-02-09 17:22:30.825621
+2026-02-09 17:21:48,527 - monitor - INFO - Sleeping for 63.54s...
+2026-02-09 17:22:52,122 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:22:52,476 - monitor - INFO - Sleeping for 55.27s...
+2026-02-09 17:23:47,796 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:23:47,993 - monitor - INFO - Sleeping for 58.22s...
+2026-02-09 17:24:46,253 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:24:46,255 - storage - WARNING - Pausing user 857093 for 0m due to 3 failures.
+2026-02-09 17:24:46,447 - monitor - INFO - Sleeping for 62.38s...
+2026-02-09 17:25:48,878 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:25:49,303 - monitor - INFO - Sleeping for 63.02s...
+2026-02-09 17:26:52,370 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:26:52,563 - monitor - INFO - Sleeping for 59.76s...
+2026-02-09 17:27:52,358 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:27:52,380 - storage - WARNING - Pausing user 857093 for 0m due to 3 failures.
+2026-02-09 17:27:52,597 - monitor - INFO - Sleeping for 60.52s...
+2026-02-09 17:29:15,483 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:29:15,491 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:29:15,492 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:29:15,625 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:29:15,625 - monitor - INFO - Monitoring 11 users with 60s base interval.
+2026-02-09 17:29:15,659 - client - ERROR - Exception fetching /user/857093/predictions?page=0: User not found at /user/857093/predictions?page=0
+2026-02-09 17:29:15,843 - monitor - INFO - Sleeping for 56.55s...
+2026-02-09 17:30:10,409 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:30:10,420 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:30:10,420 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:30:10,550 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:30:10,551 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-09 17:30:10,756 - monitor - INFO - Sleeping for 60.42s...
+2026-02-09 17:31:11,375 - monitor - INFO - Sleeping for 60.51s...
+2026-02-09 17:33:53,912 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:33:53,927 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:33:53,927 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:33:54,112 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:33:54,112 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-09 17:33:54,310 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 3.3
+2026-02-09 17:33:54,873 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 10.0
+2026-02-09 17:33:55,415 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.0
+2026-02-09 17:33:56,158 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 5.0
+2026-02-09 17:33:56,684 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 2.6
+2026-02-09 17:33:57,215 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 1.27
+2026-02-09 17:33:57,745 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.25
+2026-02-09 17:33:58,309 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 3.75
+2026-02-09 17:33:58,829 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.75
+2026-02-09 17:33:59,365 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.33
+2026-02-09 17:33:59,927 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 3.4
+2026-02-09 17:34:00,558 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.0
+2026-02-09 17:34:01,227 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 26.0
+2026-02-09 17:34:01,775 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 1.17
+2026-02-09 17:34:02,550 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 3.3
+2026-02-09 17:34:03,220 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.55
+2026-02-09 17:34:03,785 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 10.0
+2026-02-09 17:34:04,330 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 5.25
+2026-02-09 17:34:04,880 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.88
+2026-02-09 17:34:05,480 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 5.75
+2026-02-09 17:34:06,128 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 12.0
+2026-02-09 17:34:06,675 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 4.75
+2026-02-09 17:34:07,370 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 4.2
+2026-02-09 17:34:07,872 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 1 @ 2.9
+2026-02-09 17:34:08,500 - monitor - INFO - New bet found for Guest68864018740173ade94578cf: 2 @ 1.3
+2026-02-09 17:34:09,027 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.36
+2026-02-09 17:34:09,671 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.8
+2026-02-09 17:34:10,194 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.5
+2026-02-09 17:34:10,698 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.1
+2026-02-09 17:34:11,277 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.53
+2026-02-09 17:34:11,781 - monitor - INFO - New bet found for Lucassixel: 2 @ 4.33
+2026-02-09 17:34:12,341 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.73
+2026-02-09 17:34:12,887 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.67
+2026-02-09 17:34:13,545 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.7
+2026-02-09 17:34:14,180 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.95
+2026-02-09 17:34:14,727 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.95
+2026-02-09 17:34:15,297 - monitor - INFO - New bet found for Lucassixel: 2 @ 3.0
+2026-02-09 17:34:15,963 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.14
+2026-02-09 17:34:16,503 - monitor - INFO - New bet found for Lucassixel: X @ 3.5
+2026-02-09 17:34:18,818 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.3
+2026-02-09 17:34:19,511 - monitor - INFO - New bet found for Lucassixel: 2 @ 2.25
+2026-02-09 17:34:20,141 - monitor - INFO - New bet found for Lucassixel: 1 @ 2.1
+2026-02-09 17:34:20,764 - monitor - INFO - New bet found for Lucassixel: 2 @ 1.73
+2026-02-09 17:34:21,333 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.62
+2026-02-09 17:34:21,826 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.976, "global": false}
+2026-02-09 17:34:21,843 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.39
+2026-02-09 17:34:22,344 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.448, "global": false}
+2026-02-09 17:34:22,358 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.53
+2026-02-09 17:34:22,874 - monitor - INFO - New bet found for Lucassixel: 1 @ 1.61
+2026-02-09 17:34:23,418 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.384, "global": false}
+2026-02-09 17:34:23,432 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.95
+2026-02-09 17:34:23,885 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.909, "global": false}
+2026-02-09 17:34:23,904 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.29
+2026-02-09 17:34:24,460 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.389, "global": false}
+2026-02-09 17:34:24,472 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.61
+2026-02-09 17:34:24,993 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.65
+2026-02-09 17:34:25,452 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.344, "global": false}
+2026-02-09 17:34:25,472 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.2
+2026-02-09 17:34:25,987 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.816, "global": false}
+2026-02-09 17:34:26,003 - monitor - INFO - New bet found for BTTS is the best: 1 @ 2.35
+2026-02-09 17:34:26,508 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:26,523 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.44
+2026-02-09 17:34:27,136 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.53
+2026-02-09 17:34:27,592 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.202, "global": false}
+2026-02-09 17:34:27,609 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.33
+2026-02-09 17:34:28,114 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.68, "global": false}
+2026-02-09 17:34:28,126 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.83
+2026-02-09 17:34:28,587 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:28,601 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.5
+2026-02-09 17:34:29,161 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.91
+2026-02-09 17:34:29,645 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.147, "global": false}
+2026-02-09 17:34:29,664 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.73
+2026-02-09 17:34:30,238 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.577, "global": false}
+2026-02-09 17:34:30,254 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.57
+2026-02-09 17:34:30,751 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:30,769 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.8
+2026-02-09 17:34:31,406 - monitor - INFO - New bet found for BTTS is the best: 2 @ 1.45
+2026-02-09 17:34:31,895 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.906, "global": false}
+2026-02-09 17:34:31,913 - monitor - INFO - New bet found for BTTS is the best: 2 @ 2.05
+2026-02-09 17:34:32,388 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.417, "global": false}
+2026-02-09 17:34:32,410 - monitor - INFO - New bet found for BTTS is the best: 1 @ 3.1
+2026-02-09 17:34:32,997 - monitor - INFO - New bet found for BTTS is the best: 1 @ 2.55
+2026-02-09 17:34:33,515 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.281, "global": false}
+2026-02-09 17:34:33,533 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.48
+2026-02-09 17:34:34,073 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.737, "global": false}
+2026-02-09 17:34:34,086 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.22
+2026-02-09 17:34:34,535 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:34,549 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.29
+2026-02-09 17:34:35,154 - monitor - INFO - New bet found for BTTS is the best: 2 @ 3.3
+2026-02-09 17:34:35,616 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.178, "global": false}
+2026-02-09 17:34:35,639 - monitor - INFO - New bet found for BTTS is the best: 2 @ 5.5
+2026-02-09 17:34:36,122 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.682, "global": false}
+2026-02-09 17:34:36,132 - monitor - INFO - New bet found for BTTS is the best: 1 @ 1.33
+2026-02-09 17:34:36,600 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:36,612 - monitor - INFO - New bet found for BTTS is the best: 2 @ 2.1
+2026-02-09 17:34:37,149 - monitor - INFO - New bet found for Swift GB: 1 @ 1.73
+2026-02-09 17:34:37,631 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.164, "global": false}
+2026-02-09 17:34:37,659 - monitor - INFO - New bet found for Swift GB: 1 @ 2.63
+2026-02-09 17:34:38,139 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.658, "global": false}
+2026-02-09 17:34:38,157 - monitor - INFO - New bet found for Swift GB: 2 @ 2.75
+2026-02-09 17:34:38,647 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:38,659 - monitor - INFO - New bet found for Swift GB: 1 @ 2.25
+2026-02-09 17:34:39,389 - monitor - INFO - New bet found for Swift GB: 1 @ 2.9
+2026-02-09 17:34:39,875 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.918, "global": false}
+2026-02-09 17:34:39,888 - monitor - INFO - New bet found for Swift GB: 1 @ 1.67
+2026-02-09 17:34:40,355 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.442, "global": false}
+2026-02-09 17:34:40,382 - monitor - INFO - New bet found for Swift GB: 1 @ 2.4
+2026-02-09 17:34:40,980 - monitor - INFO - New bet found for Swift GB: 2 @ 2.55
+2026-02-09 17:34:41,492 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.299, "global": false}
+2026-02-09 17:34:41,507 - monitor - INFO - New bet found for Swift GB: 1 @ 1.42
+2026-02-09 17:34:41,992 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.802, "global": false}
+2026-02-09 17:34:42,009 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 17:34:42,732 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:42,755 - monitor - INFO - New bet found for Swift GB: 2 @ 1.83
+2026-02-09 17:34:43,319 - monitor - INFO - New bet found for Swift GB: 1 @ 4.2
+2026-02-09 17:34:43,792 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.005, "global": false}
+2026-02-09 17:34:43,817 - monitor - INFO - New bet found for Swift GB: 2 @ 1.4
+2026-02-09 17:34:44,352 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.453, "global": false}
+2026-02-09 17:34:44,366 - monitor - INFO - New bet found for Swift GB: 2 @ 1.9
+2026-02-09 17:34:44,928 - monitor - INFO - New bet found for Swift GB: 2 @ 2.15
+2026-02-09 17:34:45,384 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.408, "global": false}
+2026-02-09 17:34:45,401 - monitor - INFO - New bet found for Swift GB: 1 @ 3.7
+2026-02-09 17:34:45,859 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.931, "global": false}
+2026-02-09 17:34:45,872 - monitor - INFO - New bet found for Swift GB: 1 @ 2.38
+2026-02-09 17:34:46,395 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.418, "global": false}
+2026-02-09 17:34:46,409 - monitor - INFO - New bet found for Swift GB: 2 @ 2.15
+2026-02-09 17:34:46,995 - monitor - INFO - New bet found for Swift GB: 1 @ 1.53
+2026-02-09 17:34:47,498 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.296, "global": false}
+2026-02-09 17:34:47,515 - monitor - INFO - New bet found for Swift GB: 1 @ 2.1
+2026-02-09 17:34:47,974 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.819, "global": false}
+2026-02-09 17:34:47,997 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 17:34:48,471 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.334, "global": false}
+2026-02-09 17:34:48,487 - monitor - INFO - New bet found for Swift GB: 1 @ 2.5
+2026-02-09 17:34:49,002 - monitor - INFO - New bet found for Swift GB: 2 @ 1.95
+2026-02-09 17:34:49,508 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.29, "global": false}
+2026-02-09 17:34:49,523 - monitor - INFO - New bet found for Swift GB: 2 @ 2.9
+2026-02-09 17:34:49,986 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.804, "global": false}
+2026-02-09 17:34:50,005 - monitor - INFO - New bet found for Albert PL: 1 @ 1.9
+2026-02-09 17:34:50,507 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:50,530 - monitor - INFO - New bet found for Albert PL: 2 @ 1.8
+2026-02-09 17:34:51,190 - monitor - INFO - New bet found for Albert PL: 1 @ 2.1
+2026-02-09 17:34:51,659 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.134, "global": false}
+2026-02-09 17:34:51,671 - monitor - INFO - New bet found for Albert PL: 2 @ 2.35
+2026-02-09 17:34:52,148 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.653, "global": false}
+2026-02-09 17:34:52,171 - monitor - INFO - New bet found for Albert PL: 2 @ 2.0
+2026-02-09 17:34:52,656 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:52,676 - monitor - INFO - New bet found for Albert PL: 1 @ 2.0
+2026-02-09 17:34:53,213 - monitor - INFO - New bet found for Albert PL: 2 @ 2.63
+2026-02-09 17:34:53,665 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.126, "global": false}
+2026-02-09 17:34:53,682 - monitor - INFO - New bet found for Albert PL: 2 @ 2.4
+2026-02-09 17:34:54,141 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.659, "global": false}
+2026-02-09 17:34:54,155 - monitor - INFO - New bet found for Albert PL: 1 @ 2.63
+2026-02-09 17:34:54,661 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:55,671 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.119, "global": false}
+2026-02-09 17:34:56,165 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.624, "global": false}
+2026-02-09 17:34:56,653 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:57,760 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.036, "global": false}
+2026-02-09 17:34:58,293 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.504, "global": false}
+2026-02-09 17:34:58,776 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:34:59,911 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.878, "global": false}
+2026-02-09 17:35:00,509 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:35:01,557 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.242, "global": false}
+2026-02-09 17:35:02,070 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.722, "global": false}
+2026-02-09 17:35:02,587 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:35:03,618 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.17, "global": false}
+2026-02-09 17:35:04,206 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.605, "global": false}
+2026-02-09 17:35:04,704 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:35:05,715 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.08, "global": false}
+2026-02-09 17:35:06,274 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.531, "global": false}
+2026-02-09 17:35:06,758 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:35:07,844 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.945, "global": false}
+2026-02-09 17:35:08,401 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.404, "global": false}
+2026-02-09 17:35:09,565 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 1.248, "global": false}
+2026-02-09 17:35:10,158 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.652, "global": false}
+2026-02-09 17:35:10,686 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:35:11,986 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.801, "global": false}
+2026-02-09 17:35:12,529 - notifications - ERROR - Failed to send Discord alert: {"message": "The resource is being rate limited.", "retry_after": 0.3, "global": false}
+2026-02-09 17:43:30,698 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:43:30,714 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:43:30,714 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:43:30,847 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:43:30,847 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-09 17:43:31,124 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15512239
+2026-02-09 17:43:31,666 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14413350
+2026-02-09 17:43:32,217 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15421259
+2026-02-09 17:43:32,820 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15421255
+2026-02-09 17:43:33,319 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15138053
+2026-02-09 17:43:33,933 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14445568
+2026-02-09 17:43:34,521 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14624085
+2026-02-09 17:43:35,177 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14512499
+2026-02-09 17:43:35,895 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14596151
+2026-02-09 17:43:36,419 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14402657
+2026-02-09 17:43:36,942 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14403320
+2026-02-09 17:43:37,508 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14404853
+2026-02-09 17:43:38,145 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15505452
+2026-02-09 17:43:38,757 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14162011
+2026-02-09 17:43:39,369 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15180106
+2026-02-09 17:43:39,889 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14253760
+2026-02-09 17:43:40,469 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15491942
+2026-02-09 17:43:41,041 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14524604
+2026-02-09 17:43:41,567 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15496136
+2026-02-09 17:43:42,169 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14103218
+2026-02-09 17:43:42,708 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15352842
+2026-02-09 17:43:43,241 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15479059
+2026-02-09 17:43:43,837 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14523408
+2026-02-09 17:43:44,401 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14397770
+2026-02-09 17:43:44,961 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 14977979
+2026-02-09 17:43:45,744 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14092138
+2026-02-09 17:43:46,609 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14624084
+2026-02-09 17:43:47,291 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14060354
+2026-02-09 17:43:47,891 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15491580
+2026-02-09 17:43:49,253 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15146476
+2026-02-09 17:43:49,913 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15146477
+2026-02-09 17:43:50,455 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15462601
+2026-02-09 17:43:50,978 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15437147
+2026-02-09 17:43:51,538 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14512004
+2026-02-09 17:43:52,289 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14253786
+2026-02-09 17:43:53,301 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15253974
+2026-02-09 17:43:54,223 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15409813
+2026-02-09 17:43:54,874 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15449413
+2026-02-09 17:43:55,569 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15253973
+2026-02-09 17:43:56,149 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15204507
+2026-02-09 17:43:56,818 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15204501
+2026-02-09 17:43:57,346 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15482513
+2026-02-09 17:43:57,911 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 14678043
+2026-02-09 17:43:58,479 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15388286
+2026-02-09 17:43:59,029 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.602s...
+2026-02-09 17:44:00,308 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15397560
+2026-02-09 17:44:00,834 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.787s...
+2026-02-09 17:44:02,533 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14288988
+2026-02-09 17:44:03,001 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.618s...
+2026-02-09 17:44:04,422 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 15138052
+2026-02-09 17:44:04,937 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.688s...
+2026-02-09 17:44:06,315 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14064490
+2026-02-09 17:44:07,084 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.53s...
+2026-02-09 17:44:08,244 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14053839
+2026-02-09 17:44:08,807 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.816s...
+2026-02-09 17:44:10,335 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 13981656
+2026-02-09 17:44:10,814 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.801s...
+2026-02-09 17:44:12,212 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14059824
+2026-02-09 17:44:12,707 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.909s...
+2026-02-09 17:44:14,407 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 13981654
+2026-02-09 17:44:14,886 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.735s...
+2026-02-09 17:44:16,294 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14025179
+2026-02-09 17:44:16,763 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.858s...
+2026-02-09 17:44:18,401 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14025182
+2026-02-09 17:44:18,939 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.684s...
+2026-02-09 17:44:20,262 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14062201
+2026-02-09 17:44:20,816 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.823s...
+2026-02-09 17:44:22,349 - monitor - INFO - Sending grouped alert for Guest68864018740173ade94578cf: 1 bets on match 14025170
+2026-02-09 17:44:22,836 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.78s...
+2026-02-09 17:50:03,856 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-09 17:50:03,871 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-09 17:50:03,871 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-09 17:50:04,012 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-09 17:50:04,012 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-09 17:50:05,232 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14128354
+2026-02-09 17:50:05,760 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14025188
+2026-02-09 17:50:06,336 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15440056
+2026-02-09 17:50:06,960 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14025203
+2026-02-09 17:50:07,476 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15370026
+2026-02-09 17:50:08,104 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14025206
+2026-02-09 17:50:08,924 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14025212
+2026-02-09 17:50:09,517 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15193712
+2026-02-09 17:50:10,078 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15372917
+2026-02-09 17:50:10,788 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15250651
+2026-02-09 17:50:11,519 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14206330
+2026-02-09 17:50:12,121 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14210735
+2026-02-09 17:50:12,675 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15250650
+2026-02-09 17:50:13,204 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15496189
+2026-02-09 17:50:13,902 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14288997
+2026-02-09 17:50:14,489 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14062212
+2026-02-09 17:50:14,999 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15359744
+2026-02-09 17:50:15,529 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14015587
+2026-02-09 17:50:16,129 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14109807
+2026-02-09 17:50:16,628 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 14064492
+2026-02-09 17:50:17,156 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15359739
+2026-02-09 17:50:17,851 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15485262
+2026-02-09 17:50:18,436 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15250675
+2026-02-09 17:50:18,975 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15452736
+2026-02-09 17:50:19,683 - monitor - INFO - Sending grouped alert for Avexo Julius: 1 bets on match 14083341
+2026-02-09 17:50:20,184 - monitor - INFO - Sending grouped alert for Avexo Julius: 1 bets on match 15452742
+2026-02-09 17:50:21,104 - monitor - INFO - Sending grouped alert for M M 215: 1 bets on match 15341966
+2026-02-09 17:50:21,626 - monitor - INFO - Sending grouped alert for M M 215: 1 bets on match 15315483
+2026-02-09 17:50:22,203 - monitor - INFO - Sending grouped alert for M M 215: 1 bets on match 15294982
+2026-02-09 17:50:22,723 - monitor - INFO - Sending grouped alert for M M 215: 1 bets on match 15380189
+2026-02-09 17:50:23,535 - monitor - INFO - Sending grouped alert for BTTS is the best: 1 bets on match 15397560
+2026-02-09 17:50:24,581 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442675
+2026-02-09 17:50:25,095 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442569
+2026-02-09 17:50:25,613 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14439206
+2026-02-09 17:50:26,313 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442678
+2026-02-09 17:50:26,836 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442419
+2026-02-09 17:50:27,344 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 15506152
+2026-02-09 17:50:27,933 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14439148
+2026-02-09 17:50:28,471 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442593
+2026-02-09 17:50:29,015 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 15506153
+2026-02-09 17:50:29,553 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442138
+2026-02-09 17:50:30,095 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442266
+2026-02-09 17:50:30,626 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 14442437
+2026-02-09 17:50:31,119 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.593s...
+2026-02-09 17:50:32,437 - monitor - INFO - Sending grouped alert for Ираклий Несторович: 1 bets on match 15237912
+2026-02-09 17:50:33,121 - notifications - WARNING - Discord Rate Limited. Sleeping for 0.592s...
+2026-02-09 17:50:34,493 - monitor - INFO - Sleeping for 31.23s...
+2026-02-09 17:51:05,958 - monitor - INFO - Sleeping for 59.98s...
+2026-02-09 17:52:06,178 - monitor - INFO - Sleeping for 58.10s...
+2026-02-09 17:53:04,506 - monitor - INFO - Sleeping for 64.52s...
+2026-02-09 17:54:09,253 - monitor - INFO - Sleeping for 55.99s...
+2026-02-09 17:55:05,466 - monitor - INFO - Sleeping for 56.63s...
+2026-02-09 17:56:02,334 - monitor - INFO - Sleeping for 60.30s...
+2026-02-09 17:57:02,863 - monitor - INFO - Sleeping for 55.92s...
+2026-02-09 17:57:59,012 - monitor - INFO - Sleeping for 60.64s...
+2026-02-09 17:59:00,214 - monitor - INFO - Sleeping for 63.00s...
+2026-02-09 18:00:03,459 - monitor - INFO - Sleeping for 57.29s...
+2026-02-09 18:01:01,132 - monitor - INFO - Sleeping for 60.00s...
+2026-02-09 18:02:01,361 - monitor - INFO - Sleeping for 56.97s...
+2026-02-09 18:02:58,609 - monitor - INFO - Sleeping for 58.56s...
+2026-02-09 18:03:57,389 - monitor - INFO - Sleeping for 55.58s...
+2026-02-09 18:04:53,189 - monitor - INFO - Sleeping for 61.33s...
+2026-02-09 18:05:54,755 - monitor - INFO - Sleeping for 60.73s...
+2026-02-09 18:06:55,853 - monitor - INFO - Sleeping for 56.55s...
+2026-02-09 18:07:52,617 - monitor - INFO - Sleeping for 61.35s...
+2026-02-09 18:08:54,209 - monitor - INFO - Sleeping for 55.41s...
+2026-02-09 18:09:49,846 - monitor - INFO - Sleeping for 56.87s...
+2026-02-09 18:10:46,938 - monitor - INFO - Sleeping for 60.81s...
+2026-02-09 18:11:48,143 - monitor - INFO - Sleeping for 59.55s...
+2026-02-09 18:12:47,927 - monitor - INFO - Sleeping for 62.25s...
+2026-02-09 18:13:50,656 - monitor - INFO - Sleeping for 58.47s...
