@@ -2000,3 +2000,46 @@ ValueError: could not convert string to float: '-'
 2026-02-09 18:11:48,143 - monitor - INFO - Sleeping for 59.55s...
 2026-02-09 18:12:47,927 - monitor - INFO - Sleeping for 62.25s...
 2026-02-09 18:13:50,656 - monitor - INFO - Sleeping for 58.47s...
+2026-02-10 14:56:02,853 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-10 14:56:02,861 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-10 14:56:02,862 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-10 14:56:03,277 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-10 14:56:03,277 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-10 14:56:04,284 - monitor - INFO - Sending grouped alert for TrustMyBets: 1 bets on match 14275122
+2026-02-10 14:56:04,995 - monitor - INFO - Sending grouped alert for TrustMyBets: 1 bets on match 14168841
+2026-02-10 14:56:05,844 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14025200
+2026-02-10 14:56:06,512 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14025191
+2026-02-10 14:56:07,191 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14049191
+2026-02-10 14:56:07,772 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14059833
+2026-02-10 14:56:08,485 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14049186
+2026-02-10 14:56:09,094 - monitor - INFO - Sending grouped alert for Ali Santiago: 1 bets on match 14336334
+2026-02-10 14:56:09,700 - monitor - INFO - Sending grouped alert for DRoPx_7: 1 bets on match 14025197
+2026-02-10 14:56:10,292 - monitor - INFO - Sending grouped alert for DRoPx_7: 1 bets on match 14025185
+2026-02-10 14:56:10,951 - monitor - INFO - Sending grouped alert for DRoPx_7: 1 bets on match 14083418
+2026-02-10 14:56:11,612 - monitor - INFO - Sending grouped alert for DRoPx_7: 1 bets on match 15453063
+2026-02-10 14:56:12,245 - monitor - INFO - Sending grouped alert for DRoPx_7: 1 bets on match 15453065
+2026-02-10 14:56:12,964 - monitor - INFO - Sending grouped alert for Cù Chí Minh: 1 bets on match 14025200
+2026-02-10 14:56:13,861 - monitor - INFO - Sending grouped alert for Cù Chí Minh: 1 bets on match 15193715
+2026-02-10 14:56:14,529 - monitor - INFO - Sending grouped alert for Cù Chí Minh: 1 bets on match 14025194
+2026-02-10 14:56:15,159 - monitor - INFO - Sending grouped alert for Cù Chí Minh: 1 bets on match 14025209
+2026-02-10 14:56:15,759 - monitor - INFO - Sending grouped alert for Cù Chí Minh: 1 bets on match 15496188
+2026-02-10 14:56:16,637 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15520392
+2026-02-10 14:56:17,376 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15298463
+2026-02-10 14:56:18,009 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15506146
+2026-02-10 14:56:18,860 - monitor - INFO - Sleeping for 43.84s...
+2026-02-10 14:57:03,002 - monitor - INFO - Sleeping for 61.72s...
+2026-02-10 20:49:13,635 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-10 20:49:13,648 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-10 20:49:13,648 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-10 20:49:13,894 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-10 20:49:13,894 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-10 20:49:14,115 - monitor - INFO - Sending grouped alert for Marko Grbović: 1 bets on match 15452731
+2026-02-10 20:49:14,864 - monitor - INFO - Sleeping for 57.85s...
+2026-02-10 20:50:13,033 - monitor - INFO - Sleeping for 63.43s...
+2026-02-12 16:41:19,888 - monitor - INFO - Starting Async Sofascore Monitor (Hardened)...
+2026-02-12 16:41:19,900 - storage - INFO - Cleaned up bets older than 30 days.
+2026-02-12 16:41:19,900 - monitor - INFO - Auto-discovering Top 10 Predictors...
+2026-02-12 16:41:20,179 - monitor - INFO - Discovered 10 new top predictors.
+2026-02-12 16:41:20,180 - monitor - INFO - Monitoring 10 users with 60s base interval.
+2026-02-12 16:41:20,870 - monitor - INFO - Sending grouped alert for Albert PL: 1 bets on match 15530642
+2026-02-12 16:41:21,736 - monitor - INFO - Sending grouped alert for Gabriel '-'508: 1 bets on match 13981671
