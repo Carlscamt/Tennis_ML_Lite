@@ -765,20 +765,40 @@ class TennisPipeline:
 
     # Helper methods
     def _get_upcoming_matches(self, days: int, skip_scrape: bool = False) -> pl.DataFrame:
-        latest_path = self.data_dir / "upcoming.parquet"
-        if latest_path.exists():
-            import os
-            mtime = os.path.getmtime(latest_path)
-            age_hours = (datetime.now().timestamp() - mtime) / 3600
-            if age_hours < 1 or skip_scrape:
-                print(f"[Pipeline] Using cached upcoming.parquet (age: {age_hours:.1f}h)", flush=True)
-                return pl.read_parquet(latest_path)
+        upcoming_path = self.data_dir / "upcoming.parquet"
+        
+        # Check if file exists
+        if upcoming_path.exists():
+            try:
+                # Load dataframe to check robust freshness (not just file mtime)
+                df = pl.read_parquet(upcoming_path)
+                
+                # Check _scraped_at column if present
+                if "_scraped_at" in df.columns and not df.is_empty():
+                    # Get max scraped time
+                    last_scraped = df["_scraped_at"].str.strptime(pl.Datetime).max()
+                    
+                    if last_scraped:
+                        age_hours = (datetime.now() - last_scraped).total_seconds() / 3600
+                        
+                        if age_hours < 1.0 or skip_scrape:
+                            print(f"[Pipeline] Using cached upcoming.parquet (data age: {age_hours:.1f}h)", flush=True)
+                            return df
+                        else:
+                            print(f"[Pipeline] Cached data is stale ({age_hours:.1f}h > 1.0h). Triggering fresh scrape...", flush=True)
+                    else:
+                        print("[Pipeline] Cached data missing valid timestamps. Rescraping...", flush=True)
+                else:
+                    print("[Pipeline] Cached data invalid or empty. Rescraping...", flush=True)
+                    
+            except Exception as e:
+                print(f"[Pipeline] Error reading cache: {e}. Rescraping...", flush=True)
         
         if skip_scrape:
-            print("[Pipeline] --no-scrape set but no cached data found. Returning empty.", flush=True)
+            print("[Pipeline] --no-scrape set but no valid cached data found. Returning empty.", flush=True)
             return pl.DataFrame()
         
-        print("[Pipeline] Scraping upcoming matches...", flush=True)
+        print(f"[Pipeline] Scraping upcoming matches (days={days})...", flush=True)
         return scrape_upcoming(days_ahead=days)
 
     def _load_historical_data(self) -> pl.DataFrame:
